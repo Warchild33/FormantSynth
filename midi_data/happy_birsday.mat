@@ -1,0 +1,122 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% DATA LEGEND                                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Filename: happy_birthday.mid
+%%Ticks per quarter note: 256
+%%Time units used in column 1: beat
+% 6 opcodes are present in the data:
+%	opcode 1000	= note
+%	   column 1 = start time of note
+%	   column 2 = opcode for note
+%	   column 3 = duration of note
+%	   column 4 = MIDI key number
+%	   column 5 = MIDI attack velocity
+%	   column 6 = MIDI channel
+%	   column 7 = MIDI-file track number
+%	opcode 2000	= continuous controller
+%	   column 1 = action time of controller
+%	   column 2 = opcode for controller
+%	   column 3 = controller number
+%	   column 4 = controller value
+%	   column 5 = unused
+%	   column 6 = MIDI channel
+%	   column 7 = MIDI-file track number
+%	opcode 3000	= instrument
+%	   column 1 = start time of instrument on channel
+%	   column 2 = opcode for instrument
+%	   column 3 = instrument number
+%	   column 4-5 = unused
+%	   column 6 = MIDI channel
+%	   column 7 = MIDI-file track number
+%	opcode 4000	= tempo change
+%	   column 1 = start time of tempo
+%	   column 2 = opcode for tempo
+%	   column 3 = number of beats per minute
+%	   column 4-7 = unused
+%	opcode 5000	= meter signature
+%	   column 1 = start time of meter signature
+%	   column 2 = opcode for meter
+%	   column 3 = numerator of meter
+%	   column 4 = denominator of meter
+%	   column 5-7 = unused
+%	opcode 6000	= key signature
+%	   column 1 = start time of key signature
+%	   column 2 = opcode for key signature
+%	   column 3 = number of sharps (positive) or flats (negative)
+%	   column 4 = mode (0=major, 1=minor)
+%	   column 5-7 = unused
+% 1 instrument timbre is present in the data:
+%	instrument number 0	= acpiano
+% 4 types of controllers are present in the data:
+%	controller   0   Bank Select (coarse)               0..127
+%	controller  10   Pan (coarse)                       0=left 127=right
+%	controller  32   Bank Select (fine)                 0..127 usu.ignored
+%	controller  91   Effects Level                      0..127
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+NOTE = 1000;
+CONT = 2000;
+INSTR = 3000;
+TEMPO = 4000;
+METER = 5000;
+KEYSIG = 6000;
+data = [
+0,	METER,	4,	16,	-1000,	-1000,	-1000;
+0,	KEYSIG,	2,	255,	-1000,	-1000,	-1000;
+0,	METER,	4,	8,	-1000,	-1000,	-1000;
+0,	CONT,	91,	50,	-1000,	0,	1;
+0,	CONT,	10,	73,	-1000,	0,	1;
+0,	CONT,	91,	50,	-1000,	0,	1;
+0,	CONT,	10,	73,	-1000,	0,	1;
+0,	CONT,	0,	0,	-1000,	0,	1;
+0,	CONT,	32,	0,	-1000,	0,	1;
+0,	INSTR,	0,	-1000,	-1000,	0,	1;
+0,	NOTE,	0.675781,	60,	70,	0,	1;
+0.75,	NOTE,	0.226562,	60,	72,	0,	1;
+1,	NOTE,	0.902344,	62,	83,	0,	1;
+1,	NOTE,	2.80469,	53,	73,	0,	1;
+1,	NOTE,	2.80469,	57,	72,	0,	1;
+2,	NOTE,	0.902344,	60,	72,	0,	1;
+3,	NOTE,	0.902344,	65,	85,	0,	1;
+4,	NOTE,	1.80469,	64,	79,	0,	1;
+4,	NOTE,	2.80469,	48,	81,	0,	1;
+4,	NOTE,	2.80469,	58,	81,	0,	1;
+6,	NOTE,	0.675781,	60,	71,	0,	1;
+6.75,	NOTE,	0.226562,	60,	72,	0,	1;
+7,	NOTE,	0.902344,	62,	85,	0,	1;
+7,	NOTE,	2.80469,	48,	80,	0,	1;
+7,	NOTE,	2.80469,	58,	79,	0,	1;
+8,	NOTE,	0.902344,	60,	69,	0,	1;
+9,	NOTE,	0.902344,	67,	90,	0,	1;
+10,	NOTE,	1.80469,	65,	75,	0,	1;
+10,	NOTE,	2.80469,	53,	73,	0,	1;
+10,	NOTE,	2.80469,	57,	73,	0,	1;
+12,	NOTE,	0.675781,	60,	69,	0,	1;
+12.75,	NOTE,	0.226562,	60,	74,	0,	1;
+13,	NOTE,	0.902344,	72,	99,	0,	1;
+13,	NOTE,	2.80469,	53,	77,	0,	1;
+13,	NOTE,	2.80469,	57,	79,	0,	1;
+14,	NOTE,	0.902344,	69,	74,	0,	1;
+15,	NOTE,	0.902344,	65,	66,	0,	1;
+16,	NOTE,	0.902344,	64,	73,	0,	1;
+16,	NOTE,	2.80469,	53,	81,	0,	1;
+16,	NOTE,	2.80469,	58,	84,	0,	1;
+17,	NOTE,	0.902344,	62,	69,	0,	1;
+17.7773,	TEMPO,	16,	-1000,	-1000,	-1000,	-1000;
+17.9023,	TEMPO,	100,	-1000,	-1000,	-1000,	-1000;
+18,	NOTE,	0.675781,	70,	89,	0,	1;
+18.6797,	TEMPO,	16,	-1000,	-1000,	-1000,	-1000;
+18.75,	NOTE,	0.226562,	70,	78,	0,	1;
+18.8047,	TEMPO,	100,	-1000,	-1000,	-1000,	-1000;
+19,	NOTE,	0.902344,	69,	76,	0,	1;
+19,	NOTE,	1.80469,	53,	75,	0,	1;
+19,	NOTE,	1.80469,	57,	75,	0,	1;
+20,	NOTE,	0.902344,	65,	65,	0,	1;
+21,	NOTE,	0.902344,	67,	77,	0,	1;
+21,	NOTE,	0.902344,	48,	78,	0,	1;
+21,	NOTE,	0.902344,	58,	79,	0,	1;
+22,	NOTE,	2.80469,	65,	73,	0,	1;
+22,	NOTE,	2.80469,	53,	76,	0,	1;
+22,	NOTE,	2.80469,	57,	76,	0,	1;
+];
