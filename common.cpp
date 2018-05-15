@@ -1,0 +1,41 @@
+#include "math.h"
+#include "stdlib.h"
+#include "common.h"
+
+double* ones(int i1, int i2)
+{
+    double* x = new double[sizeof(double)*i2];//(double*)malloc(sizeof(double)*i2);
+    for(int i=i1; i < i2; i++)
+        x[i] = 1;
+    return x;
+}
+
+double* zeroes(int i1, int i2)
+{
+    double* x = new double[sizeof(double)*i2];
+    for(int i=i1; i < i2; i++)
+        x[i] = 0;
+    return x;
+}
+
+complex_double** Make2DArray(int arraySizeX, int arraySizeY)
+{
+    complex_double** theArray;
+    theArray = (complex_double**) malloc(arraySizeX*sizeof(complex_double*));
+    int i,j;
+    for (i = 0; i < arraySizeX; i++)
+    {
+        theArray[i] = (complex_double*) malloc(arraySizeY*sizeof(complex_double));
+        for(j=0; j < arraySizeY; j++)
+        {
+            theArray[i][j].re = 0;
+            theArray[i][j].im = 0;
+        }
+    }
+    return theArray;
+}
+
+double rem(double x, double y)
+{
+    return x - floor(x/y)*y;
+}
