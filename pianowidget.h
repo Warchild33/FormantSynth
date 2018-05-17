@@ -5,6 +5,7 @@
 #include <map>
 #include <QPoint>
 #include "key2notetable.h"
+#include "svgwidget.h"
 
 struct PianoKey
 {
@@ -20,7 +21,7 @@ struct PianoKey
 
 };
 
-class PianoWidget : public QWidget
+class PianoWidget : public SvgWidget
 {
     Q_OBJECT
 public:

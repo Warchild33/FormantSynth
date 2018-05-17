@@ -4,10 +4,14 @@
 #include <QThread>
 #include "alsadriver.h"
 
+extern QSemaphore                  freeBytes;
+extern QSemaphore                  usedBytes;
+
 AlsaDriver::AlsaDriver()
 {
     playback_handle = 0;
     bProcessBuffers = false;
+    bExitThread = false;
 
 }
 
@@ -17,6 +21,7 @@ int AlsaDriver::open(char* device_name)
     int err;
     short buf[128];
 
+    this->device_name = device_name;
     if ((err = snd_pcm_open(&playback_handle, device_name, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
         fprintf (stderr, "cannot open audio device %s (%s)\n",
              device_name,
@@ -102,24 +107,30 @@ int AlsaDriver::open(char* device_name)
                  snd_strerror (err));
         }
     }
-    fprintf (stderr, "thread id = %d", QThread::currentThreadId());
-    start();
-    moveToThread(this);
-    notetowaveform_thread.start();
+    fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
+    snd_pcm_close(playback_handle);
+    //start();
+    //moveToThread(this);
+    //notetowaveform_thread.start();
     return 1;
 }
 
 int AlsaDriver::close()
 {
     int err;
-    Qt::HANDLE h = QThread::currentThreadId();
-/*    snd_pcm_drop(playback_handle);
-    if ((err = snd_pcm_close(playback_handle)) < 0) {
-        fprintf (stderr, "cannot close audio device (%s)\n",
-             snd_strerror (err));
-        return 0;
-    }
-    */
+    bExitThread = true;
+    int i=0;
+//    while(++i < SIZE_OF_CIRC_BUFFER)
+//    {
+//        freeBytes.acquire();
+//        usedBytes.release();
+//    }
+    snd_pcm_close(playback_handle);
+    //QThread::wait(100);
+    //fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
+
+
+
 }
 
 
@@ -147,10 +158,6 @@ static int xrun_recovery(snd_pcm_t *handle, int err)
         return err;
 }
 
-extern QSemaphore                  freeBytes;
-extern QSemaphore                  usedBytes;
-
-
 void AlsaDriver::run()
 {
     fprintf (stderr, "thread id = %d", QThread::currentThreadId());
@@ -171,6 +178,7 @@ void AlsaDriver::run()
               usedBytes.acquire();
               err = snd_pcm_writei(playback_handle, ptr, 1);
               freeBytes.release();
+
             //usleep(1);
             //mixer_thread.mixedCondition.wakeAll();
 
@@ -184,10 +192,21 @@ void AlsaDriver::run()
                 }
                 break;
             }
+            if( bExitThread )
+            {
+                fprintf (stderr,"AlsaDriver Thread exit ");
+                if ((err = snd_pcm_close(playback_handle)) < 0) {
+                    fprintf (stderr, "cannot close audio device (%s)\n",
+                         snd_strerror (err));
+                    return;
+                }
+                return;
+            }
             ptr += err * 2; //2 channels
             cptr -= err;
         }
     }
+
 }
 
 /*

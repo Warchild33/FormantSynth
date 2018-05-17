@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui svg xml
 QT += multimedia
 LIBS+=-lqwt-qt5 -lasound
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     midinote.cpp \
     key2notetable.cpp \
     buffer.cpp \
-    notetowaveformthread.cpp
+    notetowaveformthread.cpp \
+    svgwidget.cpp
 
 HEADERS  += mainwindow.h \
     stft.h \
@@ -68,7 +69,8 @@ HEADERS  += mainwindow.h \
     midinote.h \
     key2notetable.h \
     buffer.h \
-    notetowaveformthread.h
+    notetowaveformthread.h \
+    svgwidget.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \

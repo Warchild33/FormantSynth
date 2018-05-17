@@ -4,18 +4,25 @@
 #include <math.h>
 #include "pianowidget.h"
 
-PianoWidget::PianoWidget(QWidget *parent) : QWidget(parent)
+PianoWidget::PianoWidget(QWidget *parent) : SvgWidget(parent)
 {
-    background = QImage("./images/piano_keys_and_notes.png");
+    //background = QImage("./images/piano_keys_and_notes.png");
+    SvgLoad("./images/keyboard.svg");
+    LoadDom("./images/keyboard.svg");
     create_table();
 }
 
 void PianoWidget::paintEvent(QPaintEvent* event)
 {
-    QPainter painter(this);
+    /*
     painter.fillRect(this->rect(),Qt::red);
     painter.drawPixmap(this->rect(),QPixmap::fromImage(background));
+    */
+    QPainter painter(this);
     drawKeys(painter);
+
+
+    SvgWidget::paintEvent(event);
 }
 
 void PianoWidget::drawKeys(QPainter& painter)
@@ -27,6 +34,13 @@ void PianoWidget::drawKeys(QPainter& painter)
         {
             painter.setPen(Qt::red);
             painter.drawEllipse(pixel,5,5);
+            setPathStyleDOM("C4",Qt::red, 0.94);
+            LoadRenderDOM();
+        }
+        else
+        {
+            //setPathStyleDOM("C4",Qt::white, 1);
+            //LoadRenderDOM();
         }
     }
 }

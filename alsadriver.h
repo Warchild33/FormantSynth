@@ -28,6 +28,8 @@ private:
     snd_pcm_t *playback_handle;
     snd_pcm_hw_params_t *hw_params;
     bool bProcessBuffers;
+    bool bExitThread;
+    std::string device_name;
 
 };
 

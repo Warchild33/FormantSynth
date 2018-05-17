@@ -17,6 +17,7 @@ FormantSyntForm::~FormantSyntForm()
 
 void FormantSyntForm::on_hbSongButton_clicked()
 {
+    //synt.alsa->close();
     Happybirsday hb_song;
     Play("./wave/hb_song.wav");
 
@@ -25,7 +26,7 @@ void FormantSyntForm::Play(QString fn)
 {
     QProcess process1;
     QProcess process2;
-    process1.start(QString("mplayer %1 ").arg(fn));
+    process1.start(QString("bash -c \"mplayer %1\" ").arg(fn));
     if (!process1.waitForFinished())
              return ;
 }
