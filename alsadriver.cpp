@@ -108,10 +108,10 @@ int AlsaDriver::open(char* device_name)
         }
     }
     fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
-    snd_pcm_close(playback_handle);
-    //start();
-    //moveToThread(this);
-    //notetowaveform_thread.start();
+    //snd_pcm_close(playback_handle);
+    start();
+    moveToThread(this);
+    notetowaveform_thread.start();
     return 1;
 }
 

@@ -76,7 +76,7 @@ int NoteToWaveformThread::append_waveform_chunk(double* common_samplesD, short* 
 
             }
 
-            fprintf(stderr,"buf %d note %d count %d time_last = %d \n",it - process_buffers.begin(), buf->note, count, timerLastNote.elapsed());
+            //fprintf(stderr,"buf %d note %d count %d time_last = %d \n",it - process_buffers.begin(), buf->note, count, timerLastNote.elapsed());
             if( !buf->timeEnd.isNull() )
               buf->bWrited = true;
         }

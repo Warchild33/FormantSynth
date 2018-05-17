@@ -11,11 +11,16 @@ struct PianoKey
 {
     QPoint pixel;
     bool   on;
+    QString name;
     PianoKey()
         : on(false)
     {}
     PianoKey(QPoint pixel)
         : pixel(pixel), on(false)
+    {
+    }
+    PianoKey(QPoint pixel, QString name)
+        : pixel(pixel), on(false), name(name)
     {
     }
 

@@ -121,6 +121,19 @@ bool SvgWidget::LoadRender()
     return svg_rend.load(svg.toUtf8());
 }
 
+QString changeAttr(QString attr_string, QString attr_key, QString attr_val)
+{
+    QStringList params_list = attr_string.split(";");
+    for(auto i = params_list.begin(); i!= params_list.end(); i++ )
+    {
+        QStringList key_value = (*i).split(":");
+        if( attr_key == key_value[0] )
+            (*i) = key_value[0] + ":" + attr_val;
+    }
+    return params_list.join(";");
+}
+//;fill:#ffffff;fill-opacity:1;
+
 //находит path с заданным id и выставляет аттрибуты заливки
 void SvgWidget::setPathStyleDOM(QString id, QColor fill_color, float fill_opacity)
 {
@@ -129,9 +142,11 @@ void SvgWidget::setPathStyleDOM(QString id, QColor fill_color, float fill_opacit
     it = elementByID.find(id);
     if( it!=elementByID.end() )
     {
-       QString val = QString("fill:%1;fill-opacity:%2").arg(fill_color.name(),QString::number(fill_opacity));
        path_node = it.value();
-       path_node.setAttribute("style",val);
+       QString style = path_node.attribute("style");
+       style = changeAttr(style, "fill", fill_color.name());
+       style = changeAttr(style, "fill-opacity", QString::number(fill_opacity));
+       path_node.setAttribute("style",style);
        //qDebug() << "change style " << path_node.attribute("style") << "\n";
        //qDebug() << val;
     }
