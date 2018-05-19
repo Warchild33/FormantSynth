@@ -4,6 +4,7 @@
 #include "ploter.h"
 #include "formantsyntform.h"
 #include "sounddriverdialog.h"
+#include "formantsynthsvg.h"
 #include "nessyntform.h"
 #include <QKeyEvent>
 
@@ -46,6 +47,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     NesSyntForm* nwidget = new NesSyntForm(this);
     ui->tabWidget->insertTab(1,nwidget,QIcon(),"NES Synt");
+
+    FormantSynthSvg* fwidget2 = new FormantSynthSvg(this);
+    ui->tabWidget->insertTab(2,fwidget2,QIcon(),"Formant Synth SVG");
+    ui->tabWidget->setCurrentIndex(2);
+
 
 
     //on_processButton_clicked();

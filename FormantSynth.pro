@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     key2notetable.cpp \
     buffer.cpp \
     notetowaveformthread.cpp \
-    svgwidget.cpp
+    svgwidget.cpp \
+    formantsynthsvg.cpp
 
 HEADERS  += mainwindow.h \
     stft.h \
@@ -70,7 +71,8 @@ HEADERS  += mainwindow.h \
     key2notetable.h \
     buffer.h \
     notetowaveformthread.h \
-    svgwidget.h
+    svgwidget.h \
+    formantsynthsvg.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \

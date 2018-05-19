@@ -36,6 +36,7 @@ void Syntezer::on_Timer()
 
 void Syntezer::out_pcm(short* buffer, int len)
 {
+    alsa->drop_pcm_frames();
     alsa->out_pcm(buffer, (unsigned long)len);
 }
 
@@ -70,10 +71,13 @@ void Syntezer::on_key_release(int key_code)
 {
    bKeyPressed = false;
    //emit sigDisableNote(key2note[key_code]);
-   Buffer* buf = key2noteBuffer[key_code];
-   buf->timeEnd = QTime::currentTime();
-   key2noteBuffer.erase(key2noteBuffer.find(key_code));
-   fprintf(stderr,"disable note");
+   if(key2noteBuffer.find(key_code)!=key2noteBuffer.end())
+   {
+       Buffer* buf = key2noteBuffer[key_code];
+       buf->timeEnd = QTime::currentTime();
+       key2noteBuffer.erase(key2noteBuffer.find(key_code));
+       fprintf(stderr,"disable note");
+   }
 }
 
 
