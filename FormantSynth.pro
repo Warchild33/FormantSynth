@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     buffer.cpp \
     notetowaveformthread.cpp \
     svgwidget.cpp \
-    formantsynthsvg.cpp
+    formantsynthsvg.cpp \
+    svg_path_parser.cpp
 
 HEADERS  += mainwindow.h \
     stft.h \
@@ -72,7 +73,8 @@ HEADERS  += mainwindow.h \
     buffer.h \
     notetowaveformthread.h \
     svgwidget.h \
-    formantsynthsvg.h
+    formantsynthsvg.h \
+    svg_path_parser.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \

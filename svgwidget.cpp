@@ -4,6 +4,8 @@
 #include <QTextStream>
 #include <QMap>
 #include "svgwidget.h"
+#include "svg_path_parser.h"
+
 
 SvgWidget::SvgWidget(QWidget *parent):
 QWidget(parent)
@@ -66,8 +68,17 @@ bool SvgWidget::LoadDom(QString fn)
     }
     QDomNode root = domDocument.documentElement();
     TraverseXmlNode(root);
-    //setPathStyleDOM("path4232",Qt::yellow, 0.5);
+    setViewBox(root);
     return true;
+}
+
+// задает viewbox
+void SvgWidget::setViewBox(const QDomNode& root)
+{
+    QStringList parts = root.toElement().attribute("viewBox").split(" ");
+    viewbox = QRectF(parts[0].toDouble(), parts[1].toDouble(),
+                     parts[2].toDouble(), parts[3].toDouble());
+
 }
 
 // рекурсивный проход по дереву xml
@@ -86,6 +97,8 @@ void SvgWidget::TraverseXmlNode(const QDomNode& node)
                 //qDebug() << __FUNCTION__ << "" << domElement.tagName() << domElement.text();
                 //qDebug() << domElement.attribute("id");
                 elementByID[domElement.attribute("id")] = domElement;
+                QString name = domNode.nodeName();
+                elementByName[name] = domElement;
             }
 
         }
@@ -112,7 +125,7 @@ bool SvgWidget::SaveDom(QString fn)
 //загружает SVG рендер из DOM документа
 bool SvgWidget::LoadRenderDOM()
 {
-    return svg_rend.load(domDocument.toByteArray());
+    return svg_rend.load(domDocument.toByteArray(-1));
 }
 
 // загружает SVG рендер
@@ -135,7 +148,7 @@ QString changeAttr(QString attr_string, QString attr_key, QString attr_val)
 //;fill:#ffffff;fill-opacity:1;
 
 //находит path с заданным id и выставляет аттрибуты заливки
-void SvgWidget::setPathStyleDOM(QString id, QColor fill_color, float fill_opacity)
+void SvgWidget::setFill(QString id, QColor fill_color, float fill_opacity)
 {
     QDomElement path_node;
     QMap<QString, QDomElement>::iterator it;
@@ -149,6 +162,120 @@ void SvgWidget::setPathStyleDOM(QString id, QColor fill_color, float fill_opacit
        path_node.setAttribute("style",style);
        //qDebug() << "change style " << path_node.attribute("style") << "\n";
        //qDebug() << val;
+    }
+}
+
+void SvgWidget::setStroke(QString id, QColor stroke_color)
+{
+    QDomElement path_node;
+    QMap<QString, QDomElement>::iterator it;
+    it = elementByID.find(id);
+    if( it!=elementByID.end() )
+    {
+       path_node = it.value();
+       QString style = path_node.attribute("style");
+       style = changeAttr(style, "stroke", stroke_color.name());
+       path_node.setAttribute("style",style);
+    }
+}
+
+
+QPointF SvgWidget::findPathCenter(QString id)
+{
+    QDomElement node;
+    QMap<QString, QDomElement>::iterator it;
+    it = elementByID.find(id);
+    if( it!=elementByID.end() )
+    {
+       node = it.value();
+       QString d = node.attribute("d");
+       QPainterPath path;
+       parsePathDataFast(d, path);
+       return path.boundingRect().center();
+    }
+}
+
+QPainterPath SvgWidget::getPath(QString id)
+{
+    QDomElement node;
+    QPainterPath path;
+    QMap<QString, QDomElement>::iterator it;
+    it = elementByID.find(id);
+    if( it!=elementByID.end() )
+    {
+       node = it.value();
+       QString d = node.attribute("d");
+       parsePathDataFast(d, path);
+    }
+    return path;
+}
+
+void SvgWidget::rotateNode(QString id, QPointF center, float degree)
+{
+    QDomElement node;
+    QMap<QString, QDomElement>::iterator it;
+    it = elementByID.find(id);
+    if( it!=elementByID.end() )
+    {
+       node = it.value();
+       QTransform t, ti;
+       ti.translate(-center.x(), -center.y());
+       t.translate(center.x(), center.y());
+       QTransform R;
+       R = R.rotate(degree);
+       t = (ti * R) * t;
+       QString matrixs = QString("matrix(%1,%2,%3,%4,%5,%6)")
+               .arg(t.m11()).arg(t.m21()).arg(t.m12())
+               .arg(t.m22()).arg(t.m13()).arg(t.m23());
+
+       //node.setAttribute("transform",matrixs);
+       matrixs = QString("rotate(%1 %2 %3)").
+               arg(degree).
+               arg(center.x()).
+               arg(center.y());
+       node.setAttribute("transform",matrixs);
+    }
+}
+
+void SvgWidget::rotateNode(QString id, float degree)
+{
+    QDomElement node;
+    QMap<QString, QDomElement>::iterator it;
+    it = elementByID.find(id);
+    if( it!=elementByID.end() )
+    {
+       node = it.value();
+       QString transform = node.attribute("transform");
+       QRegExp rx("matrix(\\S+)");
+       if(rx.indexIn(transform)!=-1)
+       {
+          double m11, m12, m13;
+          double m21, m22, m23;
+          //t.setMatrix();
+          QString trimmed = rx.cap(1).mid(1,rx.cap(1).size()-2);
+          QStringList reals = trimmed.split(",");
+          m11 = reals[0].toDouble();
+          m12 = reals[1].toDouble();
+          m13 = reals[2].toDouble();
+          m21 = reals[3].toDouble();
+          m22 = reals[4].toDouble();
+          m23 = reals[5].toDouble();
+          QTransform t;
+          t.setMatrix(m11,m12,m13,m21,m22,m23,0,0,1);
+          QTransform ti = t.inverted();
+          QTransform R;
+          R = R.rotate(45);
+          t = (ti * R) * t;
+          QString matrixs = QString("matrix(%1,%2,%3,%4,%5,%6)")
+                  .arg(t.m11()).arg(t.m12()).arg(t.m13()).arg(t.m21()).arg(t.m22()).arg(t.m23());
+          node.setAttribute("transform",matrixs);
+
+       }
+
+
+       //node.setAttribute("transform",QString("rotate(%1)").
+       //                                   arg(QString::number(degree)));
+
     }
 
 }

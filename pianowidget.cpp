@@ -34,12 +34,12 @@ void PianoWidget::drawKeys(QPainter& painter)
         {
             painter.setPen(Qt::red);
             painter.drawEllipse(pixel,5,5);
-            setPathStyleDOM((*key).second.name,Qt::red, 0.94);
+            setFill((*key).second.name,Qt::red, 0.94);
             LoadRenderDOM();
         }
         else
         {
-            setPathStyleDOM((*key).second.name,Qt::white, 0.94);
+            setFill((*key).second.name,Qt::white, 0.94);
             LoadRenderDOM();
         }
     }
