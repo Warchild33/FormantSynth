@@ -1,6 +1,7 @@
 #include <QTransform>
-#include <QtMath>
+//#include <QtMath>
 #include "formantsynthsvg.h"
+
 
 FormantSynthSvg::FormantSynthSvg(QWidget *parent) : SvgWidget(parent)
 {
@@ -10,7 +11,7 @@ FormantSynthSvg::FormantSynthSvg(QWidget *parent) : SvgWidget(parent)
     LoadDom("./images/formant_synth.svg");
     QPointF center = findPathCenter("F9");
     rotateNode("F9", center, -270);
-    setStroke("F9", Qt::red);
+    setStroke("F9", Qt::red);    
     LoadRenderDOM();
     SaveDom("./images/formant_synth_dom.svg");
 
@@ -30,17 +31,6 @@ FormantSynthSvg::FormantSynthSvg(QWidget *parent) : SvgWidget(parent)
 
 }
 
-QPointF  FormantSynthSvg::mapToViewbox(QPoint p, QRectF viewbox)
-{
-    QPointF pt(p.x(), p.y());
-    float sx = (float)viewbox.width() / (float)geometry().width();
-    float sy = (float)viewbox.height() / (float)geometry().height();
-    QTransform t;
-    t = t.scale(sx, sy);
-    pt = pt * t;
-    return pt;
-}
-
 void  FormantSynthSvg::mousePressEvent(QMouseEvent* event)
 {
 
@@ -48,20 +38,22 @@ void  FormantSynthSvg::mousePressEvent(QMouseEvent* event)
 
 }
 
-double findNearestPointOnCircle(QPointF mouse, QPointF center, float R)
+double Slider::findNearestPointOnCircle(QPointF mouse, QPointF center, float R)
 {
     double  X,Y,d, minD=100000000;
     double  min_angle;
-    for(double angle=0; angle < 360; angle+=1)
+    double  degree2rad = M_PI / 180.;
+    for(double angle=310; angle < 310+360; angle+=1)
     {
-        X = center.x() + R * cos( qDegreesToRadians(angle) );
-        Y = center.y() + R * sin( qDegreesToRadians(angle) );
+        X = center.x() + R * cos( degree2rad * angle );
+        Y = center.y() + R * sin( degree2rad * angle );
         d = (mouse.x() - X)*(mouse.x() - X) + (mouse.y() - Y)*(mouse.y() - Y);
         if(minD!=qMin(d, minD))
             min_angle = angle;
         minD = qMin(d, minD);
     }
-    return 270 - min_angle;
+    value = ((670 - min_angle) / 360) * 10000;
+    return 270 - min_angle + 55;
 }
 
 void  FormantSynthSvg::mouseMoveEvent(QMouseEvent* event)
@@ -73,14 +65,16 @@ void  FormantSynthSvg::mouseMoveEvent(QMouseEvent* event)
         pos.setY(height() - pos.y());
         //fprintf(stderr,"mouse %d %d\n", pos.x(), pos.y());
         QPointF p = mapToViewbox(pos, viewbox);
-        angle = findNearestPointOnCircle(p, freqSliders[i].rect.center(),
-                                            freqSliders[i].rect.width());
-        //fprintf(stderr,"angle %f\n", angle);
+        angle = freqSliders[i].findNearestPointOnCircle(p, freqSliders[i].rect.center(),
+                                                           freqSliders[i].rect.width());
 
         if( freqSliders[i].rect.contains(p) )
         {
+            fprintf(stderr,"value %f\n", freqSliders[i].value);
             setStroke(freqSliders[i].name, freqSliders[i].activeColor);
             rotateNode(freqSliders[i].name, freqSliders[i].rect.center(), angle);
+            setText(freqSliders[i].name + "g",
+                    QString::number(int(freqSliders[i].value)) + " Hz");
         }
         else
             setStroke(freqSliders[i].name, freqSliders[i].defaultColor);

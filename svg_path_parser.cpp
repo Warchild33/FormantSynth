@@ -36,6 +36,7 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
+#include <QVarLengthArray>
 #include "svg_path_parser.h"
 #include "qbrush.h"
 #include "qmath.h"

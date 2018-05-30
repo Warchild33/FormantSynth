@@ -57,11 +57,11 @@ void Syntezer::on_key_press(int key_code)
     if(key2noteBuffer.find(key_code) == key2noteBuffer.end())
     {
 
-        Buffer* buf = play_note(key2note[key_code], 10, 1);
-        buf->bWrited = false;
+        Buffer* buf = play_note(key2note[key_code], 1, 1);
+        //buf->bWrited = false;
         key_time.start();
         bKeyPressed = true;
-        key2noteBuffer[key_code] = buf;
+        //key2noteBuffer[key_code] = buf;
         fprintf(stderr,"keycode=%d", key_code);
 
     }

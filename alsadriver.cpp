@@ -4,6 +4,7 @@
 #include <QThread>
 #include "alsadriver.h"
 
+
 extern QSemaphore                  freeBytes;
 extern QSemaphore                  usedBytes;
 
@@ -109,9 +110,9 @@ int AlsaDriver::open(char* device_name)
     }
     fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
     //snd_pcm_close(playback_handle);
-    start();
-    moveToThread(this);
-    notetowaveform_thread.start();
+    //start();
+    //moveToThread(this);
+    //notetowaveform_thread.start();
     return 1;
 }
 
@@ -160,7 +161,7 @@ static int xrun_recovery(snd_pcm_t *handle, int err)
 
 void AlsaDriver::run()
 {
-    fprintf (stderr, "thread id = %d", QThread::currentThreadId());
+    fprintf (stderr, "AlsaDriver thread id = %d", QThread::currentThreadId());
     int cptr,err;
     short* ptr;
     short* common_samples;

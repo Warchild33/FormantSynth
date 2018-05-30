@@ -18,6 +18,8 @@ public:
     QString name;
     QColor  activeColor;
     QColor  defaultColor;
+    double   findNearestPointOnCircle(QPointF mouse, QPointF center, float R);
+    double  value;
 };
 
 class FormantSynthSvg : public SvgWidget
@@ -29,7 +31,7 @@ public:
     void     paintEvent(QPaintEvent* event);
     void     mousePressEvent(QMouseEvent* event);
     void     mouseMoveEvent(QMouseEvent* event);
-    QPointF  mapToViewbox(QPoint p, QRectF viewbox);
+
 
     Slider  freqSliders[10];
     int minRotateAngle;

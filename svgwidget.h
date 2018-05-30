@@ -34,8 +34,12 @@ public:
     void paintEvent(QPaintEvent*);
     QPointF findPathCenter(QString id);
     QPainterPath getPath(QString id);
+    QRectF getRect(QString id);
     void rotateNode(QString id, float degree);
     void rotateNode(QString id, QPointF center, float degree);
+    void setText(QString group_id, QString text);
+    QPointF  mapToViewbox(QPoint p, QRectF viewbox);
+    QRectF   mapToViewbox(QRectF p, QRectF viewbox);
 
 //----методы работающие с SVG как с DOM документом(медленнее)
     bool LoadDom(QString fn);

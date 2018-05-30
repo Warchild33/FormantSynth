@@ -12,6 +12,9 @@ struct PianoKey
     QPoint pixel;
     bool   on;
     QString name;
+    QRectF  rect;
+    QRectF  rect2;
+    QRectF  rect3;
     PianoKey()
         : on(false)
     {}
@@ -19,8 +22,12 @@ struct PianoKey
         : pixel(pixel), on(false)
     {
     }
-    PianoKey(QPoint pixel, QString name)
-        : pixel(pixel), on(false), name(name)
+    PianoKey(QPoint pixel, QString name, QRectF rect)
+        : pixel(pixel), on(false), name(name), rect(rect)
+    {
+    }
+    PianoKey(QString name, QRectF rect, QRectF rect2=QRectF(), QRectF rect3=QRectF())
+        : on(false), name(name), rect(rect), rect2(rect2), rect3(rect3)
     {
     }
 

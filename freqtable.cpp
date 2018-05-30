@@ -1,5 +1,7 @@
 #include <QFile>
 #include <QTextStream>
+#include <QRegExp>
+#include <QStringList>
 #include "freqtable.h"
 
 FreqTable::FreqTable()

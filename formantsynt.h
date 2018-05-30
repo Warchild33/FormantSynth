@@ -10,6 +10,21 @@ class FormantSynt : public Syntezer
     Q_OBJECT
 public:
     FormantSynt();
+    FormantSynt(const FormantSynt& B): Syntezer()
+    {
+        F1 = B.F1; F2 = B.F2;
+        F3 = B.F3; BW = B.BW;
+        Ncascade = B.Ncascade;
+        cur_vowel = B.cur_vowel;
+    }
+    FormantSynt operator=(FormantSynt B)
+    {
+        F1 = B.F1; F2 = B.F2;
+        F3 = B.F3; BW = B.BW;
+        Ncascade = B.Ncascade;
+        cur_vowel = B.cur_vowel;
+        return *this;
+    }
 
     void get_params_for(char vowel);
     Buffer* play_note(char note, double duration, double velocity);

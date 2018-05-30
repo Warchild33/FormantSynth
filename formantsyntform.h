@@ -30,6 +30,16 @@ private slots:
 
     void on_Ubut_clicked();
 
+    void on_Ncascade_valueChanged(double arg1);
+
+    void on_F1_valueChanged(double arg1);
+
+    void on_F2_valueChanged(double arg1);
+
+    void on_F3_valueChanged(double arg1);
+
+    void on_BW_valueChanged(double arg1);
+
 private:
     Ui::FormantSyntForm *ui;
 };

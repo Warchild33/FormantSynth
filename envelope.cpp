@@ -35,7 +35,7 @@ Pnt spline_kochaken(Pnt P1, Pnt P2, Pnt P3, Pnt P4, float t,
 */
 double deBoor(int k, double x, double* t, double* c, int p)
 {
-    double* d = new double(p+1);
+    double d[3];
 
     for(int j=0; j < p+1; j++)
         d[j] = c[j + k - p];

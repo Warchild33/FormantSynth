@@ -11,8 +11,6 @@
 
 Happybirsday::Happybirsday()
 {
-    std::vector<Notestruct> notes = parse_hb_notes("./midi_data/happy_birsday.txt");
-    generate_song(notes);
 }
 
 std::vector<Notestruct> Happybirsday::parse_hb_notes(QString file)
@@ -58,7 +56,7 @@ void Happybirsday::generate_song(std::vector<Notestruct>& song)
         float t_start = (*ns).t_start;
         float t_end = (*ns).t_end;
         // sound of A
-        generate_voice(f, int(t_start*48000), t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, output_samples);
+        generate_voice(f, int(t_start*48000), t_end-t_start, synt.F1, synt.F2, synt.F3, synt.BW, synt.Ncascade, output_samples);
 
     }
     wavwrite("./wave/hb_song.wav",&(*output_samples)[0],(*output_samples).size(),44000,1);
@@ -92,7 +90,7 @@ void generate_voice(double f,int sample_offset, double duration, double F1, doub
 
     double Amax = (*std::max_element(&y[0],&y[N-1]));
     envelope_Bspline(y,Amax,48000,duration);
-    normalize(0.1, y,Amax,48000,duration);
+    //normalize(0.1, y,Amax,48000,duration);
 
     for(int i=0; i<N; i++)
     {
@@ -109,3 +107,8 @@ void generate_voice(double f,int sample_offset, double duration, double F1, doub
 
 
 
+
+void Happybirsday::set_synth(FormantSynt s)
+{
+    synt = s;
+}

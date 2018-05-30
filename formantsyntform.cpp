@@ -17,8 +17,11 @@ FormantSyntForm::~FormantSyntForm()
 
 void FormantSyntForm::on_hbSongButton_clicked()
 {
-    //synt.alsa->close();
+    synt.alsa->close();
     Happybirsday hb_song;
+    hb_song.set_synth(synt);
+    std::vector<Notestruct> notes = hb_song.parse_hb_notes("./midi_data/happy_birsday.txt");
+    hb_song.generate_song(notes);
     Play("./wave/hb_song.wav");
 
 }
@@ -83,4 +86,29 @@ void FormantSyntForm::on_Ebutton_clicked()
 void FormantSyntForm::on_Ubut_clicked()
 {
     synt.cur_vowel = 'U';
+}
+
+void FormantSyntForm::on_Ncascade_valueChanged(double arg1)
+{
+    synt.Ncascade = arg1;
+}
+
+void FormantSyntForm::on_F1_valueChanged(double arg1)
+{
+    set_params();
+}
+
+void FormantSyntForm::on_F2_valueChanged(double arg1)
+{
+    set_params();
+}
+
+void FormantSyntForm::on_F3_valueChanged(double arg1)
+{
+    set_params();
+}
+
+void FormantSyntForm::on_BW_valueChanged(double arg1)
+{
+    set_params();
 }

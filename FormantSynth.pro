@@ -5,8 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui svg xml
-QT += multimedia
-LIBS+=-lqwt-qt5 -lasound
+LIBS+=-lqwt -lasound
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QMAKE_CXXFLAGS+=-g -std=c++11 -Wreorder
 

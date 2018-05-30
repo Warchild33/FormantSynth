@@ -1,9 +1,11 @@
 #include "sounddriverdialog.h"
 #include "ui_sounddriverdialog.h"
+#include <QDebug>
 #include <QSettings>
 #include <QProcess>
 #include <QFile>
 #include <QTextStream>
+
 
 QSettings settings("./settings/settings.ini", QSettings::IniFormat);
 
@@ -13,11 +15,16 @@ SoundDriverDialog::SoundDriverDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->comboBox->addItem("hw:0,0");
-    ui->comboBox->addItem("hw:1,0");
-    ui->comboBox->addItem("hw:2,0");    
+//    ui->comboBox->addItem("hw:0,0");
+//    ui->comboBox->addItem("hw:0,0");
+//    ui->comboBox->addItem("hw:1,0");
+//    ui->comboBox->addItem("hw:2,0");
+//    ui->comboBox->addItem("hw:0,1");
+//    ui->comboBox->addItem("hw:1,1");
+//    ui->comboBox->addItem("hw:1,2");
     listdev();
-    ui->comboBox->setCurrentText(settings.value("alsa_device").toString());
+    //ui->comboBox->setCurrentText(settings.value("alsa_device").toString());
+    ui->comboBox->setItemText(0,settings.value("alsa_device").toString());
     alsa = new AlsaDriver();
     alsa->open((char*)ui->comboBox->currentText().toStdString().c_str());
 }
@@ -25,7 +32,7 @@ SoundDriverDialog::SoundDriverDialog(QWidget *parent) :
 void SoundDriverDialog::listdev()
 {
     QProcess process1;
-    process1.start(QString("bash -c \"aplay -L | grep hw > /tmp/listdev.000\""));
+    process1.start(QString("bash -c \"cat /proc/asound/devices > /tmp/listdev.000\""));
     if (!process1.waitForFinished())
              return ;
 
@@ -34,8 +41,25 @@ void SoundDriverDialog::listdev()
     {
          QString line;
          QTextStream stream(&f);
+         ui->comboBox->clear();
          while( !stream.atEnd() )
-             ui->comboBox->addItem(stream.readLine());
+         {
+             QString line = stream.readLine();
+             if( line.contains("playback") )
+             {
+                 QRegExp rx("(\\d+)[ -]+(\\d+)");
+                 if(rx.indexIn(line)!=-1)
+                 {
+                     QStringList list = rx.capturedTexts();
+                     int card = rx.cap(1).toInt();
+                     int device = rx.cap(2).toInt();
+                     ui->comboBox->addItem(QString("hw:%1,%2").
+                                           arg(card).arg(device));
+                 }
+
+             }
+             //ui->comboBox->addItem();
+         }
     }
 
 }

@@ -179,6 +179,31 @@ void SvgWidget::setStroke(QString id, QColor stroke_color)
     }
 }
 
+void SvgWidget::setText(QString group_id, QString text)
+{
+    QDomElement group_node;
+    QMap<QString, QDomElement>::iterator it;
+    it = elementByID.find(group_id);
+    if( it!=elementByID.end() )
+    {
+       group_node = it.value();
+       QDomNode e = group_node.firstChild();
+       fprintf(stderr,"%s", e.nodeName().toStdString().c_str());
+       if(e.nodeName()=="rect")
+           e = e.nextSibling();
+       if(e.nodeName() == "text")
+       {
+           QDomNode parent = e;
+           e = e.firstChild();
+           fprintf(stderr,"%s", e.nodeName().toStdString().c_str());
+           e.setNodeValue(text);
+           QDomText newNode = domDocument.createTextNode(text);
+           parent.replaceChild(newNode,e);
+
+       }
+
+    }
+}
 
 QPointF SvgWidget::findPathCenter(QString id)
 {
@@ -209,6 +234,49 @@ QPainterPath SvgWidget::getPath(QString id)
     }
     return path;
 }
+
+QRectF SvgWidget::getRect(QString id)
+{
+    QDomElement node;
+    QPainterPath path;
+    QMap<QString, QDomElement>::iterator it;
+    QRectF rect;
+    it = elementByID.find(id);
+    if( it!=elementByID.end() )
+    {
+       node = it.value();
+       double x = node.attribute("x").toDouble();
+       double y = node.attribute("y").toDouble();
+       double w = node.attribute("width").toDouble();
+       double h = node.attribute("height").toDouble();
+       rect.setRect(x,y,w,h);
+    }
+    return rect;
+}
+
+QPointF  SvgWidget::mapToViewbox(QPoint p, QRectF viewbox)
+{
+    QPointF pt(p.x(), p.y());
+    float sx = (float)viewbox.width() / (float)geometry().width();
+    float sy = (float)viewbox.height() / (float)geometry().height();
+    QTransform t;
+    t = t.scale(sx, sy);
+    pt = pt * t;
+    return pt;
+}
+
+QRectF  SvgWidget::mapToViewbox(QRectF p, QRectF viewbox)
+{
+    float sx = (float)viewbox.width() / (float)geometry().width();
+    float sy = (float)viewbox.height() / (float)geometry().height();
+    QTransform t;
+    t = t.scale(1./sx, 1./sy);
+    QPolygonF p2(p);
+    p2 = t.map(p2);
+    p  = p2.boundingRect();
+    return p;
+}
+
 
 void SvgWidget::rotateNode(QString id, QPointF center, float degree)
 {

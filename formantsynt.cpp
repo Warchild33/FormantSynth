@@ -4,6 +4,7 @@
 #include "gen.h"
 #include "formantsynt.h"
 
+
 FormantSynt::FormantSynt()
     :Syntezer()
 {
@@ -106,7 +107,7 @@ Buffer* FormantSynt::play_note(char note, double duration, double velocity)
     delete [] y3;
     buffer->note = note;
     out_pcm(&buffer->samples[0], buffer->samples.size()/2);
-    //delete buffer;
+    delete buffer;
     //out_buffer( buffer );
     return buffer;
 }

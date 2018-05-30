@@ -18,11 +18,12 @@ void PianoWidget::paintEvent(QPaintEvent* event)
     painter.fillRect(this->rect(),Qt::red);
     painter.drawPixmap(this->rect(),QPixmap::fromImage(background));
     */
+    SvgWidget::paintEvent(event);
+
     QPainter painter(this);
     drawKeys(painter);
 
 
-    SvgWidget::paintEvent(event);
 }
 
 void PianoWidget::drawKeys(QPainter& painter)
@@ -30,29 +31,32 @@ void PianoWidget::drawKeys(QPainter& painter)
     for(auto key=piano_keys.begin(); key!=piano_keys.end(); key++)
     {
         QPoint pixel = (*key).second.pixel;
+        pixel.setY(pixel.y()+100);
         if( (*key).second.on )
         {
-            painter.setPen(Qt::red);
-            painter.drawEllipse(pixel,5,5);
-            setFill((*key).second.name,Qt::red, 0.94);
-            LoadRenderDOM();
-        }
-        else
-        {
-            setFill((*key).second.name,Qt::white, 0.94);
-            LoadRenderDOM();
+            QRectF rect = mapToViewbox((*key).second.rect, viewbox);
+            painter.fillRect(rect,qRgba(255,0,0,40));
+            QRectF rect2 = mapToViewbox((*key).second.rect2, viewbox);
+            painter.fillRect(rect2,Qt::black);
+            QRectF rect3 = mapToViewbox((*key).second.rect3, viewbox);
+            painter.fillRect(rect3,Qt::black);
+
         }
     }
 }
 
 void PianoWidget::on_key_press(int key_code)
 {
+    if( piano_keys.find(key_code)==piano_keys.end() )
+        return;
     piano_keys[key_code].on = true;
     repaint();
 }
 
 void PianoWidget::on_key_release(int key_code)
 {
+   if( piano_keys.find(key_code)==piano_keys.end() )
+       return;
    piano_keys[key_code].on = false;
    repaint();
 }
@@ -60,10 +64,14 @@ void PianoWidget::on_key_release(int key_code)
 void PianoWidget::create_table()
 {
     //C4
-    piano_keys['Q'] = PianoKey(QPoint(40,140),"C4");    piano_keys['W'] = PianoKey(QPoint(75,140),"D4");
-    piano_keys['E'] = PianoKey(QPoint(115,140),"E4");    piano_keys['R'] = PianoKey(QPoint(150,140),"F4");
-    piano_keys['T'] = PianoKey(QPoint(185,140),"G4");    piano_keys['Y'] = PianoKey(QPoint(225,140),"A4");
-    piano_keys['U'] = PianoKey(QPoint(260,140),"B4");   piano_keys['I'] = PianoKey(QPoint(285,140),"G4");
+    piano_keys['Q'] = PianoKey("C4", getRect("C4"),getRect("Db4"));
+    piano_keys['W'] = PianoKey("D4", getRect("D4"),getRect("Eb4"),getRect("Db4"));
+    piano_keys['E'] = PianoKey("E4", getRect("E4"),getRect("Eb4"));
+    piano_keys['R'] = PianoKey("F4", getRect("F4"),getRect("Gb4"));
+    piano_keys['T'] = PianoKey("G4", getRect("G4"),getRect("Gb4"),getRect("Ab4"));
+    piano_keys['Y'] = PianoKey("A4", getRect("A4"),getRect("Ab4"),getRect("Bb4"));
+    piano_keys['U'] = PianoKey("B4", getRect("B4"),getRect("Bb4"));
+    piano_keys['I'] = PianoKey("C5", getRect("C5"));
     /*
     //C5
     piano_keys['O'] = PianoKey(QPoint(335,140);    piano_keys['P'] = PianoKey(QPoint(365,140);
