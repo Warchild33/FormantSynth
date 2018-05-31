@@ -36,4 +36,9 @@ void Key2NoteTable::create()
     key2note['7'] = 51;    key2note['8'] = 54;
     key2note['9'] = 58;    key2note['0'] = 61;
 
+    key2note['Z'] = 61;    key2note['X'] = 63;
+    key2note['C'] = 66;    key2note['V'] = 68;
+    key2note['B'] = 70;
+
+
 }

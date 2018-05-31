@@ -30,8 +30,6 @@ void PianoWidget::drawKeys(QPainter& painter)
 {
     for(auto key=piano_keys.begin(); key!=piano_keys.end(); key++)
     {
-        QPoint pixel = (*key).second.pixel;
-        pixel.setY(pixel.y()+100);
         if( (*key).second.on )
         {
             QRectF rect = mapToViewbox((*key).second.rect, viewbox);
@@ -71,9 +69,45 @@ void PianoWidget::create_table()
     piano_keys['T'] = PianoKey("G4", getRect("G4"),getRect("Gb4"),getRect("Ab4"));
     piano_keys['Y'] = PianoKey("A4", getRect("A4"),getRect("Ab4"),getRect("Bb4"));
     piano_keys['U'] = PianoKey("B4", getRect("B4"),getRect("Bb4"));
-    piano_keys['I'] = PianoKey("C5", getRect("C5"));
-    /*
+
     //C5
+    piano_keys['I'] = PianoKey("C5", getRect("C5"),getRect("Db5"));
+    piano_keys['O'] = PianoKey("D5", getRect("D5"),getRect("Eb5"),getRect("Db5"));
+    piano_keys['P'] = PianoKey("E5", getRect("E5"),getRect("Eb5"));
+    piano_keys['['] = PianoKey("F5", getRect("F5"),getRect("Gb5"));
+    piano_keys[']'] = PianoKey("G5", getRect("G5"),getRect("Gb5"),getRect("Ab5"));
+    piano_keys['A'] = PianoKey("A5", getRect("A5"),getRect("Ab5"),getRect("Bb5"));
+    piano_keys['S'] = PianoKey("B5", getRect("B5"),getRect("Bb5"));
+
+    //C6
+    piano_keys['D'] = PianoKey("C6", getRect("C6"),getRect("Db6"));
+    piano_keys['F'] = PianoKey("D6", getRect("D6"),getRect("Eb6"),getRect("Db6"));
+    piano_keys['G'] = PianoKey("E6", getRect("E6"),getRect("Eb6"));
+    piano_keys['H'] = PianoKey("F6", getRect("F6"),getRect("Gb6"));
+    piano_keys['J'] = PianoKey("G6", getRect("G6"),getRect("Gb6"),getRect("Ab6"));
+    piano_keys['K'] = PianoKey("A6", getRect("A6"),getRect("Ab6"),getRect("Bb6"));
+    piano_keys['L'] = PianoKey("B6", getRect("B6"),getRect("Bb6"));
+
+    piano_keys['1'] = PianoKey("Db4", getRect("Db4"));
+    piano_keys['2'] = PianoKey("Eb4", getRect("Eb4"));
+    piano_keys['3'] = PianoKey("Gb4", getRect("Gb4"));
+    piano_keys['4'] = PianoKey("Ab4", getRect("Ab4"));
+    piano_keys['5'] = PianoKey("Bb4", getRect("Bb4"));
+
+    piano_keys['6'] = PianoKey("Db5", getRect("Db5"));
+    piano_keys['7'] = PianoKey("Eb5", getRect("Eb5"));
+    piano_keys['8'] = PianoKey("Gb5", getRect("Gb5"));
+    piano_keys['9'] = PianoKey("Ab5", getRect("Ab5"));
+    piano_keys['0'] = PianoKey("Bb5", getRect("Bb5"));
+
+    piano_keys['Z'] = PianoKey("Db6", getRect("Db6"));
+    piano_keys['X'] = PianoKey("Eb6", getRect("Eb6"));
+    piano_keys['C'] = PianoKey("Gb6", getRect("Gb6"));
+    piano_keys['V'] = PianoKey("Ab6", getRect("Ab6"));
+    piano_keys['B'] = PianoKey("Bb6", getRect("Bb6"));
+
+    /*
+
     piano_keys['O'] = PianoKey(QPoint(335,140);    piano_keys['P'] = PianoKey(QPoint(365,140);
     piano_keys['['] = PianoKey(QPoint(407,140);    piano_keys[']'] = PianoKey(QPoint(439,140);
     piano_keys['A'] = PianoKey(QPoint(480,140);    piano_keys['S'] = PianoKey(QPoint(520,140);
@@ -96,21 +130,36 @@ void PianoWidget::create_table()
 void PianoWidget::mousePressEvent(QMouseEvent* event)
 {
     fprintf(stderr,"pixel %d %d\n", event->pos().x(), event->pos().y());
+    QPointF mouse = mapToViewbox(event->pos(), viewbox);
     for(auto key=piano_keys.begin(); key!=piano_keys.end(); key++)
        (*key).second.on = false;
+    bool blackDown = false;
     for(auto key=piano_keys.begin(); key!=piano_keys.end(); key++)
     {
-        QPoint pixel = (*key).second.pixel;
-        QPoint diff = event->pos() - pixel;
-        float r = sqrt(diff.x()*diff.x() + diff.y()*diff.y());
-        //fprintf(stderr,"pixel r = %f\n", r);
-        if( r < 20 )
+        if((*key).second.name[1] == 'b')
         {
-            (*key).second.on = true;
-            emit sigMouseKey((*key).first);
+            if( (*key).second.rect.contains(mouse) )
+            {
+                (*key).second.on = true;
+                blackDown = true;
+                emit sigMouseKey((*key).first);
+            }
         }
-
     }
+    repaint();
+    if( blackDown ) return;
+    for(auto key=piano_keys.begin(); key!=piano_keys.end(); key++)
+    {
+        if((*key).second.name[1] != 'b')
+        {
+            if( (*key).second.rect.contains(mouse) )
+            {
+                (*key).second.on = true;
+                emit sigMouseKey((*key).first);
+            }
+        }
+    }
+
     repaint();
     // start position 40 120
 }
