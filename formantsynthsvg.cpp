@@ -27,23 +27,67 @@ FormantSynthSvg::FormantSynthSvg(QWidget *parent) : SvgWidget(parent)
         rect.setHeight(w*2);
         freqSliders[i] = Slider(rect, name);
     }
-    setFocus();
 
+    //Init buttons
+    buttons[0] = Button(getEllipse("A_but"),"A_but");
+    buttons[1] = Button(getEllipse("I_but"),"I_but");
+    buttons[2] = Button(getEllipse("O_but"),"O_but");
+    buttons[3] = Button(getEllipse("E_but"),"E_but");
+
+    setFocus();
 }
 
 void  FormantSynthSvg::mousePressEvent(QMouseEvent* event)
 {
-
-
+    QPoint pos = event->pos();
+    //pos.setY(height() - pos.y());
+    QPointF p = mapToViewbox(pos, viewbox);
+    for(int i=0; i < 4; i++)
+    {
+        if( buttons[i].rect.contains(p) )
+        {
+            setFill(buttons[i].name,Qt::red,1);
+            switch(i)
+            {
+                case 0:
+                    emit sigA_but();
+                break;
+                case 1:
+                    emit sigI_but();
+                break;
+                case 2:
+                    emit sigO_but();
+                break;
+                case 3:
+                    emit sigE_but();
+                break;
+            }
+        }
+        else
+            setFill(buttons[i].name,QColor("#0e541b"),1);
+    }
+    LoadRenderDOM();
+    repaint();
 
 }
+
+void  FormantSynthSvg::mouseReleaseEvent(QMouseEvent* event)
+{
+    QPoint pos = event->pos();
+    QPointF p = mapToViewbox(pos, viewbox);
+    for(int i=0; i < 4; i++)
+        setFill(buttons[i].name,QColor("#0e541b"),1);
+    LoadRenderDOM();
+    repaint();
+}
+
 
 double Slider::findNearestPointOnCircle(QPointF mouse, QPointF center, float R)
 {
     double  X,Y,d, minD=100000000;
     double  min_angle;
     double  degree2rad = M_PI / 180.;
-    for(double angle=310; angle < 310+360; angle+=1)
+    for(double angle=0; angle < 360; angle+=0.1)
     {
         X = center.x() + R * cos( degree2rad * angle );
         Y = center.y() + R * sin( degree2rad * angle );
@@ -52,22 +96,22 @@ double Slider::findNearestPointOnCircle(QPointF mouse, QPointF center, float R)
             min_angle = angle;
         minD = qMin(d, minD);
     }
-    value = ((670 - min_angle) / 360) * 10000;
-    return 270 - min_angle + 55;
+    value = ((min_angle) / 360) * 10000;
+    return min_angle-20;
 }
 
 void  FormantSynthSvg::mouseMoveEvent(QMouseEvent* event)
 {
+
+    QPoint pos = event->pos();
+    //pos.setY(height() - pos.y());
+    QPointF p = mapToViewbox(pos, viewbox);
+
     float angle;
     for(int i=0; i < 10; i++)
     {
-        QPoint pos = event->pos();
-        pos.setY(height() - pos.y());
-        //fprintf(stderr,"mouse %d %d\n", pos.x(), pos.y());
-        QPointF p = mapToViewbox(pos, viewbox);
         angle = freqSliders[i].findNearestPointOnCircle(p, freqSliders[i].rect.center(),
                                                            freqSliders[i].rect.width());
-
         if( freqSliders[i].rect.contains(p) )
         {
             fprintf(stderr,"value %f\n", freqSliders[i].value);
@@ -78,6 +122,13 @@ void  FormantSynthSvg::mouseMoveEvent(QMouseEvent* event)
         }
         else
             setStroke(freqSliders[i].name, freqSliders[i].defaultColor);
+    }
+    for(int i=0; i < 4; i++)
+    {
+        if( buttons[i].rect.contains(p) )
+            setFill(buttons[i].name,Qt::red,1);
+        else
+            setFill(buttons[i].name,QColor("#0e541b"),1);
     }
     LoadRenderDOM();
     repaint();

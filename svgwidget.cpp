@@ -179,6 +179,28 @@ void SvgWidget::setStroke(QString id, QColor stroke_color)
     }
 }
 
+QRectF SvgWidget::getEllipse(QString id)
+{
+    QDomElement path_node;
+    QMap<QString, QDomElement>::iterator it;
+    QRectF rect;
+    it = elementByID.find(id);
+    if( it!=elementByID.end() )
+    {
+       path_node = it.value();
+       double cx = path_node.attribute("cx").toDouble();
+       double cy = path_node.attribute("cy").toDouble();
+       double rx = path_node.attribute("rx").toDouble();
+       double ry = path_node.attribute("ry").toDouble();
+       rect.setTop(cy-ry/2);
+       rect.setLeft(cx-rx/2);
+       rect.setRight(cx+rx/2);
+       rect.setBottom(cy+ry/2);
+    }
+    return rect;
+}
+
+
 void SvgWidget::setText(QString group_id, QString text)
 {
     QDomElement group_node;

@@ -52,7 +52,7 @@ void FormantSyntForm::on_Abutton_clicked()
     ui->Ncascade->setValue(5);
     synt.cur_vowel = 'A';
     set_params();
-    synt.play_note(32,2,1);
+    //synt.play_note(32,2,1);
     //on_genButton_clicked();
     //Play();
 }

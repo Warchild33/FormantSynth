@@ -35,6 +35,7 @@ public:
     QPointF findPathCenter(QString id);
     QPainterPath getPath(QString id);
     QRectF getRect(QString id);
+    QRectF getEllipse(QString id);
     void rotateNode(QString id, float degree);
     void rotateNode(QString id, QPointF center, float degree);
     void setText(QString group_id, QString text);

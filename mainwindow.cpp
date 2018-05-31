@@ -51,6 +51,10 @@ MainWindow::MainWindow(QWidget *parent) :
     FormantSynthSvg* fwidget2 = new FormantSynthSvg(this);
     ui->tabWidget->insertTab(2,fwidget2,QIcon(),"Formant Synth SVG");
     ui->tabWidget->setCurrentIndex(2);
+    connect(fwidget2, SIGNAL(sigA_but()), fwidget, SLOT(on_Abutton_clicked()));
+    connect(fwidget2, SIGNAL(sigE_but()), fwidget, SLOT(on_Ebutton_clicked()));
+    connect(fwidget2, SIGNAL(sigI_but()), fwidget, SLOT(on_Ibutton_clicked()));
+    connect(fwidget2, SIGNAL(sigO_but()), fwidget, SLOT(on_Obutton_clicked()));
 
 
 
