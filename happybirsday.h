@@ -2,6 +2,7 @@
 #define HAPPYBIRSDAY_H
 
 #include <QString>
+#include <QProgressBar>
 #include <map>
 #include <vector>
 #include "freqtable.h"
@@ -27,7 +28,7 @@ public:
 
     Happybirsday();
     void set_synth(FormantSynt* s);
-    void generate_song(std::vector<Notestruct>& song);
+    void generate_song(std::vector<Notestruct>& song, QProgressBar* progress_bar);
     std::vector<Notestruct> parse_hb_notes(QString file);
     void parse_notes_table(QString file); // creates note2fre table
 

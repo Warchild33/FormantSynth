@@ -22,7 +22,7 @@ void FormantSyntForm::on_hbSongButton_clicked()
     hb_song.set_synth(&synt);
     std::vector<Notestruct> notes = hb_song.parse_hb_notes("./midi_data/happy_birsday.txt");
     synt.alsa->set_nonblock(0);
-    hb_song.generate_song(notes);
+    hb_song.generate_song(notes,ui->progressBar);
     synt.alsa->set_nonblock(1);
     //Play("./wave/hb_song.wav");
 

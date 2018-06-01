@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QStringList>
 #include <QTextStream>
+#include <QApplication>
 
 Happybirsday::Happybirsday()
 {
@@ -41,7 +42,7 @@ std::vector<Notestruct> Happybirsday::parse_hb_notes(QString file)
    return output;
 }
 
-void Happybirsday::generate_song(std::vector<Notestruct>& song)
+void Happybirsday::generate_song(std::vector<Notestruct>& song, QProgressBar* progress_bar)
 {
     std::vector<short>* output_samples = new std::vector<short>();
     int n_note = 0;
@@ -61,8 +62,12 @@ void Happybirsday::generate_song(std::vector<Notestruct>& song)
         // sound of A
         //generate_voice(f, int(t_start*48000), t_end-t_start, synt.F1, synt.F2, synt.F3, synt.BW, synt.Ncascade, output_samples);
         generate_voice(f, int(t_start*48000), t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, output_samples);
+        progress_bar->setValue(((float)n_note/song.size()) * 100);
 
     }
+    progress_bar->setValue(100);
+    QApplication::processEvents();
+
     wavwrite("./wave/hb_song.wav",&(*output_samples)[0],(*output_samples).size(),48000,1);
     synt->out_pcm(&(*output_samples)[0], (*output_samples).size());
 
@@ -95,11 +100,11 @@ void generate_voice(double f,int sample_offset, double duration, double F1, doub
 
     double Amax = (*std::max_element(&y[0],&y[N-1]));
     //envelope_Bspline(y,Amax,48000,duration);
-    //normalize(0.1, y,Amax,48000,duration);
+    normalize(0.1, y,Amax,48000,duration);
 
     for(int i=0; i<N; i++)
     {
-        short sample = (y[i]*6) * 32768;
+        short sample = (y[i]) * 32768;
         int os = 2*(sample_offset+i);
         (*output_samples)[os] = (*output_samples)[os] + sample;
         (*output_samples)[os+1] = (*output_samples)[os];
