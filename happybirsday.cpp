@@ -48,7 +48,10 @@ void Happybirsday::generate_song(std::vector<Notestruct>& song)
 
     float total_time = (*(song.end()-1)).t_start;
     for(int i=0; i<int((total_time+5)*48000); i++)
+    {
         output_samples->push_back(0);
+        output_samples->push_back(0);
+    }
 
     for(auto ns=song.begin(); ns!=song.end(); ns++,n_note++)
     {
@@ -56,10 +59,12 @@ void Happybirsday::generate_song(std::vector<Notestruct>& song)
         float t_start = (*ns).t_start;
         float t_end = (*ns).t_end;
         // sound of A
-        generate_voice(f, int(t_start*48000), t_end-t_start, synt.F1, synt.F2, synt.F3, synt.BW, synt.Ncascade, output_samples);
+        //generate_voice(f, int(t_start*48000), t_end-t_start, synt.F1, synt.F2, synt.F3, synt.BW, synt.Ncascade, output_samples);
+        generate_voice(f, int(t_start*48000), t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, output_samples);
 
     }
-    wavwrite("./wave/hb_song.wav",&(*output_samples)[0],(*output_samples).size(),44000,1);
+    wavwrite("./wave/hb_song.wav",&(*output_samples)[0],(*output_samples).size(),48000,1);
+    synt->out_pcm(&(*output_samples)[0], (*output_samples).size());
 
 }
 
@@ -89,13 +94,15 @@ void generate_voice(double f,int sample_offset, double duration, double F1, doub
     }
 
     double Amax = (*std::max_element(&y[0],&y[N-1]));
-    envelope_Bspline(y,Amax,48000,duration);
+    //envelope_Bspline(y,Amax,48000,duration);
     //normalize(0.1, y,Amax,48000,duration);
 
     for(int i=0; i<N; i++)
     {
         short sample = (y[i]*6) * 32768;
-        (*output_samples)[sample_offset+i] = (*output_samples)[sample_offset+i] + sample;
+        int os = 2*(sample_offset+i);
+        (*output_samples)[os] = (*output_samples)[os] + sample;
+        (*output_samples)[os+1] = (*output_samples)[os];
     }
 
     delete [] x;
@@ -108,7 +115,7 @@ void generate_voice(double f,int sample_offset, double duration, double F1, doub
 
 
 
-void Happybirsday::set_synth(FormantSynt s)
+void Happybirsday::set_synth(FormantSynt* s)
 {
     synt = s;
 }

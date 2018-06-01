@@ -301,3 +301,13 @@ int AlsaDriver::drop_pcm_frames()
     }
     return 1;
 }
+
+int AlsaDriver::set_nonblock(bool flag)
+{
+    int err;
+    if ((err = snd_pcm_nonblock (playback_handle, flag)) < 0) {
+      fprintf (stderr, "cannot set non block (%s)\n",
+               snd_strerror (err));
+      return 0;
+    }
+}

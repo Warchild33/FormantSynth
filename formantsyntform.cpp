@@ -17,12 +17,15 @@ FormantSyntForm::~FormantSyntForm()
 
 void FormantSyntForm::on_hbSongButton_clicked()
 {
-    synt.alsa->close();
+    //synt.alsa->close();
     Happybirsday hb_song;
-    hb_song.set_synth(synt);
+    hb_song.set_synth(&synt);
     std::vector<Notestruct> notes = hb_song.parse_hb_notes("./midi_data/happy_birsday.txt");
+    synt.alsa->set_nonblock(0);
     hb_song.generate_song(notes);
-    Play("./wave/hb_song.wav");
+    synt.alsa->set_nonblock(1);
+    //Play("./wave/hb_song.wav");
+
 
 }
 void FormantSyntForm::Play(QString fn)

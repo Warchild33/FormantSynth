@@ -18,6 +18,7 @@ public:
     int  out_pcm(short* buf, unsigned long len);
     int  close();
     int  drop_pcm_frames();
+    int  set_nonblock(bool flag);
     void run();
     NoteToWaveformThread     notetowaveform_thread;
 

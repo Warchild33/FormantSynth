@@ -82,4 +82,5 @@ FORMS    += mainwindow.ui \
     nessyntform.ui
 
 OTHER_FILES += \
-    play_wav.sh
+    play_wav.sh \
+    midi_data/happy_birsday.txt
