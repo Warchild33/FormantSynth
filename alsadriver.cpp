@@ -10,7 +10,6 @@ static QSettings settings("./settings/settings.ini", QSettings::IniFormat);
 AlsaDriver::AlsaDriver()
 {
     playback_handle = 0;
-    bProcessBuffers = false;
     bExitThread = false;
     parent = 0;
     Nthreads = 8;
@@ -20,7 +19,6 @@ AlsaDriver::AlsaDriver(AlsaDriver* parent)
     : parent(parent)
 {
     playback_handle = 0;
-    bProcessBuffers = false;
     bExitThread = false;
     Nthreads = 0;
 }
@@ -152,25 +150,25 @@ int AlsaDriver::close()
  *   Underrun and suspend recovery
  */
 
-//static int xrun_recovery(snd_pcm_t *handle, int err)
-//{
-//        if (err == -EPIPE) {    /* under-run */
-//                err = snd_pcm_prepare(handle);
-//                if (err < 0)
-//                        fprintf (stderr,"Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
-//                return 0;
-//        } else if (err == -ESTRPIPE) {
-//                while ((err = snd_pcm_resume(handle)) == -EAGAIN)
-//                        sleep(1);       /* wait until the suspend flag is released */
-//                if (err < 0) {
-//                        err = snd_pcm_prepare(handle);
-//                        if (err < 0)
-//                                fprintf (stderr,"Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
-//                }
-//                return 0;
-//        }
-//        return err;
-//}
+static int xrun_recovery(snd_pcm_t *handle, int err)
+{
+        if (err == -EPIPE) {    /* under-run */
+                err = snd_pcm_prepare(handle);
+                if (err < 0)
+                        fprintf (stderr,"Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
+                return 0;
+        } else if (err == -ESTRPIPE) {
+                while ((err = snd_pcm_resume(handle)) == -EAGAIN)
+                        sleep(1);       /* wait until the suspend flag is released */
+                if (err < 0) {
+                        err = snd_pcm_prepare(handle);
+                        if (err < 0)
+                                fprintf (stderr,"Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
+                }
+                return 0;
+        }
+        return err;
+}
 
 void AlsaDriver::out_buffer(Buffer* buf)
 {
@@ -194,17 +192,15 @@ void AlsaDriver::out_buffer(Buffer* buf)
 
 void AlsaDriver::run()
 {
-
     int cptr,err;
     short* ptr;
-    short* common_samples;
 
     //open device if not parent
     if( parent!=0 )
     {
         if(!open((char*)settings.value("alsa_device").toString().toStdString().c_str()))
             return;
-        set_nonblock(0);
+        set_nonblock(1);
         fprintf (stderr, "AlsaDriver thread id = %d device=dmix", QThread::currentThreadId());
     }
 
@@ -215,7 +211,44 @@ void AlsaDriver::run()
         if( quenue.size() > 0 )
         {
             Buffer* buf = quenue.back();
-            out_pcm(&buf->samples[0], buf->samples.size()/2);
+            //out_pcm(&buf->samples[0], buf->samples.size()/2);
+
+            int period_size = buf->samples.size()/2;
+
+            cptr = period_size;
+            ptr = &buf->samples[0];
+            while (cptr > 0) {
+                err = snd_pcm_writei(playback_handle, ptr, 1);
+
+                if (err == -EAGAIN)
+                    continue;
+                if (err < 0) {
+                    if (xrun_recovery(playback_handle, err) < 0) {
+                        fprintf (stderr,"Write error: %s\n", snd_strerror(err));
+                        continue;
+                    }
+                    continue;
+                }
+                if( bExitThread )
+                {
+                    fprintf (stderr,"AlsaDriver Thread exit ");
+                    if ((err = snd_pcm_close(playback_handle)) < 0) {
+                        fprintf (stderr, "cannot close audio device (%s)\n",
+                                 snd_strerror (err));
+                        return;
+                    }
+                    return;
+                }
+                if( !buf->timeEnd.isNull() )
+                {
+                    break;
+                }
+
+                ptr += err * 2; //2 channels
+                cptr -= err;
+            }
+
+
             quenue.erase(quenue.end()-1);
         }
         mutex.unlock();
@@ -225,38 +258,6 @@ void AlsaDriver::run()
 
 
     return;
-//    int period_size = SIZE_OF_CHUNK;
-//    while (1) {
-//        cptr = period_size;
-//        ptr = common_samples;
-//        while (cptr > 0) {
-//              usedBytes.acquire();
-//              err = snd_pcm_writei(playback_handle, ptr, 1);
-//              freeBytes.release();
-
-//            if (err == -EAGAIN)
-//                continue;
-//            if (err < 0) {
-//                if (xrun_recovery(playback_handle, err) < 0) {
-//                    fprintf (stderr,"Write error: %s\n", snd_strerror(err));
-//                    break;
-//                }
-//                break;
-//            }
-//            if( bExitThread )
-//            {
-//                fprintf (stderr,"AlsaDriver Thread exit ");
-//                if ((err = snd_pcm_close(playback_handle)) < 0) {
-//                    fprintf (stderr, "cannot close audio device (%s)\n",
-//                         snd_strerror (err));
-//                    return;
-//                }
-//                return;
-//            }
-//            ptr += err * 2; //2 channels
-//            cptr -= err;
-//        }
-//    }
 
 }
 

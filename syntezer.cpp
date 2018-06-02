@@ -74,7 +74,7 @@ void Syntezer::on_key_release(int key_code)
    if(key2noteBuffer.find(key_code)!=key2noteBuffer.end())
    {
        Buffer* buf = key2noteBuffer[key_code];
-       buf->timeEnd = QTime::currentTime();
+       buf->timeEnd = QTime::currentTime();       
        key2noteBuffer.erase(key2noteBuffer.find(key_code));
        fprintf(stderr,"disable note");
    }

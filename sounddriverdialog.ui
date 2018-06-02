@@ -79,7 +79,7 @@
       <item row="2" column="1" colspan="3">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#008000;&quot;&gt;Select your sound card to use FormantSynth in single voice mode.If you want to use it in multiple voices (polyphony) use device &amp;quot;plug:dmix&amp;quot;.Wich is a mixer device. How to setup mixer device please read README file. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#008000;&quot;&gt;Your need to restart FormantSynth to apply settings&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#008000;&quot;&gt;Select your sound card to use FormantSynth in single voice mode.If you want to use it in multiple voices (polyphony) use device &amp;quot;plug:dmix&amp;quot;.Wich is a mixer device. How to setup mixer device please read README.md file. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#008000;&quot;&gt;Your need to restart FormantSynth to apply settings&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>

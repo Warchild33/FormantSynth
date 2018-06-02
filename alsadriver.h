@@ -2,11 +2,12 @@
 #define ALSADRIVER_H
 
 #include "buffer.h"
-#include "notetowaveformthread.h"
 #include <alsa/asoundlib.h>
 #include <QObject>
 #include <QThread>
 #include <QMutex>
+#include <QWaitCondition>
+#include <map>
 
 
 class AlsaDriver : public QThread
@@ -21,7 +22,7 @@ public:
     void out_buffer(Buffer* buf);
     int  close();
     int  drop_pcm_frames();
-    int  set_nonblock(bool flag);
+    int  set_nonblock(bool flag);    
     void run();
 
     std::vector<Buffer*>      quenue;
@@ -35,7 +36,6 @@ private:
     AlsaDriver* parent;
     snd_pcm_t *playback_handle;
     snd_pcm_hw_params_t *hw_params;
-    bool bProcessBuffers;
     bool bExitThread;
     std::string device_name;
     int Nthreads;
