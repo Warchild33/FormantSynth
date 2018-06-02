@@ -60,11 +60,12 @@ int NoteToWaveformThread::append_waveform_chunk(double* common_samplesD, short* 
             double* optrD = &common_samplesD[0];
             short* optr = &common_samples[0];
             double* iptr = &buf->samplesD[0];
-            count = buf->timeStart.msecsTo(buf->timeEnd) * 48 * 2;
-             if(count > buf->samplesD.size() || buf->timeEnd.isNull() )
-                 count = buf->samplesD.size();
-            if( buf->timeEnd.isNull() )
-                count = buf->timeStart.msecsTo(QTime::currentTime()) * 48 * 2;
+//            count = buf->timeStart.msecsTo(buf->timeEnd) * 48 * 2;
+//             if(count > buf->samplesD.size() || buf->timeEnd.isNull() )
+//                 count = buf->samplesD.size();
+//            if( buf->timeEnd.isNull() )
+//                count = buf->timeStart.msecsTo(QTime::currentTime()) * 48 * 2;
+            count = buf->samplesD.size();
 
             maxCount = qMax(maxCount, count);
             int i = 0;
@@ -76,7 +77,7 @@ int NoteToWaveformThread::append_waveform_chunk(double* common_samplesD, short* 
 
             }
 
-            //fprintf(stderr,"buf %d note %d count %d time_last = %d \n",it - process_buffers.begin(), buf->note, count, timerLastNote.elapsed());
+            fprintf(stderr,"buf %d note %d count %d time_last = %d \n",it - process_buffers.begin(), buf->note, count, timerLastNote.elapsed());
             if( !buf->timeEnd.isNull() )
               buf->bWrited = true;
         }

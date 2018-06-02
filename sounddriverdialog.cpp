@@ -23,6 +23,8 @@ SoundDriverDialog::SoundDriverDialog(QWidget *parent) :
 //    ui->comboBox->addItem("hw:1,1");
 //    ui->comboBox->addItem("hw:1,2");
     listdev();
+    ui->comboBox->addItem("plug:dmix");
+
     //ui->comboBox->setCurrentText(settings.value("alsa_device").toString());
     ui->comboBox->setItemText(0,settings.value("alsa_device").toString());
     alsa = new AlsaDriver();

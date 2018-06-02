@@ -2,18 +2,27 @@
 #include <stdlib.h>
 #include <QtGlobal>
 #include <QThread>
+#include <QSettings>
 #include "alsadriver.h"
 
-
-extern QSemaphore                  freeBytes;
-extern QSemaphore                  usedBytes;
+static QSettings settings("./settings/settings.ini", QSettings::IniFormat);
 
 AlsaDriver::AlsaDriver()
 {
     playback_handle = 0;
     bProcessBuffers = false;
     bExitThread = false;
+    parent = 0;
+    Nthreads = 8;
+}
 
+AlsaDriver::AlsaDriver(AlsaDriver* parent)
+    : parent(parent)
+{
+    playback_handle = 0;
+    bProcessBuffers = false;
+    bExitThread = false;
+    Nthreads = 0;
 }
 
 int AlsaDriver::open(char* device_name)
@@ -109,27 +118,31 @@ int AlsaDriver::open(char* device_name)
         }
     }
     fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
-    //snd_pcm_close(playback_handle);
-    //start();
-    //moveToThread(this);
-    //notetowaveform_thread.start();
+
+    if(QString(device_name) == "plug:dmix")
+    {
+        if(parent == 0)
+        {
+            for(int i=0; i < Nthreads; i++)
+            {
+                AlsaDriver* alsa_thread = new AlsaDriver(this);
+                alsa_threads.push_back(alsa_thread);
+                alsa_thread->start();
+
+            }
+        }
+    }
+
     return 1;
 }
+
 
 int AlsaDriver::close()
 {
     int err;
     bExitThread = true;
     int i=0;
-//    while(++i < SIZE_OF_CIRC_BUFFER)
-//    {
-//        freeBytes.acquire();
-//        usedBytes.release();
-//    }
     snd_pcm_close(playback_handle);
-    //QThread::wait(100);
-    //fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
-
 
 
 }
@@ -139,138 +152,113 @@ int AlsaDriver::close()
  *   Underrun and suspend recovery
  */
 
-static int xrun_recovery(snd_pcm_t *handle, int err)
+//static int xrun_recovery(snd_pcm_t *handle, int err)
+//{
+//        if (err == -EPIPE) {    /* under-run */
+//                err = snd_pcm_prepare(handle);
+//                if (err < 0)
+//                        fprintf (stderr,"Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
+//                return 0;
+//        } else if (err == -ESTRPIPE) {
+//                while ((err = snd_pcm_resume(handle)) == -EAGAIN)
+//                        sleep(1);       /* wait until the suspend flag is released */
+//                if (err < 0) {
+//                        err = snd_pcm_prepare(handle);
+//                        if (err < 0)
+//                                fprintf (stderr,"Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
+//                }
+//                return 0;
+//        }
+//        return err;
+//}
+
+void AlsaDriver::out_buffer(Buffer* buf)
 {
-        if (err == -EPIPE) {    /* under-run */
-                err = snd_pcm_prepare(handle);
-                if (err < 0)
-                        fprintf (stderr,"Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
-                return 0;
-        } else if (err == -ESTRPIPE) {
-                while ((err = snd_pcm_resume(handle)) == -EAGAIN)
-                        sleep(1);       /* wait until the suspend flag is released */
-                if (err < 0) {
-                        err = snd_pcm_prepare(handle);
-                        if (err < 0)
-                                fprintf (stderr,"Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
-                }
-                return 0;
+    if(device_name!="plug:dmix")
+    {
+      drop_pcm_frames();
+      out_pcm(&buf->samples[0], buf->samples.size()/2);
+      return;
+    }
+
+    for(int i=0; i < Nthreads; i++)
+    {
+        if (alsa_threads[i]->quenue.size() == 0)
+        {
+            alsa_threads[i]->quenue.push_back(buf);
+            alsa_threads[i]->waitCondition.wakeAll();
+            break;
         }
-        return err;
+    }
 }
 
 void AlsaDriver::run()
 {
-    fprintf (stderr, "AlsaDriver thread id = %d", QThread::currentThreadId());
+
     int cptr,err;
     short* ptr;
     short* common_samples;
 
-    int period_size = SIZE_OF_CHUNK;
-    //usleep(100);
-    while (1) {
-        //generate_sine(areas, 0, period_size, &phase);
-        //for(int i=0; i < 48000*2; i++) common_samples[i] = rand();
-        cptr = period_size;
-        common_samples = notetowaveform_thread.get_common_samples(common_samples);
-
-        ptr = common_samples;
-        while (cptr > 0) {
-              usedBytes.acquire();
-              err = snd_pcm_writei(playback_handle, ptr, 1);
-              freeBytes.release();
-
-            //usleep(1);
-            //mixer_thread.mixedCondition.wakeAll();
-
-            //fprintf (stderr,"Write : %d\n", err);
-            if (err == -EAGAIN)
-                continue;
-            if (err < 0) {
-                if (xrun_recovery(playback_handle, err) < 0) {
-                    fprintf (stderr,"Write error: %s\n", snd_strerror(err));
-                    break;
-                }
-                break;
-            }
-            if( bExitThread )
-            {
-                fprintf (stderr,"AlsaDriver Thread exit ");
-                if ((err = snd_pcm_close(playback_handle)) < 0) {
-                    fprintf (stderr, "cannot close audio device (%s)\n",
-                         snd_strerror (err));
-                    return;
-                }
-                return;
-            }
-            ptr += err * 2; //2 channels
-            cptr -= err;
-        }
+    //open device if not parent
+    if( parent!=0 )
+    {
+        if(!open((char*)settings.value("alsa_device").toString().toStdString().c_str()))
+            return;
+        set_nonblock(0);
+        fprintf (stderr, "AlsaDriver thread id = %d device=dmix", QThread::currentThreadId());
     }
+
+    while(1)
+    {
+        mutex.lock();
+        waitCondition.wait(&mutex);
+        if( quenue.size() > 0 )
+        {
+            Buffer* buf = quenue.back();
+            out_pcm(&buf->samples[0], buf->samples.size()/2);
+            quenue.erase(quenue.end()-1);
+        }
+        mutex.unlock();
+    }
+
+
+
+
+    return;
+//    int period_size = SIZE_OF_CHUNK;
+//    while (1) {
+//        cptr = period_size;
+//        ptr = common_samples;
+//        while (cptr > 0) {
+//              usedBytes.acquire();
+//              err = snd_pcm_writei(playback_handle, ptr, 1);
+//              freeBytes.release();
+
+//            if (err == -EAGAIN)
+//                continue;
+//            if (err < 0) {
+//                if (xrun_recovery(playback_handle, err) < 0) {
+//                    fprintf (stderr,"Write error: %s\n", snd_strerror(err));
+//                    break;
+//                }
+//                break;
+//            }
+//            if( bExitThread )
+//            {
+//                fprintf (stderr,"AlsaDriver Thread exit ");
+//                if ((err = snd_pcm_close(playback_handle)) < 0) {
+//                    fprintf (stderr, "cannot close audio device (%s)\n",
+//                         snd_strerror (err));
+//                    return;
+//                }
+//                return;
+//            }
+//            ptr += err * 2; //2 channels
+//            cptr -= err;
+//        }
+//    }
 
 }
-
-/*
-void AlsaDriver::run()
-{
-    double phase = 0;
-    const snd_pcm_channel_area_t *areas;
-    snd_pcm_sframes_t avail, size, commitres;
-    snd_pcm_uframes_t offset, frames;
-    int err;
-    snd_pcm_state_t state;
-
-    state = snd_pcm_state(playback_handle);
-    if (state == SND_PCM_STATE_XRUN) {
-            err = xrun_recovery(playback_handle, -EPIPE);
-            if (err < 0) {
-                    printf("XRUN recovery failed: %s\n", snd_strerror(err));
-            }
-
-    } else if (state == SND_PCM_STATE_SUSPENDED) {
-            err = xrun_recovery(playback_handle, -ESTRPIPE);
-            if (err < 0) {
-                    printf("SUSPEND recovery failed: %s\n", snd_strerror(err));
-            }
-    }
-    avail = snd_pcm_avail_update(playback_handle);
-    double common_samplesD[48000*2];
-    short  common_samples[48000*2];
-
-    while (1) {
-        //generate_sine(areas, 0, period_size, &phase);
-        memset(common_samplesD, 0, 48000*sizeof(double)*2);
-        memset(common_samples, 0, 48000*sizeof(short)*2);
-        //for(int i=0; i < 1024; i++) common_samples[i] = rand();
-        fill_common_samples(common_samplesD, common_samples, 48000);
-        // at this point, we can transfer at least 'avail' frames
-        int period_size = 48000;
-        // we want to process frames in chunks (period_size)
-        if (avail < period_size)
-          return;
-        size = period_size;
-        // it is possible that contiguous areas are smaller, thus we use a loop
-        while (size > 0) {
-          frames = size;
-          err = snd_pcm_mmap_begin(playback_handle, &areas, &offset, &frames);
-          if (err < 0)
-          {
-            fprintf (stderr,"Write error: %s\n", snd_strerror(err));
-          }
-          // this function fills the areas from offset with count of frames
-          //generate_sine(areas, offset, frames, &phase);
-          commitres = snd_pcm_mmap_commit(playback_handle, offset, frames);
-          if (commitres < 0 || commitres != frames)
-          {
-            fprintf (stderr,"Write error: %s\n", snd_strerror(commitres >= 0 ? -EPIPE : commitres));
-          }
-
-          size -= frames;
-        }
-    }
-
-}
-*/
 
 int AlsaDriver::out_pcm(short* buf, unsigned long len)
 {

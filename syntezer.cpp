@@ -42,7 +42,7 @@ void Syntezer::out_pcm(short* buffer, int len)
 
 void Syntezer::out_buffer(Buffer* buf)
 {
-    alsa->notetowaveform_thread.out_buffer(buf);
+    alsa->out_buffer(buf);
 }
 
 void Syntezer::drop_pcm_frames()
@@ -58,10 +58,10 @@ void Syntezer::on_key_press(int key_code)
     {
 
         Buffer* buf = play_note(key2note[key_code], 1, 1);
-        //buf->bWrited = false;
+        buf->bWrited = false;
         key_time.start();
         bKeyPressed = true;
-        //key2noteBuffer[key_code] = buf;
+        key2noteBuffer[key_code] = buf;
         fprintf(stderr,"keycode=%d", key_code);
 
     }

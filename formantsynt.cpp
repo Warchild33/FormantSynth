@@ -106,8 +106,8 @@ Buffer* FormantSynt::play_note(char note, double duration, double velocity)
     delete [] y2;
     delete [] y3;
     buffer->note = note;
-    out_pcm(&buffer->samples[0], buffer->samples.size()/2);
-    delete buffer;
-    //out_buffer( buffer );
+    //out_pcm(&buffer->samples[0], buffer->samples.size()/2);
+    //delete buffer;
+    out_buffer( buffer );
     return buffer;
 }
