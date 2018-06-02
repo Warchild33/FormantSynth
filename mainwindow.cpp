@@ -42,7 +42,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(keyReleaseSig(int)), &fwidget->synt, SLOT(on_key_release(int)));
     connect(this, SIGNAL(keyPressSig(int)), ui->pianoWidget, SLOT(on_key_press(int)));
     connect(this, SIGNAL(keyReleaseSig(int)), ui->pianoWidget, SLOT(on_key_release(int)));
-    connect(ui->pianoWidget, SIGNAL(sigMouseKey(int)), &fwidget->synt, SLOT(on_key_press(int)));
+    connect(ui->pianoWidget, SIGNAL(sigMouseKeyDown(int)), &fwidget->synt, SLOT(on_key_press(int)));
+    connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), &fwidget->synt, SLOT(on_key_release(int)));
 
 
     NesSyntForm* nwidget = new NesSyntForm(this);

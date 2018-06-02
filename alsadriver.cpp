@@ -192,17 +192,32 @@ void AlsaDriver::out_buffer(Buffer* buf)
 
 void AlsaDriver::run()
 {
-    int cptr,err;
-    short* ptr;
+    bool multiple_voice = settings.value("multiple_voice").toBool();
 
     //open device if not parent
+
     if( parent!=0 )
     {
         if(!open((char*)settings.value("alsa_device").toString().toStdString().c_str()))
             return;
-        set_nonblock(1);
+        set_nonblock(!multiple_voice);
         fprintf (stderr, "AlsaDriver thread id = %d device=dmix", QThread::currentThreadId());
     }
+
+
+    if( multiple_voice )
+        blockingLoop();
+    else
+        nonBlockingLoop();
+
+
+    return;
+}
+
+void AlsaDriver::nonBlockingLoop()
+{
+    int cptr,err;
+    short* ptr;
 
     while(1)
     {
@@ -254,12 +269,24 @@ void AlsaDriver::run()
         mutex.unlock();
     }
 
-
-
-
-    return;
-
 }
+
+void AlsaDriver::blockingLoop()
+{
+    while(1)
+    {
+        mutex.lock();
+        waitCondition.wait(&mutex);
+        if( quenue.size() > 0 )
+        {
+            Buffer* buf = quenue.back();
+            out_pcm(&buf->samples[0], buf->samples.size()/2);
+            quenue.erase(quenue.end()-1);
+        }
+        mutex.unlock();
+    }
+}
+
 
 int AlsaDriver::out_pcm(short* buf, unsigned long len)
 {

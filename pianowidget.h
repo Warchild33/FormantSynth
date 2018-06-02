@@ -50,7 +50,8 @@ public:
     void drawKeys(QPainter& painter);
 
 signals:
-    void sigMouseKey(int key);
+    void sigMouseKeyDown(int key);
+    void sigMouseKeyRelease(int key);
 
 public slots:
     void on_key_press(int key_code);

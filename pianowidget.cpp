@@ -142,7 +142,7 @@ void PianoWidget::mousePressEvent(QMouseEvent* event)
             {
                 (*key).second.on = true;
                 blackDown = true;
-                emit sigMouseKey((*key).first);
+                emit sigMouseKeyDown((*key).first);
             }
         }
     }
@@ -155,7 +155,7 @@ void PianoWidget::mousePressEvent(QMouseEvent* event)
             if( (*key).second.rect.contains(mouse) )
             {
                 (*key).second.on = true;
-                emit sigMouseKey((*key).first);
+                emit sigMouseKeyDown((*key).first);
             }
         }
     }
@@ -167,6 +167,13 @@ void PianoWidget::mousePressEvent(QMouseEvent* event)
 void PianoWidget::mouseReleaseEvent(QMouseEvent* event)
 {
     for(auto key=piano_keys.begin(); key!=piano_keys.end(); key++)
-       (*key).second.on = false;
+    {
+        if( (*key).second.on)
+        {
+            (*key).second.on = false;
+            emit sigMouseKeyRelease((*key).first);
+        }
+    }
+
      repaint();
 }

@@ -23,7 +23,10 @@ public:
     int  close();
     int  drop_pcm_frames();
     int  set_nonblock(bool flag);    
+
     void run();
+    void nonBlockingLoop();
+    void blockingLoop();
 
     std::vector<Buffer*>      quenue;
     QWaitCondition            waitCondition;
