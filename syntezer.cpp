@@ -62,7 +62,7 @@ void Syntezer::on_key_press(int key_code)
         key_time.start();
         bKeyPressed = true;
         key2noteBuffer[key_code] = buf;
-        fprintf(stderr,"keycode=%d", key_code);
+        //fprintf(stderr,"keycode=%d", key_code);
 
     }
 }
@@ -76,7 +76,7 @@ void Syntezer::on_key_release(int key_code)
        Buffer* buf = key2noteBuffer[key_code];
        buf->timeEnd = QTime::currentTime();       
        key2noteBuffer.erase(key2noteBuffer.find(key_code));
-       fprintf(stderr,"disable note");
+       //fprintf(stderr,"disable note");
    }
 }
 

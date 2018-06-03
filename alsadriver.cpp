@@ -265,7 +265,7 @@ void AlsaDriver::nonBlockingLoop()
             cptr -= err;
         }
 
-
+        delete buf;
         quenue.erase(quenue.end()-1);
     }
     mutex.unlock();
@@ -282,6 +282,7 @@ void AlsaDriver::blockingLoop()
         Buffer* buf = quenue.back();
         out_pcm(&buf->samples[0], buf->samples.size()/2);
         quenue.erase(quenue.end()-1);
+        delete buf;
     }
     mutex.unlock();
 

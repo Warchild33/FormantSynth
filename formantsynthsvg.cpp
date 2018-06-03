@@ -99,6 +99,7 @@ void  FormantSynthSvg::mousePressEvent(QMouseEvent* event)
         else
             setStroke(buttons[i].name,Qt::black);
     }
+    lastKeyTimer.restart();
     LoadRenderDOM();
     repaint();
 
@@ -166,7 +167,14 @@ void  FormantSynthSvg::mouseMoveEvent(QMouseEvent* event)
 
 
     LoadRenderDOM();
+    bool a1, a2;
+    a1 = mouth1->bAnimate;
+    a2 = mouth2->bAnimate;
+    mouth1->bAnimate = false;
+    mouth2->bAnimate = false;
     repaint();
+    mouth1->bAnimate = a1;
+    mouth2->bAnimate = a2;
 }
 
 void FormantSynthSvg::timerEvent(QTimerEvent *)

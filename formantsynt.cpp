@@ -88,7 +88,7 @@ Buffer* FormantSynt::play_note(char note, double duration, double velocity)
     }
 
     double Amax = (*std::max_element(&y[0],&y[N-1]));
-    fprintf(stderr,"Amax = %f\n", Amax);
+    //fprintf(stderr,"Amax = %f\n", Amax);
     //envelope_Bspline(y,Amax,48000,duration);
     normalize(0.1, y, Amax, 48000,duration);
 

@@ -9,6 +9,7 @@ class Buffer
 public:
     Buffer();
     Buffer(int SampleRate, double duration, int channels);
+    ~Buffer();
     bool checkExpired();
     std::vector<short> samples;
     std::vector<double> samplesD;

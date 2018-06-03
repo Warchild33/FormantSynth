@@ -24,3 +24,9 @@ bool Buffer::checkExpired()
         bWrited = true;
     return bWrited;
 }
+
+Buffer::~Buffer()
+{
+    samples.resize(0);
+    samplesD.resize(0);
+}

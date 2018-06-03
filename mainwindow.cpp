@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(fwidget2, SIGNAL(sigO_but()), fwidget, SLOT(on_Obutton_clicked()));
     connect(this, SIGNAL(keyPressSig(int)), fwidget2, SLOT(on_key_press(int)));
     connect(this, SIGNAL(keyReleaseSig(int)), fwidget2, SLOT(on_key_release(int)));
+    connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), fwidget2, SLOT(on_key_release(int)));
 
 
 }
