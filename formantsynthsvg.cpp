@@ -1,7 +1,9 @@
 #include <QTransform>
 //#include <QtMath>
 #include "formantsynthsvg.h"
+#include <QSettings>
 
+static QSettings settings("./settings/settings.ini", QSettings::IniFormat);
 
 FormantSynthSvg::FormantSynthSvg(QWidget *parent) : SvgWidget(parent)
 {
@@ -12,6 +14,12 @@ FormantSynthSvg::FormantSynthSvg(QWidget *parent) : SvgWidget(parent)
     QPointF center = findPathCenter("F9");
     rotateNode("F9", center, -270);
     setStroke("F9", Qt::red);    
+    setFill("mouth1", Qt::white, 0);
+    setStroke("mouth1", Qt::white);
+    setFill("mouth2", Qt::white, 0);
+    setStroke("mouth2", Qt::white);
+    mouth1 = new Mouth("mouth1", this);
+    mouth2 = new Mouth("mouth2", this);
     LoadRenderDOM();
     SaveDom("./images/formant_synth_dom.svg");
 
@@ -33,6 +41,8 @@ FormantSynthSvg::FormantSynthSvg(QWidget *parent) : SvgWidget(parent)
     buttons[1] = Button(getEllipse("I_but"),"I_but");
     buttons[2] = Button(getEllipse("O_but"),"O_but");
     buttons[3] = Button(getEllipse("E_but"),"E_but");
+    buttons[4] = Button(getPath("path3271").boundingRect(),"path3271");
+    buttons[5] = Button(getPath("path3271-3").boundingRect(),"path3271-3");
 
     setFocus();
 }
@@ -65,6 +75,28 @@ void  FormantSynthSvg::mousePressEvent(QMouseEvent* event)
         }
         else
             setFill(buttons[i].name,QColor("#0e541b"),1);
+    }
+
+    for(int i=4; i < 6; i++)
+    {
+        if( buttons[i].rect.contains(p) )
+        {
+            setStroke(buttons[i].name,Qt::red);
+            if(i==4)
+            {
+                settings.setValue("multiple_voice",true);
+                mouth1->bAnimate = false;
+                mouth2->bAnimate = true;
+            }
+            else
+            {
+                settings.setValue("multiple_voice",false);
+                mouth1->bAnimate = true;
+                mouth2->bAnimate = false;
+            }
+        }
+        else
+            setStroke(buttons[i].name,Qt::black);
     }
     LoadRenderDOM();
     repaint();
@@ -130,6 +162,8 @@ void  FormantSynthSvg::mouseMoveEvent(QMouseEvent* event)
         else
             setFill(buttons[i].name,QColor("#0e541b"),1);
     }
+
+
     LoadRenderDOM();
     repaint();
 }
@@ -141,4 +175,6 @@ void FormantSynthSvg::paintEvent(QPaintEvent* event)
     painter.drawPixmap(this->rect(),QPixmap::fromImage(background));
     */
     SvgWidget::paintEvent(event);
+    mouth1->draw();
+    mouth2->draw();
 }

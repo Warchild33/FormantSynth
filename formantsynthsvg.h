@@ -2,7 +2,9 @@
 #define FORMANTSYNTHSVG_H
 
 #include <QWidget>
+#include <QPainterPath>
 #include "svgwidget.h"
+#include "mouth.h"
 
 class Slider
 {
@@ -39,6 +41,8 @@ public:
 
 };
 
+
+
 class FormantSynthSvg : public SvgWidget
 {
     Q_OBJECT
@@ -52,9 +56,12 @@ public:
 
 
     Slider  freqSliders[10];
-    Button  buttons[4];
+    Button  buttons[6];
     int minRotateAngle;
     int maxRotateAngle;
+    Mouth*  mouth1;
+    Mouth*  mouth2;
+
 
 signals:
     void sigA_but();

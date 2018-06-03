@@ -134,7 +134,7 @@ bool SvgWidget::LoadRender()
     return svg_rend.load(svg.toUtf8());
 }
 
-QString changeAttr(QString attr_string, QString attr_key, QString attr_val)
+QString SvgWidget::changeAttr(QString attr_string, QString attr_key, QString attr_val)
 {
     QStringList params_list = attr_string.split(";");
     for(auto i = params_list.begin(); i!= params_list.end(); i++ )
@@ -145,7 +145,32 @@ QString changeAttr(QString attr_string, QString attr_key, QString attr_val)
     }
     return params_list.join(";");
 }
+
+QString SvgWidget::getSubAttr(QString attr_string, QString attr_key)
+{
+    QStringList params_list = attr_string.split(";");
+    for(auto i = params_list.begin(); i!= params_list.end(); i++ )
+    {
+        QStringList key_value = (*i).split(":");
+        if( attr_key == key_value[0] )
+            return key_value[1];
+    }
+    return "";
+}
+
 //;fill:#ffffff;fill-opacity:1;
+
+QString SvgWidget::getAttr(QString id, QString attr)
+{
+    QDomElement path_node;
+    QMap<QString, QDomElement>::iterator it;
+    it = elementByID.find(id);
+    if( it!=elementByID.end() )
+    {
+       path_node = it.value();
+       return path_node.attribute(attr);
+    }
+}
 
 //находит path с заданным id и выставляет аттрибуты заливки
 void SvgWidget::setFill(QString id, QColor fill_color, float fill_opacity)
@@ -286,6 +311,16 @@ QPointF  SvgWidget::mapToViewbox(QPoint p, QRectF viewbox)
     pt = pt * t;
     return pt;
 }
+
+QTransform SvgWidget::getViewBoxTransform()
+{
+    float sx = (float)viewbox.width() / (float)geometry().width();
+    float sy = (float)viewbox.height() / (float)geometry().height();
+    QTransform t;
+    t = t.scale(1./sx, 1./sy);
+    return t;
+}
+
 
 QRectF  SvgWidget::mapToViewbox(QRectF p, QRectF viewbox)
 {

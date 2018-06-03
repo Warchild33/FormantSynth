@@ -192,7 +192,6 @@ void AlsaDriver::out_buffer(Buffer* buf)
 
 void AlsaDriver::run()
 {
-    bool multiple_voice = settings.value("multiple_voice").toBool();
 
     //open device if not parent
 
@@ -200,15 +199,29 @@ void AlsaDriver::run()
     {
         if(!open((char*)settings.value("alsa_device").toString().toStdString().c_str()))
             return;
-        set_nonblock(!multiple_voice);
         fprintf (stderr, "AlsaDriver thread id = %d device=dmix", QThread::currentThreadId());
     }
 
-
-    if( multiple_voice )
-        blockingLoop();
-    else
-        nonBlockingLoop();
+    while(1)
+    {
+        bool multiple_voice = settings.value("multiple_voice").toBool();
+        set_nonblock(!multiple_voice);
+        if( multiple_voice )
+            blockingLoop();
+        else
+            nonBlockingLoop();
+        if( bExitThread )
+        {
+            int err;
+            fprintf (stderr,"AlsaDriver Thread exit ");
+            if ((err = snd_pcm_close(playback_handle)) < 0) {
+                fprintf (stderr, "cannot close audio device (%s)\n",
+                         snd_strerror (err));
+                return;
+            }
+            return;
+        }
+    }
 
 
     return;
@@ -219,72 +232,59 @@ void AlsaDriver::nonBlockingLoop()
     int cptr,err;
     short* ptr;
 
-    while(1)
+    mutex.lock();
+    waitCondition.wait(&mutex);
+    if( quenue.size() > 0 )
     {
-        mutex.lock();
-        waitCondition.wait(&mutex);
-        if( quenue.size() > 0 )
-        {
-            Buffer* buf = quenue.back();
-            //out_pcm(&buf->samples[0], buf->samples.size()/2);
+        Buffer* buf = quenue.back();
+        //out_pcm(&buf->samples[0], buf->samples.size()/2);
 
-            int period_size = buf->samples.size()/2;
+        int period_size = buf->samples.size()/2;
 
-            cptr = period_size;
-            ptr = &buf->samples[0];
-            while (cptr > 0) {
-                err = snd_pcm_writei(playback_handle, ptr, 1);
+        cptr = period_size;
+        ptr = &buf->samples[0];
+        while (cptr > 0) {
+            err = snd_pcm_writei(playback_handle, ptr, 1);
 
-                if (err == -EAGAIN)
-                    continue;
-                if (err < 0) {
-                    if (xrun_recovery(playback_handle, err) < 0) {
-                        fprintf (stderr,"Write error: %s\n", snd_strerror(err));
-                        continue;
-                    }
+            if (err == -EAGAIN)
+                continue;
+            if (err < 0) {
+                if (xrun_recovery(playback_handle, err) < 0) {
+                    fprintf (stderr,"Write error: %s\n", snd_strerror(err));
                     continue;
                 }
-                if( bExitThread )
-                {
-                    fprintf (stderr,"AlsaDriver Thread exit ");
-                    if ((err = snd_pcm_close(playback_handle)) < 0) {
-                        fprintf (stderr, "cannot close audio device (%s)\n",
-                                 snd_strerror (err));
-                        return;
-                    }
-                    return;
-                }
-                if( !buf->timeEnd.isNull() )
-                {
-                    break;
-                }
-
-                ptr += err * 2; //2 channels
-                cptr -= err;
+                continue;
             }
 
+            if( !buf->timeEnd.isNull() )
+            {
+                break;
+            }
 
-            quenue.erase(quenue.end()-1);
+            ptr += err * 2; //2 channels
+            cptr -= err;
         }
-        mutex.unlock();
+
+
+        quenue.erase(quenue.end()-1);
     }
+    mutex.unlock();
+
 
 }
 
 void AlsaDriver::blockingLoop()
 {
-    while(1)
+    mutex.lock();
+    waitCondition.wait(&mutex);
+    if( quenue.size() > 0 )
     {
-        mutex.lock();
-        waitCondition.wait(&mutex);
-        if( quenue.size() > 0 )
-        {
-            Buffer* buf = quenue.back();
-            out_pcm(&buf->samples[0], buf->samples.size()/2);
-            quenue.erase(quenue.end()-1);
-        }
-        mutex.unlock();
+        Buffer* buf = quenue.back();
+        out_pcm(&buf->samples[0], buf->samples.size()/2);
+        quenue.erase(quenue.end()-1);
     }
+    mutex.unlock();
+
 }
 
 

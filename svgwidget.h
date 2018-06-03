@@ -41,6 +41,7 @@ public:
     void setText(QString group_id, QString text);
     QPointF  mapToViewbox(QPoint p, QRectF viewbox);
     QRectF   mapToViewbox(QRectF p, QRectF viewbox);
+    QTransform getViewBoxTransform();
 
 //----методы работающие с SVG как с DOM документом(медленнее)
     bool LoadDom(QString fn);
@@ -50,7 +51,12 @@ public:
     void setFill(QString id, QColor fill_color, float fill_opacity);
     void setStroke(QString id, QColor stroke_color);
     void TraverseXmlNode(const QDomNode& node);
+    QString getAttr(QString id, QString attr);
+    QString getSubAttr(QString attr_string, QString attr_key);
+    QString changeAttr(QString attr_string, QString attr_key, QString attr_val);
 
 };
+
+
 
 #endif // SVGWIDGET_H
