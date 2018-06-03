@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPainterPath>
+#include <QElapsedTimer>
 #include "svgwidget.h"
 #include "mouth.h"
 
@@ -50,11 +51,13 @@ public:
 
     explicit FormantSynthSvg(QWidget *parent = nullptr);
     void     paintEvent(QPaintEvent* event);
+    void     timerEvent(QTimerEvent *);
     void     mousePressEvent(QMouseEvent* event);
     void     mouseReleaseEvent(QMouseEvent* event);
     void     mouseMoveEvent(QMouseEvent* event);
 
 
+    QElapsedTimer  lastKeyTimer;
     Slider  freqSliders[10];
     Button  buttons[6];
     int minRotateAngle;
@@ -70,6 +73,8 @@ signals:
     void sigE_but();
 
 public slots:
+    void on_key_press(int key);
+    void on_key_release(int key);
 };
 
 #endif // FORMANTSYNTHSVG_H

@@ -45,6 +45,7 @@ FormantSynthSvg::FormantSynthSvg(QWidget *parent) : SvgWidget(parent)
     buttons[5] = Button(getPath("path3271-3").boundingRect(),"path3271-3");
 
     setFocus();
+    startTimer(200);
 }
 
 void  FormantSynthSvg::mousePressEvent(QMouseEvent* event)
@@ -168,6 +169,12 @@ void  FormantSynthSvg::mouseMoveEvent(QMouseEvent* event)
     repaint();
 }
 
+void FormantSynthSvg::timerEvent(QTimerEvent *)
+{
+    if( lastKeyTimer.elapsed() > 1000) return;
+    repaint();
+}
+
 void FormantSynthSvg::paintEvent(QPaintEvent* event)
 {
     /*
@@ -177,4 +184,14 @@ void FormantSynthSvg::paintEvent(QPaintEvent* event)
     SvgWidget::paintEvent(event);
     mouth1->draw();
     mouth2->draw();
+}
+
+void FormantSynthSvg::on_key_press(int key)
+{
+
+}
+
+void FormantSynthSvg::on_key_release(int key)
+{
+    lastKeyTimer.restart();
 }

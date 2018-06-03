@@ -56,11 +56,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(fwidget2, SIGNAL(sigE_but()), fwidget, SLOT(on_Ebutton_clicked()));
     connect(fwidget2, SIGNAL(sigI_but()), fwidget, SLOT(on_Ibutton_clicked()));
     connect(fwidget2, SIGNAL(sigO_but()), fwidget, SLOT(on_Obutton_clicked()));
-    connect(this, SIGNAL(keyPressSig(int)), fwidget2, SLOT(repaint()));
+    connect(this, SIGNAL(keyPressSig(int)), fwidget2, SLOT(on_key_press(int)));
+    connect(this, SIGNAL(keyReleaseSig(int)), fwidget2, SLOT(on_key_release(int)));
 
 
-    //on_processButton_clicked();
-    //on_genButton_clicked();
 }
 
 MainWindow::~MainWindow()
