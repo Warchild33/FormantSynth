@@ -4,6 +4,7 @@
 #include "wave_in.h"
 #include "envelope.h"
 #include "common.h"
+#include "buffer.h"
 #include <QString>
 #include <QFile>
 #include <QStringList>
@@ -42,7 +43,7 @@ std::vector<Notestruct> Happybirsday::parse_hb_notes(QString file)
    return output;
 }
 
-void Happybirsday::generate_song(std::vector<Notestruct>& song, QProgressBar* progress_bar)
+void Happybirsday::generate_wave_file(std::vector<Notestruct>& song, QProgressBar* progress_bar)
 {
     std::vector<short>* output_samples = new std::vector<short>();
     int n_note = 0;
@@ -72,6 +73,47 @@ void Happybirsday::generate_song(std::vector<Notestruct>& song, QProgressBar* pr
     synt->out_pcm(&(*output_samples)[0], (*output_samples).size());
 
 }
+
+void Happybirsday::timerEvent(QTimerEvent *)
+{
+    int n_note = 0;
+    if( isPlaying )
+    {
+        double t = (double)timer.elapsed()/1000.;
+        for(auto ns=song->begin(); ns!=song->end(); ns++,n_note++)
+        {
+            float f= freq_table.getFreq((*ns).note);
+            float t_start = (*ns).t_start;
+            float t_end = (*ns).t_end;
+            if((*ns).isPlayed == false)
+            if((t_start - t) < 0.2)
+            {
+                Buffer* buf = new Buffer(48000, t_end-t_start, 2);
+                generate_voice(f, 0, t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, &buf->samples);
+                progress_bar->setValue(((float)n_note/song->size()) * 100);
+                (*ns).isPlayed = true;
+                synt->out_buffer(buf);
+            }
+
+        }
+    }
+}
+
+void Happybirsday::Play(std::vector<Notestruct>* song, QProgressBar* progress_bar)
+{
+    this->song = song;
+    this->progress_bar = progress_bar;
+    isPlaying = true;
+    timer.restart();
+    startTimer(100);
+}
+
+void Happybirsday::Stop()
+{
+    isPlaying = false;
+}
+
+
 
 void generate_voice(double f,int sample_offset, double duration, double F1, double F2, double F3, double BW, int Ncascade,
                     std::vector<short>* output_samples)

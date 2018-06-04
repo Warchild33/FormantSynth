@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "formantsynt.h"
+#include "happybirsday.h"
 
 namespace Ui {
 class FormantSyntForm;
@@ -18,6 +19,8 @@ public:
     FormantSynt synt;
     void Play(QString fn);
     void set_params();
+    bool         isPlaying;
+    Happybirsday* hb_song;
 
 private slots:
     void on_hbSongButton_clicked();
@@ -39,6 +42,8 @@ private slots:
     void on_F3_valueChanged(double arg1);
 
     void on_BW_valueChanged(double arg1);
+
+    void on_hbSongButton_2_clicked();
 
 private:
     Ui::FormantSyntForm *ui;

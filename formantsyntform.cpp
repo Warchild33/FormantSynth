@@ -1,13 +1,17 @@
 #include <QProcess>
+#include <QSettings>
 #include "happybirsday.h"
 #include "formantsyntform.h"
 #include "ui_formantsyntform.h"
+
+static QSettings settings("./settings/settings.ini", QSettings::IniFormat);
 
 FormantSyntForm::FormantSyntForm(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FormantSyntForm)
 {
     ui->setupUi(this);
+    isPlaying = false;
 }
 
 FormantSyntForm::~FormantSyntForm()
@@ -18,16 +22,37 @@ FormantSyntForm::~FormantSyntForm()
 void FormantSyntForm::on_hbSongButton_clicked()
 {
     //synt.alsa->close();
-    Happybirsday hb_song;
-    hb_song.set_synth(&synt);
-    std::vector<Notestruct> notes = hb_song.parse_hb_notes("./midi_data/happy_birsday.txt");
-    synt.alsa->set_nonblock(0);
-    hb_song.generate_song(notes,ui->progressBar);
-    synt.alsa->set_nonblock(1);
-    //Play("./wave/hb_song.wav");
+    if( !isPlaying)
+    {
+        hb_song = new Happybirsday();
+        hb_song->set_synth(&synt);
+        std::vector<Notestruct>* notes = new std::vector<Notestruct>();
+        *notes = hb_song->parse_hb_notes("./midi_data/happy_birsday.txt");
+        settings.setValue("multiple_voice",1);
+        hb_song->Play(notes, ui->progressBar);
+        ui->hbSongButton->setText("Stop");
+    }
+    else
+    {
+        ui->hbSongButton->setText("Happy birsday song");
+        hb_song->Stop();
+        delete hb_song;
+    }
+    isPlaying = !isPlaying;
 
 
 }
+
+void FormantSyntForm::on_hbSongButton_2_clicked()
+{
+    Happybirsday hb_song;
+    synt.alsa->set_nonblock(0);
+    std::vector<Notestruct> notes;
+    notes = hb_song.parse_hb_notes("./midi_data/happy_birsday.txt");
+    hb_song.generate_wave_file(notes,ui->progressBar);
+    synt.alsa->set_nonblock(1);
+}
+
 void FormantSyntForm::Play(QString fn)
 {
     QProcess process1;
@@ -115,3 +140,4 @@ void FormantSyntForm::on_BW_valueChanged(double arg1)
 {
     set_params();
 }
+

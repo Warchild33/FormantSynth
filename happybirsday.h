@@ -15,22 +15,37 @@ void generate_voice(double f, int sample_offset, double time, double F1, double 
 
 struct Notestruct
 {
+    Notestruct()
+    {
+        isPlayed = false;
+    }
     char note;
     float t_start;
     float t_end;
+    bool  isPlayed;
 };
 
-class Happybirsday
+class Happybirsday : public QObject
 {
+    Q_OBJECT
 public:
+    bool           isPlaying;
+    QElapsedTimer  timer;
     FreqTable freq_table;
     FormantSynt* synt;
+    std::vector<Notestruct>* song;
+    QProgressBar*            progress_bar;
 
     Happybirsday();
     void set_synth(FormantSynt* s);
-    void generate_song(std::vector<Notestruct>& song, QProgressBar* progress_bar);
+    void generate_wave_file(std::vector<Notestruct>& song, QProgressBar* progress_bar);
     std::vector<Notestruct> parse_hb_notes(QString file);
     void parse_notes_table(QString file); // creates note2fre table
+
+    void timerEvent(QTimerEvent *);
+    void Play(std::vector<Notestruct>* song, QProgressBar* progress_bar);
+    void Stop();
+
 
 };
 

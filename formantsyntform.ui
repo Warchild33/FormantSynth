@@ -215,14 +215,14 @@
   <widget class="QPushButton" name="hbSongButton">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>140</y>
+     <x>510</x>
+     <y>170</y>
      <width>161</width>
      <height>32</height>
     </rect>
    </property>
    <property name="text">
-    <string>Happy Birsday Song</string>
+    <string>Happy Birsday Synt</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox_3">
@@ -341,14 +341,30 @@
   <widget class="QProgressBar" name="progressBar">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>180</y>
+     <x>510</x>
+     <y>140</y>
      <width>161</width>
      <height>23</height>
     </rect>
    </property>
    <property name="value">
     <number>0</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="hbSongButton_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>210</y>
+     <width>161</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Happy Birsday Wave </string>
    </property>
   </widget>
  </widget>
