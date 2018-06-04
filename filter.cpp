@@ -18,10 +18,10 @@ double* narrow_band_filter(double* x, double* y, int Nt, double f0, double BW, d
     double b2 = -R*R;
 
 
+    //отчетов сигнала в периоде импульса
     for(int n=2; n < Nt; n++)
     {
       y[n] = a0*x[n] + a1*x[n-1] + a2*x[n-2] + b1*y[n-1] + b2*y[n-2];
-
       //qDebug("%f",y[n]);
     }
 
