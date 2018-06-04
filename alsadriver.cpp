@@ -179,12 +179,13 @@ void AlsaDriver::out_buffer(Buffer* buf)
       return;
     }
 
-    for(int i=0; i < Nthreads; i++)
+    //for(int i=0; i < Nthreads; i++)
+    for(auto t = alsa_threads.begin(); t!=alsa_threads.end(); t++)
     {
-        if (alsa_threads[i]->quenue.size() == 0)
+        if ((*t)->quenue.size() == 0)
         {
-            alsa_threads[i]->quenue.push_back(buf);
-            alsa_threads[i]->waitCondition.wakeAll();
+            (*t)->quenue.push_back(buf);
+            (*t)->waitCondition.wakeAll();
             break;
         }
     }
