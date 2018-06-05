@@ -2,6 +2,7 @@
 #define NESSYNTFORM_H
 
 #include <QDialog>
+#include "nessynth.h"
 
 namespace Ui {
 class NesSyntForm;
@@ -14,6 +15,7 @@ class NesSyntForm : public QDialog
 public:
     explicit NesSyntForm(QWidget *parent = 0);
     ~NesSyntForm();
+    NesSynth synt;
 
 private:
     Ui::NesSyntForm *ui;

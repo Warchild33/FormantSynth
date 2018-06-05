@@ -16,6 +16,7 @@ Syntezer::Syntezer()
     alsa->open((char*)settings.value("alsa_device").toString().toStdString().c_str());
     //connect(this, SIGNAL(sigDisableNote(char)),&alsa->mixer_thread, SLOT(disable_note(char)));
     bKeyPressed = false;
+    bEnabled = false;
     QTimer* timer = new QTimer();
     connect(timer,SIGNAL(timeout()), this, SLOT(on_Timer()));
     timer->start(50);
@@ -36,23 +37,27 @@ void Syntezer::on_Timer()
 
 void Syntezer::out_pcm(short* buffer, int len)
 {
+    if(!bEnabled) return;
     alsa->drop_pcm_frames();
     alsa->out_pcm(buffer, (unsigned long)len);
 }
 
 void Syntezer::out_buffer(Buffer* buf)
 {
+    if(!bEnabled) return;
     alsa->out_buffer(buf);
 }
 
 void Syntezer::drop_pcm_frames()
 {
+    if(!bEnabled) return;
     alsa->drop_pcm_frames();
 }
 
 void Syntezer::on_key_press(int key_code)
 {
     if(key_code > 128) return;
+    if(!bEnabled) return;
 
     if(key2noteBuffer.find(key_code) == key2noteBuffer.end())
     {
@@ -70,6 +75,7 @@ void Syntezer::on_key_press(int key_code)
 void Syntezer::on_key_release(int key_code)
 {
    bKeyPressed = false;
+   if(!bEnabled) return;
    //emit sigDisableNote(key2note[key_code]);
    if(key2noteBuffer.find(key_code)!=key2noteBuffer.end())
    {

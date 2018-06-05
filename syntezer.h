@@ -18,6 +18,7 @@ public:
     std::map<int,Buffer*>       key2noteBuffer;
     FreqTable                   freq_table;
     Key2NoteTable               key2note;
+    bool                        bEnabled;
 
     Syntezer();    
     void parse_freqs_table(QString file);
@@ -40,7 +41,7 @@ public slots:
 
 private:
     QElapsedTimer        key_time;
-    bool                 bEnabled;
+
     bool                 bKeyPressed;
 
 };

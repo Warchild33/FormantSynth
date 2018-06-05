@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     svgwidget.cpp \
     formantsynthsvg.cpp \
     svg_path_parser.cpp \
-    mouth.cpp
+    mouth.cpp \
+    nessynth.cpp
 
 HEADERS  += mainwindow.h \
     stft.h \
@@ -75,7 +76,8 @@ HEADERS  += mainwindow.h \
     svgwidget.h \
     formantsynthsvg.h \
     svg_path_parser.h \
-    mouth.h
+    mouth.h \
+    nessynth.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \

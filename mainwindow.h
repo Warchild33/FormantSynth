@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "syntezer.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,8 +26,11 @@ private slots:
     void on_sound_Settings();
 
 
+    void on_tabWidget_currentChanged(QWidget *arg1);
+
 private:
     Ui::MainWindow *ui;
+    Syntezer* active_synth;
 };
 
 #endif // MAINWINDOW_H

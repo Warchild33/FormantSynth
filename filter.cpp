@@ -8,6 +8,7 @@ extern Ploter* p;
 
 double* narrow_band_filter(double* x, double* y, int Nt, double f0, double BW, double SampleRate=48000)
 {
+
     double w0 = 2 * M_PI * f0 / SampleRate;
     double R = 1 - 3 * BW;
     double K = (1 - 2*R*cos(w0) + R*R) /(2 - 2*cos(w0));
@@ -16,7 +17,6 @@ double* narrow_band_filter(double* x, double* y, int Nt, double f0, double BW, d
     double a2 = R*R - K;
     double b1 = 2*R*cos(w0);
     double b2 = -R*R;
-
 
     //отчетов сигнала в периоде импульса
     for(int n=2; n < Nt; n++)

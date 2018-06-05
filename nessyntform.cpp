@@ -1,5 +1,6 @@
 #include "nessyntform.h"
 #include "ui_nessyntform.h"
+#include "nessynth.h"
 
 NesSyntForm::NesSyntForm(QWidget *parent) :
     QDialog(parent),

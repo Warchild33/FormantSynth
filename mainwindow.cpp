@@ -37,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     FormantSyntForm* fwidget = new FormantSyntForm(this);
+    active_synth = &fwidget->synt;
+    active_synth->bEnabled = true;
     ui->tabWidget->insertTab(0,fwidget,QIcon(),"Formant Synt");
     connect(this, SIGNAL(keyPressSig(int)), &fwidget->synt, SLOT(on_key_press(int)));
     connect(this, SIGNAL(keyReleaseSig(int)), &fwidget->synt, SLOT(on_key_release(int)));
@@ -48,6 +50,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     NesSyntForm* nwidget = new NesSyntForm(this);
     ui->tabWidget->insertTab(1,nwidget,QIcon(),"NES Synt");
+    connect(this, SIGNAL(keyPressSig(int)), &nwidget->synt, SLOT(on_key_press(int)));
+    connect(this, SIGNAL(keyReleaseSig(int)), &nwidget->synt, SLOT(on_key_release(int)));
 
     FormantSynthSvg* fwidget2 = new FormantSynthSvg(this);
     ui->tabWidget->insertTab(2,fwidget2,QIcon(),"Formant Synth SVG");
@@ -178,4 +182,25 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
 {
     if( !event->isAutoRepeat() )
       emit keyReleaseSig(event->key());
+}
+
+void MainWindow::on_tabWidget_currentChanged(QWidget *arg1)
+{
+    active_synth->bEnabled = false;
+    if(     (ui->tabWidget->currentIndex() == 0) // Formant
+         || (ui->tabWidget->currentIndex() == 2) )
+    {
+        FormantSyntForm* fwidget = (FormantSyntForm*)ui->tabWidget->widget(0);
+        active_synth = &fwidget->synt;
+        active_synth->bEnabled = true;
+
+    }
+    if( ui->tabWidget->currentIndex() == 1) // Nes
+    {
+        NesSyntForm* fwidget = (NesSyntForm*)arg1;
+        active_synth = &fwidget->synt;
+        active_synth->bEnabled = true;
+
+    }
+
 }
