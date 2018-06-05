@@ -13,40 +13,11 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QRadioButton" name="radioButton_2">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>10</y>
-     <width>93</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&amp;TRIANGLE</string>
-   </property>
-  </widget>
-  <widget class="QRadioButton" name="radioButton">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>10</y>
-     <width>93</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&amp;SQUARE</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>40</y>
+     <y>10</y>
      <width>91</width>
      <height>141</height>
     </rect>
@@ -88,18 +59,47 @@
     </item>
    </layout>
   </widget>
-  <widget class="QRadioButton" name="radioButton_3">
+  <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>150</x>
      <y>10</y>
-     <width>93</width>
-     <height>20</height>
+     <width>125</width>
+     <height>126</height>
     </rect>
    </property>
-   <property name="text">
-    <string>&amp;NOISE</string>
+   <property name="title">
+    <string>GroupBox</string>
    </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QRadioButton" name="NoiseBut">
+      <property name="text">
+       <string>&amp;NOISE</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="triangleButton">
+      <property name="text">
+       <string>&amp;TRIANGLE</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="squareButton">
+      <property name="text">
+       <string>&amp;SQUARE</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

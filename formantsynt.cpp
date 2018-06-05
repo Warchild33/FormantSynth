@@ -75,6 +75,7 @@ Buffer* FormantSynt::play_note(char note, double duration, double velocity)
     float f = freq_table.getFreq(note);
     float k = 1;//f / 80;
     double* x = pulse_gen1(f,48000,duration,&N);
+    //double* x = noise_nes(f,0.5,48000,duration,&N);
     //wavwrite("pulse.wav",data,N*2,48000,1);
     double* y = zeroes(0, N);
     double* y2 = zeroes(0, N);

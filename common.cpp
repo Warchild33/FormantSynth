@@ -18,6 +18,16 @@ double* zeroes(int i1, int i2)
     return x;
 }
 
+std::vector<double> zeroesV(int i1, int i2)
+{
+    std::vector<double> x;
+    x.resize(i2);
+    for(int i=i1; i < i2; i++)
+        x[i] = 0;
+    return x;
+}
+
+
 complex_double** Make2DArray(int arraySizeX, int arraySizeY)
 {
     complex_double** theArray;

@@ -23,8 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     //график waveform
-    p = new Ploter(ui->waveFrame);
-    p->plot->setGeometry(ui->waveFrame->rect());
+    p = new Ploter(0);
+    p->plot->show();
+    //p->plot->setGeometry(ui->waveFrame->rect());
 
     //график spectrum
     //p2 = new Ploter(ui->specFrame);
@@ -55,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     FormantSynthSvg* fwidget2 = new FormantSynthSvg(this);
     ui->tabWidget->insertTab(2,fwidget2,QIcon(),"Formant Synth SVG");
-    ui->tabWidget->setCurrentIndex(2);
     connect(fwidget2, SIGNAL(sigA_but()), fwidget, SLOT(on_Abutton_clicked()));
     connect(fwidget2, SIGNAL(sigE_but()), fwidget, SLOT(on_Ebutton_clicked()));
     connect(fwidget2, SIGNAL(sigI_but()), fwidget, SLOT(on_Ibutton_clicked()));
@@ -64,6 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(keyReleaseSig(int)), fwidget2, SLOT(on_key_release(int)));
     connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), fwidget2, SLOT(on_key_release(int)));
 
+    ui->tabWidget->setCurrentIndex(1);
 
 }
 

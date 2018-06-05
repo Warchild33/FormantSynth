@@ -17,6 +17,22 @@ public:
     ~NesSyntForm();
     NesSynth synt;
 
+private slots:
+
+    void on_squareButton_clicked();
+
+    void on_triangleButton_clicked();
+
+    void on_NoiseBut_clicked();
+
+    void on_radioButton_4_clicked();
+
+    void on_radioButton_5_clicked();
+
+    void on_radioButton_6_clicked();
+
+    void on_radioButton_7_clicked();
+
 private:
     Ui::NesSyntForm *ui;
 };
