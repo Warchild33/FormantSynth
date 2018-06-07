@@ -20,14 +20,6 @@ double* zeroes(int i1, int i2);
 double rem(double x, double y);
 void four1(double data[], int nn, int isign);
 
-complex_double conj(complex_double d)
-{
-    complex_double o;
-    o.re = d.re;
-    o.im = -d.im;
-    return o;
-}
-
 double* istft(complex_double** d, int ftsize, int w=0, int h=0, int rows=0, int cols=0, int* ylen=0)
 {
     // special case: rectangular window
@@ -40,7 +32,7 @@ double* istft(complex_double** d, int ftsize, int w=0, int h=0, int rows=0, int 
            w = w + 1;
         int halflen = (w-1)/2;
         int halff = ftsize/2;     // midpoint of win
-        double* halfwin = (double*)malloc(sizeof(double)*halflen);
+        double* halfwin = new double[(sizeof(double)*halflen)];
         for(int i=0; i < halflen; i++)
            halfwin[i] = 0.5 * ( 1 + cos((double)M_PI * (i)/halflen));
         win = zeroes(0, ftsize);
@@ -63,12 +55,12 @@ double* istft(complex_double** d, int ftsize, int w=0, int h=0, int rows=0, int 
     double* x = zeroes(0,xlen);
     *ylen = xlen;
 
-  complex_double* ft = (complex_double*)malloc(sizeof(complex_double)*rows*2);
-  double* data = (double*)malloc(sizeof(double)*ftsize*2);
+  complex_double* ft = new complex_double[(sizeof(complex_double)*rows*2)];
+  double* data = new double[(sizeof(double)*ftsize*2)];
 
   for(double b=0; b < h*(cols-1); b+=h)
   {
-      for(int i=0; i<2*rows; i++) { ft[i].im = 0; ft[i].re = 0; }
+      for(int i=0; i<2*rows; i++) { ft[i] = std::complex<double>(0,0); }
 
       for(int i=0; i<rows; i++)
             ft[i] = d[i][(int)(b/h)];
@@ -77,13 +69,14 @@ double* istft(complex_double** d, int ftsize, int w=0, int h=0, int rows=0, int 
 
         for(int i=rows; i<2*rows; i++)
         {
-            ft[i] = conj(ft[j--]);
+
+            ft[i] = std::conj(ft[j--]);
         }
         data[0] = 0;
         for(int n=0; n < ftsize; n++)
         {
-          data[2*n+1] = ft[n].re;
-          data[2*n+2] = ft[n].im;
+          data[2*n+1] = ft[n].real();
+          data[2*n+2] = ft[n].imag();
         }
         four1(data,ftsize,-1);
         for(int j=0; j < ftsize; j++)
@@ -91,8 +84,8 @@ double* istft(complex_double** d, int ftsize, int w=0, int h=0, int rows=0, int 
            x[(int)b+j] = x[(int)b+j] + (1./ftsize)*data[2*j+1] * win[j];
         }
   }
-  //free(ft);
-  //free(data);
-  //free(win);
+  delete ft;
+  delete data;
+  delete win;
   return x;
 }

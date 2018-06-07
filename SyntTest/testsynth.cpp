@@ -1,21 +1,26 @@
 #include "gen.h"
 #include "buffer.h"
-#include "nessynth.h"
+#include "testsynth.h"
 #include "envelope.h"
+#include "guitarsynth.h"
 
-NesSynth::NesSynth()
+GuitarSynth* guitar_synt;
+
+TestSynth::TestSynth()
   :Syntezer()
 {
     gen_type = SQUARE;
     gen_type = NOISE;
     percent = 0.5;
+    guitar_synt = new GuitarSynth();
 }
 
-Buffer* NesSynth::play_note(char note, double duration, double velocity)
+Buffer* TestSynth::play_note(char note, double duration, double velocity)
 {
     Buffer* buffer = new Buffer(48000,duration,2);
     //генерация импульсов
-    int N;
+    int N = floor( duration * 48000);
+
     double* x;
     float f = freq_table.getFreq(note);
 
@@ -27,6 +32,13 @@ Buffer* NesSynth::play_note(char note, double duration, double velocity)
 
     if(gen_type == NOISE)
         x = noise_nes(f,percent,48000,duration,&N);
+
+    if(gen_type == NOISE2)
+        x = noise_nes1(f,percent,48000,duration,&N);
+
+    if(gen_type == GUITAR)
+        x = guitar_synt->gen(f,48000,duration);
+
 
     double Amax = (*std::max_element(&x[0],&x[N-1]));    
     normalize(0.1, x, Amax, 48000,duration);

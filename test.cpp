@@ -10,6 +10,7 @@ extern Ploter* p;
 
 Test::Test()
 {
+    startup_tests();
 }
 
 //Pnt spline_kochaken(Pnt P1, Pnt P2, Pnt P3, Pnt P4, float t,
@@ -25,11 +26,11 @@ void Test::startup_tests()
 
 void Test::test_deBoor()
 {
-    double t[] = {0, 0, 0, 1, 2, 3, 3, 3};
-    double c[] = {0, 0, 4, 0, 0};
+    double t[] = {0, 0, 20, 30, 40, 50, 50, 50, 50, 50};
+    double c[] = {0, 0, 500, 0, 0};
     p->clearvals(0);
 
-    for(int k=0; k < 11; k++)
+    for(int k=0; k < 12; k++)
     for(double x=t[k]; x < t[k+1]; x+=0.01)
     {
         double s = deBoor(k, x, t, c, 2);

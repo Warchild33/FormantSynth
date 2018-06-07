@@ -8,6 +8,11 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <QString>
+#include <QFile>
+#include <complex>
+#include "wave_in.h"
+#include "common.h"
 
 #define PI	M_PI	/* pi to machine precision, defined in math.h */
 #define TWOPI	(2.0*PI)
@@ -77,4 +82,43 @@ void four1(double data[], int nn, int isign)
 	}
 	mmax = istep;
     }
+}
+
+
+void write_fft(QString wave_file, QString fft_file)
+{
+    std::vector<short> samples;
+    int sampleRate;
+    short chanels;
+    wavread(wave_file.toStdString().c_str(), samples, sampleRate, chanels);
+
+    int Nfft = 2048*4;
+
+    if( samples.size() > Nfft )
+    {
+        std::vector<double> signalFFT = zeroesV(0, Nfft*2+1);
+        for (int j=0; j<Nfft; j++) signalFFT[2*j+1] = samples[j];
+        four1(&signalFFT[0], Nfft,1);
+        QFile f(fft_file);
+        if( f.open(QFile::Truncate | QFile::WriteOnly) )
+        {
+            f.write((char*)&Nfft, sizeof(int));
+            f.write((char*)&signalFFT[0], signalFFT.size()*sizeof(double));
+            f.close();
+        }
+    }
+
+}
+
+void read_fft(QString filename, int& Nfft, std::vector<std::complex<double> >& signalFFT)
+{
+    QFile f(filename);
+    if( f.open(QFile::ReadOnly) )
+    {
+        f.read((char*)&Nfft, sizeof(int));
+        signalFFT.resize(Nfft+1);
+        f.read((char*)&signalFFT[0], signalFFT.size()*sizeof(double)*2);
+        f.close();
+    }
+
 }

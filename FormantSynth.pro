@@ -13,29 +13,33 @@ TARGET = FormantSynth
 TEMPLATE = app
 
 INCLUDEPATH+=/usr/include/qwt
+INCLUDEPATH+=./dsp
+INCLUDEPATH+=./fft
+INCLUDEPATH+=./Formant
+INCLUDEPATH+=./Guitar
+INCLUDEPATH+=./SyntTest
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    stft.cpp \
-    istft.cpp \
-    pvoc.cpp \
-#    psample.cpp \
-    fft.cpp \
+    fft/stft.cpp \
+    fft/istft.cpp \
+    dsp/pvoc.cpp \
+#    dsp/psample.cpp \
+    fft/fft.cpp \
     wave_in.cpp \
     ploter.cpp \
 #    spectrogram.cpp \
-    gen.cpp \
+    dsp/gen.cpp \
     happybirsday.cpp \
-    filter.cpp \
+    dsp/filter.cpp \
     common.cpp \
     test.cpp \
     envelope.cpp \
     alsadriver.cpp \
     sounddriverdialog.cpp \
-    formantsyntform.cpp \
-    nessyntform.cpp \
+    Formant/formantsyntform.cpp \
     syntezer.cpp \
-    formantsynt.cpp \
+    Formant/formantsynt.cpp \
     pianowidget.cpp \
     freqtable.cpp \
     midinote.cpp \
@@ -43,30 +47,32 @@ SOURCES += main.cpp\
     buffer.cpp \
     notetowaveformthread.cpp \
     svgwidget.cpp \
-    formantsynthsvg.cpp \
+    Formant/formantsynthsvg.cpp \
     svg_path_parser.cpp \
-    mouth.cpp \
-    nessynth.cpp
+    Formant/mouth.cpp \
+    print.cpp \
+    Guitar/guitarsynth.cpp \
+    SyntTest/synttestform.cpp \
+    SyntTest/testsynth.cpp
 
 HEADERS  += mainwindow.h \
-    stft.h \
+    fft/stft.h \
     ploter.h \
     happybirsday.h \
-    gen.h \
-    filter.h \
+    dsp/gen.h \
+    dsp/filter.h \
     common.h \
-    fft.h \
+    fft/fft.h \
     complex.h \
     wave_in.h \
-    pvoc.h \
+    dsp/pvoc.h \
     test.h \
     envelope.h \
     alsadriver.h \
     sounddriverdialog.h \
-    formantsyntform.h \
-    nessyntform.h \
+    Formant/formantsyntform.h \
     syntezer.h \
-    formantsynt.h \
+    Formant/formantsynt.h \
     pianowidget.h \
     freqtable.h \
     midinote.h \
@@ -74,16 +80,20 @@ HEADERS  += mainwindow.h \
     buffer.h \
     notetowaveformthread.h \
     svgwidget.h \
-    formantsynthsvg.h \
+    Formant/formantsynthsvg.h \
     svg_path_parser.h \
-    mouth.h \
-    nessynth.h
+    Formant/mouth.h \
+    print.h \
+    Guitar/guitarsynth.h \
+    SyntTest/synttestform.h \
+    SyntTest/testsynth.h \
+    fft/istft.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \
     sounddriverdialog.ui \
-    formantsyntform.ui \
-    nessyntform.ui
+    Formant/formantsyntform.ui \
+    SyntTest/nessyntform.ui
 
 OTHER_FILES += \
     play_wav.sh \

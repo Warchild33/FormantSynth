@@ -31,15 +31,14 @@ std::vector<double> zeroesV(int i1, int i2)
 complex_double** Make2DArray(int arraySizeX, int arraySizeY)
 {
     complex_double** theArray;
-    theArray = (complex_double**) malloc(arraySizeX*sizeof(complex_double*));
+    theArray =  new complex_double*[(arraySizeX*sizeof(complex_double*))];
     int i,j;
     for (i = 0; i < arraySizeX; i++)
     {
-        theArray[i] = (complex_double*) malloc(arraySizeY*sizeof(complex_double));
+        theArray[i] = new complex_double[(arraySizeY*sizeof(complex_double))];
         for(j=0; j < arraySizeY; j++)
         {
-            theArray[i][j].re = 0;
-            theArray[i][j].im = 0;
+            theArray[i][j] = std::complex<double>(0,0);
         }
     }
     return theArray;

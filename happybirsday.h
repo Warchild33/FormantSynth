@@ -32,12 +32,12 @@ public:
     bool           isPlaying;
     QElapsedTimer  timer;
     FreqTable freq_table;
-    FormantSynt* synt;
+    Syntezer* synt;
     std::vector<Notestruct>* song;
     QProgressBar*            progress_bar;
 
     Happybirsday();
-    void set_synth(FormantSynt* s);
+    void set_synth(Syntezer* s);
     void generate_wave_file(std::vector<Notestruct>& song, QProgressBar* progress_bar);
     std::vector<Notestruct> parse_hb_notes(QString file);
     void parse_notes_table(QString file); // creates note2fre table

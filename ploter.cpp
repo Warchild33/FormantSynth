@@ -89,6 +89,7 @@ Ploter::Ploter(QWidget* parent)
     //plot->setMarkerYPos(mY, 0.0);
     //long mX = plot->insertLineMarker("x = 2 pi", QwtPlot::xBottom);
     //plot->setMarkerXPos(mX, 6.284);
+    d_curves[1]->setStyle(QwtPlotCurve::Dots);
 
 
 }

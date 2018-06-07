@@ -2,22 +2,27 @@
 #define NESSYNTFORM_H
 
 #include <QDialog>
-#include "nessynth.h"
+#include "testsynth.h"
+#include "happybirsday.h"
 
 namespace Ui {
 class NesSyntForm;
 }
 
-class NesSyntForm : public QDialog
+class SyntTestForm : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit NesSyntForm(QWidget *parent = 0);
-    ~NesSyntForm();
-    NesSynth synt;
-
+    explicit SyntTestForm(QWidget *parent = 0);
+    ~SyntTestForm();
+    TestSynth*    synt;
+    Happybirsday* hb_song;
+    Ui::NesSyntForm *ui;
+    bool isPlaying;
 private slots:
+
+    void print(QString s);
 
     void on_squareButton_clicked();
 
@@ -33,8 +38,16 @@ private slots:
 
     void on_radioButton_7_clicked();
 
+    void on_squareButton_2_clicked();
+
+    void on_pushButton_clicked();
+
+    void on_squareButton_3_clicked();
+
+    void on_hbSongButton_clicked();
+
 private:
-    Ui::NesSyntForm *ui;
+
 };
 
 #endif // NESSYNTFORM_H

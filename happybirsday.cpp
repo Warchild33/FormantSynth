@@ -89,7 +89,8 @@ void Happybirsday::timerEvent(QTimerEvent *)
             if((t_start - t) < 0.2)
             {
                 Buffer* buf = new Buffer(48000, t_end-t_start, 2);
-                generate_voice(f, 0, t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, &buf->samples);
+                //generate_voice(f, 0, t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, &buf->samples);
+                synt->play_note((*ns).note,t_end-t_start,1);
                 progress_bar->setValue(((float)n_note/song->size()) * 100);
                 (*ns).isPlayed = true;
                 synt->out_buffer(buf);
@@ -162,7 +163,7 @@ void generate_voice(double f,int sample_offset, double duration, double F1, doub
 
 
 
-void Happybirsday::set_synth(FormantSynt* s)
+void Happybirsday::set_synth(Syntezer* s)
 {
     synt = s;
 }

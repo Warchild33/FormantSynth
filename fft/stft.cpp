@@ -32,7 +32,7 @@ complex_double** stft(double x[], int Nt, double f=256, double w=256, double h=0
            w = w + 1;
         int halflen = (w-1)/2;
         int halff = f/2;     // midpoint of win
-        double* halfwin = (double*)malloc(sizeof(double)*halflen);
+        double* halfwin = new double[sizeof(double)*halflen];
         for(int i=0; i < halflen; i++)
            halfwin[i] = 0.5 * ( 1 + cos((double)M_PI * (i)/halflen));
         win = zeroes(0, f);
@@ -57,8 +57,8 @@ complex_double** stft(double x[], int Nt, double f=256, double w=256, double h=0
     // pre-allocate output array
     d = Make2DArray((1+f/2),1+floor((s-f)/h));
 
-   double* u = (double*)malloc(sizeof(double)*f);
-   double* data = (double*)malloc(sizeof(double)*f*2);
+   double* u = new double[(int)f*sizeof(double)];
+   double* data = new double[sizeof(double)*(int)f*2];
 
    int c = 0;
    *rows = 0;
@@ -80,16 +80,18 @@ complex_double** stft(double x[], int Nt, double f=256, double w=256, double h=0
        four1(data,f,1);
        for(int j=0; j < f/2; j++)
        {
-         d[j][c].re = data[2*j+1];
-         d[j][c].im = data[2*j+2];
+           d[j][c] = std::complex<double>(data[2*j+1], data[2*j+2]);
        }
        c = c + 1;
    }
    *cols = c;
    *rows = f/2;
 
-   //free(win);
-   //free(data);
-   //free(u);
+   delete [] win;
+   delete [] data;
+   delete [] u;
    return d;
 }
+
+
+

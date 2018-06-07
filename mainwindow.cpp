@@ -5,7 +5,8 @@
 #include "formantsyntform.h"
 #include "sounddriverdialog.h"
 #include "formantsynthsvg.h"
-#include "nessyntform.h"
+#include "synttestform.h"
+#include "ui_nessyntform.h"
 #include <QKeyEvent>
 
 Ploter* p;
@@ -22,16 +23,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //график waveform
-    p = new Ploter(0);
-    p->plot->show();
+
     //p->plot->setGeometry(ui->waveFrame->rect());
 
     //график spectrum
     //p2 = new Ploter(ui->specFrame);
     //p2->plot->setGeometry(ui->specFrame->rect());
 
-    Test test;
+
 
     input_file = "oh-yeah-everything-is-fine.wav";
     connect(ui->actionSound_driver, SIGNAL(triggered(bool)), this, SLOT(on_sound_Settings()));
@@ -48,11 +47,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pianoWidget, SIGNAL(sigMouseKeyDown(int)), &fwidget->synt, SLOT(on_key_press(int)));
     connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), &fwidget->synt, SLOT(on_key_release(int)));
 
+    //график waveform
+    p = new Ploter(0);
 
-    NesSyntForm* nwidget = new NesSyntForm(this);
-    ui->tabWidget->insertTab(1,nwidget,QIcon(),"NES Synt");
-    connect(this, SIGNAL(keyPressSig(int)), &nwidget->synt, SLOT(on_key_press(int)));
-    connect(this, SIGNAL(keyReleaseSig(int)), &nwidget->synt, SLOT(on_key_release(int)));
+    SyntTestForm* nwidget = new SyntTestForm(this);
+    ui->tabWidget->insertTab(1,nwidget,QIcon(),"Synt Test");
+    connect(this, SIGNAL(keyPressSig(int)), nwidget->synt, SLOT(on_key_press(int)));
+    connect(this, SIGNAL(keyReleaseSig(int)), nwidget->synt, SLOT(on_key_release(int)));
+    connect(ui->pianoWidget, SIGNAL(sigMouseKeyDown(int)),  nwidget->synt, SLOT(on_key_press(int)));
+    connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), nwidget->synt, SLOT(on_key_release(int)));
+
+    p->plot->setParent(nwidget->ui->plotFrame);
+    p->plot->setGeometry(nwidget->ui->plotFrame->rect());
+    p->plot->show();
+
 
     FormantSynthSvg* fwidget2 = new FormantSynthSvg(this);
     ui->tabWidget->insertTab(2,fwidget2,QIcon(),"Formant Synth SVG");
@@ -65,6 +73,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), fwidget2, SLOT(on_key_release(int)));
 
     ui->tabWidget->setCurrentIndex(1);
+
+    Test test;
 
 }
 
@@ -198,8 +208,8 @@ void MainWindow::on_tabWidget_currentChanged(QWidget *arg1)
     }
     if( ui->tabWidget->currentIndex() == 1) // Nes
     {
-        NesSyntForm* fwidget = (NesSyntForm*)arg1;
-        active_synth = &fwidget->synt;
+        SyntTestForm* fwidget = (SyntTestForm*)arg1;
+        active_synth = fwidget->synt;
         active_synth->bEnabled = true;
 
     }
