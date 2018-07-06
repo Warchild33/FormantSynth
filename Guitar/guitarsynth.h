@@ -9,6 +9,8 @@ class String
 public:
     String();
     String(QString name, double f, QString wave_file);
+    void SaveStft(QString filename);
+    void LoadStft(QString filename);
     double* gen(double f, double time);
 
     double  Fs;

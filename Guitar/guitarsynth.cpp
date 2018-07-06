@@ -1,3 +1,5 @@
+#include <fstream>
+#include <QFile>
 #include "wave_in.h"
 #include "ploter.h"
 #include "guitarsynth.h"
@@ -6,6 +8,19 @@
 #include "istft.h"
 
 extern Ploter* p;
+
+GuitarSynth::GuitarSynth()
+{
+    //return; // ! TEMPORARY !
+    strings[0] = new String("E", 82.4,    "./wave/E_guitar.wav");
+    strings[1] = new String("B", 110,     "./wave/B_guitar.wav");
+    strings[2] = new String("G", 146.83,  "./wave/G_guitar.wav");
+    strings[3] = new String("D", 195.99,  "./wave/D_guitar.wav");
+    strings[4] = new String("A", 246.94,  "./wave/A_guitar.wav");
+    strings[5] = new String("E", 329.627, "./wave/e_guitar.wav");
+
+}
+
 
 String::String(QString name, double f, QString wave_file)
     : name(name), Fs(f)
@@ -22,22 +37,46 @@ String::String(QString name, double f, QString wave_file)
         x.push_back((double)samples[2*i]/32768);
 
     Nfft = 32768/4;
-    fourie_samples = stft(&x[0], x.size(),Nfft,Nfft,floor(Nfft/4),sampleRate,&rows,&cols);
+    QString stft_file = wave_file.mid(0,wave_file.size()-3) + "stft";
+    QFile file(stft_file);
+    if( file.exists() )
+      LoadStft( stft_file );
+    else
+    {
+        fourie_samples = stft(&x[0], x.size(),Nfft,Nfft,floor(Nfft/4),sampleRate,&rows,&cols);
+        SaveStft( stft_file );
+    }
+
     d = Make2DArray(rows, cols);
     prn("Make stft rows=%d cols=%d",rows,cols);
 
 }
 
-GuitarSynth::GuitarSynth()
-{   
-    strings[0] = new String("E", 82.4,    "./wave/E_guitar.wav");
-    strings[1] = new String("B", 110,     "./wave/B_guitar.wav");
-    strings[2] = new String("G", 146.83,  "./wave/G_guitar.wav");
-    strings[3] = new String("D", 195.99,  "./wave/D_guitar.wav");
-    strings[4] = new String("A", 246.94,  "./wave/A_guitar.wav");
-    strings[5] = new String("E", 329.627, "./wave/e_guitar.wav");
-
+void String::SaveStft(QString filename)
+{
+     std::ofstream stream(filename.toStdString(), std::ios::binary);
+     stream.write((const char*)&rows, sizeof(rows));
+     stream.write((const char*)&cols, sizeof(cols));
+     for(int col=0; col < cols; col++)
+     for(int i=0; i < rows; i++)
+     {
+         stream.write((const char*)&fourie_samples[i][col], sizeof(complex_double));
+     }
 }
+
+void String::LoadStft(QString filename)
+{
+     std::ifstream stream(filename.toStdString(), std::ios::binary);
+     stream.read((char*)&rows, sizeof(rows));
+     stream.read((char*)&cols, sizeof(cols));
+     fourie_samples = Make2DArray(rows, cols);
+     for(int col=0; col < cols; col++)
+     for(int i=0; i < rows; i++)
+     {
+         stream.read((char*)&fourie_samples[i][col], sizeof(complex_double));
+     }
+}
+
 
 void draw_fft_frame(int plot, int n_cols, int n_rows, complex_double** d)
 {
