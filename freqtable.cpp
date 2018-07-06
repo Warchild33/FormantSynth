@@ -24,6 +24,16 @@ QString FreqTable::getOctaveFromNoteName(QString name, char& octave)
     return name;
 }
 
+MidiNote FreqTable::getNoteByName(QString note_name)
+{
+    MidiNote note;
+    if( note_table.find(note_name)!=note_table.end())
+    {
+        return note_table[note_name];
+    }
+    return note;
+}
+
 void FreqTable::parse_fields(int field, int octave, QStringList parts, QString name)
 {
     int n1 = parts[field].toInt();

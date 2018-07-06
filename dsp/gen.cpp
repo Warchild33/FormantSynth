@@ -291,8 +291,8 @@ double* noise_nes1(double f_oc=800, double percent=0.75, double SampleRate=48000
     double df = (2*SampleRate / (Nfft));
     int i_f = f_oc / df;
     prn("i_f=%d", i_f);
-    test_deBoor(i_f, 12000, deBourFFT);
-    //deBourFFT[i_f*4] = 10e9;
+    //test_deBoor(i_f, 12000, deBourFFT);
+    deBourFFT[i_f*4] = 10e9;
     mirror_spec(deBourFFT);
 
     QwtSymbol *sym=new QwtSymbol(QwtSymbol::Diamond,QBrush(Qt::red),QPen(Qt::red),QSize(5,5));

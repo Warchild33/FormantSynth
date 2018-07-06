@@ -6,6 +6,7 @@
 #include "fft.h"
 #include "common.h"
 #include "wave_in.h"
+#include "freqtable.h"
 
 static QSettings settings("./settings/settings.ini", QSettings::IniFormat);
 
@@ -99,4 +100,71 @@ void SyntTestForm::on_hbSongButton_clicked()
         delete hb_song;
     }
     isPlaying = !isPlaying;
+}
+
+std::vector<int> gen_cyclic_group(int i)
+{
+    std::vector<int> g;
+
+    g.push_back(i);
+    g.push_back(i);
+
+    int j=1;
+    int val=1;
+    while(val!=0)
+    {
+        val = (g[j-1] + g[j]) % 6 ;
+        g.push_back( val );
+        j++;
+    }
+    return g;
+}
+
+void generate_music(std::vector<Notestruct>& notes)
+{
+    const int N_NOTES = 50;
+    const int N_GROUPS = 50;
+
+    FreqTable  freq_table;
+    MidiNote c4 = freq_table.getNoteByName("C4");
+    char startNote = c4.note;
+
+    float dt[] = {1, 1./2, 1./4, 1./8, 1./16};
+    float t = 0;
+    for(int i=0; i < N_GROUPS; i++)
+    {
+        std::vector<int> g = gen_cyclic_group(rand()%7);
+        for(auto n=g.begin(); n!=g.end(); n++)
+        {
+            Notestruct note;
+            note.note = startNote + *n;
+            note.t_start = t;
+            note.t_end = t + dt[rand()%4]*0.1;
+            t = note.t_end + dt[rand()%4]*0.1;
+            notes.push_back(note);
+        }
+    }
+}
+
+void SyntTestForm::on_musicGeneratorBN_clicked()
+{
+    //synt.alsa->close();
+    if( !isPlaying)
+    {
+        hb_song = new Happybirsday();
+        hb_song->set_synth(synt);
+        std::vector<Notestruct>* notes = new std::vector<Notestruct>();
+        generate_music(*notes);
+        settings.setValue("multiple_voice",1);
+        hb_song->Play(notes, ui->progressBar);
+        ui->musicGeneratorBN->setText("Stop");
+    }
+    else
+    {
+        ui->musicGeneratorBN->setText("Music generator");
+        hb_song->Stop();
+        delete hb_song;
+    }
+    isPlaying = !isPlaying;
+
 }

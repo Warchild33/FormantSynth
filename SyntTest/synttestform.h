@@ -46,6 +46,8 @@ private slots:
 
     void on_hbSongButton_clicked();
 
+    void on_musicGeneratorBN_clicked();
+
 private:
 
 };
