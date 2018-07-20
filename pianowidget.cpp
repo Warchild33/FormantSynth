@@ -130,6 +130,7 @@ void PianoWidget::create_table()
 void PianoWidget::mousePressEvent(QMouseEvent* event)
 {
     fprintf(stderr,"pixel %d %d\n", event->pos().x(), event->pos().y());
+    setFocus();
     QPointF mouse = mapToViewbox(event->pos(), viewbox);
     for(auto key=piano_keys.begin(); key!=piano_keys.end(); key++)
        (*key).second.on = false;

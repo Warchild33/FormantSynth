@@ -138,7 +138,7 @@ void generate_voice(double f,int sample_offset, double duration, double F1, doub
     }
     for(int i=0; i<N; i++)
     {
-       y[i] = (y[i]+y2[i]+y3[i])*6;
+       y[i] = (y[i]+y2[i]+y3[i]);
     }
 
     double Amax = (*std::max_element(&y[0],&y[N-1]));

@@ -168,3 +168,17 @@ void SyntTestForm::on_musicGeneratorBN_clicked()
     isPlaying = !isPlaying;
 
 }
+
+void parseFrac(QString str, int& numerator, int& denominator)
+{
+    QStringList parts = str.split("/");
+    numerator = parts[0].toDouble();
+    denominator = parts[1].toDouble();
+}
+
+void SyntTestForm::on_ratio_textChanged()
+{
+    int numerator, denominator;
+    parseFrac(ui->ratio->toPlainText(), numerator, denominator);
+    synt->ratio = (double)numerator / (double)denominator;
+}

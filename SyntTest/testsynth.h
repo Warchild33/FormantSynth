@@ -3,7 +3,7 @@
 
 #include "syntezer.h"
 
-enum Gen_type {SQUARE, TRIANGLE, NOISE, NOISE2, GUITAR};
+enum Gen_type {SQUARE, TRIANGLE, NOISE, NOISE2, FM, GUITAR};
 
 class TestSynth : public Syntezer
 {
@@ -11,6 +11,7 @@ class TestSynth : public Syntezer
 public:
     Gen_type gen_type;
     double   percent;
+    double   ratio;
     TestSynth();
 
     Buffer* play_note(char note, double duration, double velocity);

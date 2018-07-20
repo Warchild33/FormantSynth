@@ -48,6 +48,8 @@ private slots:
 
     void on_musicGeneratorBN_clicked();
 
+    void on_ratio_textChanged();
+
 private:
 
 };
