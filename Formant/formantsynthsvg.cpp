@@ -2,6 +2,8 @@
 //#include <QtMath>
 #include "formantsynthsvg.h"
 #include <QSettings>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 static QSettings settings("./settings/settings.ini", QSettings::IniFormat);
 

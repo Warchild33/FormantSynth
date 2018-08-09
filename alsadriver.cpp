@@ -6,21 +6,44 @@
 #include "alsadriver.h"
 
 static QSettings settings("./settings/settings.ini", QSettings::IniFormat);
+//snd_pcm_t* AlsaDriver::playback_handle = 0;
+//snd_pcm_hw_params_t* AlsaDriver::hw_params=0;
 
 AlsaDriver::AlsaDriver()
 {
-    playback_handle = 0;
+    //playback_handle = 0;
     bExitThread = false;
     parent = 0;
     Nthreads = 8;
+    if(playback_handle != 0)
+    {
+        createThreads((char*)settings.value("alsa_device").toString().toStdString().c_str());
+    }
 }
 
 AlsaDriver::AlsaDriver(AlsaDriver* parent)
     : parent(parent)
 {
-    playback_handle = 0;
+    //playback_handle = 0;
     bExitThread = false;
     Nthreads = 0;
+}
+
+void AlsaDriver::createThreads(char* device_name)
+{
+    if(QString(device_name) == "plug:dmix")
+    {
+        if(parent == 0)
+        {
+            for(int i=0; i < Nthreads; i++)
+            {
+                AlsaDriver* alsa_thread = new AlsaDriver(this);
+                alsa_threads.push_back(alsa_thread);
+                alsa_thread->start();
+
+            }
+        }
+    }
 }
 
 int AlsaDriver::open(char* device_name)
@@ -30,7 +53,8 @@ int AlsaDriver::open(char* device_name)
     short buf[128];
 
     this->device_name = device_name;
-    if ((err = snd_pcm_open(&playback_handle, device_name, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+
+    if ((err = snd_pcm_open(&playback_handle, device_name, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK)) < 0) {
         fprintf (stderr, "cannot open audio device %s (%s)\n",
              device_name,
              snd_strerror (err));
@@ -117,19 +141,7 @@ int AlsaDriver::open(char* device_name)
     }
     fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
 
-    if(QString(device_name) == "plug:dmix")
-    {
-        if(parent == 0)
-        {
-            for(int i=0; i < Nthreads; i++)
-            {
-                AlsaDriver* alsa_thread = new AlsaDriver(this);
-                alsa_threads.push_back(alsa_thread);
-                alsa_thread->start();
-
-            }
-        }
-    }
+    createThreads(device_name);
 
     return 1;
 }
@@ -174,16 +186,18 @@ void AlsaDriver::out_buffer(Buffer* buf)
 {
     if(device_name!="plug:dmix")
     {
-      drop_pcm_frames();
+      //drop_pcm_frames();
       out_pcm(&buf->samples[0], buf->samples.size()/2);
       return;
     }
 
+    int cnt = 0;
     //for(int i=0; i < Nthreads; i++)
-    for(auto t = alsa_threads.begin(); t!=alsa_threads.end(); t++)
+    for(auto t = alsa_threads.begin(); t!=alsa_threads.end(); t++,cnt++)
     {
         if ((*t)->quenue.size() == 0)
         {
+            fprintf(stderr,"write to thread %d\n", cnt);
             (*t)->quenue.push_back(buf);
             (*t)->waitCondition.wakeAll();
             break;
@@ -206,9 +220,9 @@ void AlsaDriver::run()
     while(1)
     {
         bool multiple_voice = settings.value("multiple_voice").toBool();
-        set_nonblock(!multiple_voice);
+        //set_nonblock(!multiple_voice);
         if( multiple_voice )
-            blockingLoop();
+            nonBlockingLoop();//blockingLoop();
         else
             nonBlockingLoop();
         if( bExitThread )

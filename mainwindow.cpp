@@ -197,6 +197,12 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
 
 void MainWindow::on_tabWidget_currentChanged(QWidget *arg1)
 {
+
+
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
     active_synth->bEnabled = false;
     if(     (ui->tabWidget->currentIndex() == 0) // Formant
          || (ui->tabWidget->currentIndex() == 2) )
@@ -208,10 +214,9 @@ void MainWindow::on_tabWidget_currentChanged(QWidget *arg1)
     }
     if( ui->tabWidget->currentIndex() == 1) // Nes
     {
-        SyntTestForm* fwidget = (SyntTestForm*)arg1;
+        SyntTestForm* fwidget = (SyntTestForm*)ui->tabWidget->widget(index);
         active_synth = fwidget->synt;
         active_synth->bEnabled = true;
 
     }
-
 }

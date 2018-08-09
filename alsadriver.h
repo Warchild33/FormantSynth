@@ -31,6 +31,8 @@ public:
     std::vector<Buffer*>      quenue;
     QWaitCondition            waitCondition;
     QMutex                    mutex;
+    void createThreads(char* device_name);
+
 private:
 
 

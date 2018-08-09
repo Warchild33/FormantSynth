@@ -1,4 +1,5 @@
 #include <fstream>
+#include <random>
 #include <QFile>
 #include "wave_in.h"
 #include "ploter.h"
@@ -11,7 +12,7 @@ extern Ploter* p;
 
 GuitarSynth::GuitarSynth()
 {
-    return; // ! TEMPORARY !
+    //return; // ! TEMPORARY !
     strings[0] = new String("E", 82.4,    "./wave/E_guitar.wav");
     strings[1] = new String("B", 110,     "./wave/B_guitar.wav");
     strings[2] = new String("G", 146.83,  "./wave/G_guitar.wav");

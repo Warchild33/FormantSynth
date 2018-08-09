@@ -3,6 +3,7 @@
 #include "testsynth.h"
 #include "envelope.h"
 #include "guitarsynth.h"
+#include "wave_in.h"
 
 GuitarSynth* guitar_synt;
 
@@ -52,6 +53,7 @@ Buffer* TestSynth::play_note(char note, double duration, double velocity)
         buffer->samples[i*2] = sample;
         buffer->samples[i*2+1] = sample;
     }
+   // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
 
     delete [] x;
     buffer->note = note;

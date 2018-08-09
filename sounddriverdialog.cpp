@@ -44,6 +44,7 @@ void SoundDriverDialog::listdev()
          QString line;
          QTextStream stream(&f);
          ui->comboBox->clear();
+         ui->comboBox->addItem("hw:0,0");
          while( !stream.atEnd() )
          {
              QString line = stream.readLine();

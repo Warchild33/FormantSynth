@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include "freqtable.h"
+#include "buffer.h"
 #include "formantsynt.h"
 #include "alsadriver.h"
 
@@ -18,11 +19,13 @@ struct Notestruct
     Notestruct()
     {
         isPlayed = false;
+        buf = 0;
     }
     char note;
     float t_start;
     float t_end;
     bool  isPlayed;
+    Buffer* buf;
 };
 
 class Happybirsday : public QObject

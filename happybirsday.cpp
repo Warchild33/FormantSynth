@@ -86,15 +86,30 @@ void Happybirsday::timerEvent(QTimerEvent *)
             float t_start = (*ns).t_start;
             float t_end = (*ns).t_end;
             if((*ns).isPlayed == false)
-            if((t_start - t) < 0.2)
             {
-                Buffer* buf = new Buffer(48000, t_end-t_start, 2);
-                //generate_voice(f, 0, t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, &buf->samples);
-                synt->play_note((*ns).note,t_end-t_start,1);
-                progress_bar->setValue(((float)n_note/song->size()) * 100);
-                (*ns).isPlayed = true;
-                synt->out_buffer(buf);
+                if((t_start - t) < 0.2)
+                {
+                    (*ns).isPlayed = true;
+                    Buffer* buf = new Buffer(48000, t_end-t_start, 2);
+                    //generate_voice(f, 0, t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, &buf->samples);
+                    synt->play_note((*ns).note,t_end-t_start,1);
+                    fprintf(stderr,"===========>>> play_note %d\n",(*ns).note);
+                    (*ns).buf = buf;
+                    progress_bar->setValue(((float)n_note/song->size()) * 100);
+
+                    //synt->out_buffer(buf);
+                }
             }
+            else
+            {
+//                if((t_end - t) < 0.2)
+//                {
+//                    if((*ns).buf)
+//                        (*ns).buf->timeEnd = QTime::currentTime();
+//                }
+
+            }
+
 
         }
     }

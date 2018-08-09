@@ -28,6 +28,8 @@ private slots:
 
     void on_tabWidget_currentChanged(QWidget *arg1);
 
+    void on_tabWidget_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     Syntezer* active_synth;

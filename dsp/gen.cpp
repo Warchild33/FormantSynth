@@ -122,10 +122,10 @@ void abs_signal(std::vector<double>& signal)
     }
 }
 
-void test_deBoor(int i_fc, int max, std::vector<double>& deBourFFT)
+void test_deBoor(double i_fc, int max, std::vector<double>& deBourFFT)
 {
     double t[] = {0, 0, i_fc-10.0, i_fc-3.0, i_fc, i_fc+7.0, i_fc+7.0, i_fc+7.0, i_fc+7.0, i_fc+7.0};
-    double c[] = {0, 0, max/2, 0, 0};
+    double c[] = {0, 0, (double)max/2, 0, 0};
     p->clearvals(0);
 
     for(int k=0; k < 12; k++)
