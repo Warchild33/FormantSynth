@@ -50,6 +50,8 @@ private slots:
 
     void on_ratio_textChanged();
 
+    void on_squareButton_4_clicked();
+
 private:
 
 };

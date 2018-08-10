@@ -182,3 +182,8 @@ void SyntTestForm::on_ratio_textChanged()
     parseFrac(ui->ratio->toPlainText(), numerator, denominator);
     synt->ratio = (double)numerator / (double)denominator;
 }
+
+void SyntTestForm::on_squareButton_4_clicked()
+{
+    synt->gen_type = FM;
+}
