@@ -256,23 +256,34 @@ double* test_fm(double f_oc=800, double ratio=0.75, double SampleRate=48000, dou
     //отчетов сигнала в периоде импульса
     int Nt = SampleRate / f_oc;
     double* x = zeroes(0, floor(time*SampleRate));
-    double* y = tri_nes(f_oc * ratio,0.75,SampleRate,time,N);
+    //double* y = tri_nes(f_oc * ratio,0.75,SampleRate,time,N);
 
     double t = 0;
     double dt = 1. / SampleRate;
     double phase = d(gen);
+    double alfa, beta;
+    ratio = 0.75;
+    alfa = 2 * M_PI * f_oc;
+    beta = 2 * M_PI * f_oc * ratio;
+    double J[] = {1,1,1.5,1}; // http://www.sfu.ca/~truax/Frequency_Modulation.html
     for(int n=0; n < floor(time*SampleRate); n++)
     {
         //x[n] = 0;
-        double OP1 = sin(( 2 * M_PI * f_oc * ratio)*t);
-        double OP2 = y[n];
-        x[n]+= sin((2*M_PI*(f_oc))*t + OP1); //+ d(gen) ;
+        double OP1 = J[0]*sin(alfa*t);
+        double OP2 = J[1]*(sin((alfa+beta)*t) - sin((alfa-beta)*t));
+        double OP3 = J[2]*(sin((alfa+2*beta)*t) + sin((alfa-2*beta)*t));
+        double OP4 = J[3]*(sin((alfa+3*beta)*t) - sin((alfa-3*beta)*t));
+        double OP5 = J[3]*(sin((alfa+4*beta)*t) + sin((alfa-4*beta)*t));
+
+        x[n]+= OP1 + OP2 + OP3 + OP4 + OP5; //+ d(gen) ;
         t+=dt;
         //x[n]+= 0.3*sin((2*M_PI/(f_oc-50))*n);
         //x[n] *= d(gen);
         //
-        //p->setXY(0, n, x[n]);
+        if(n < 1000)
+        p->setXY(0, n, x[n]);
     }
+     p->update_data();
     if(N)
       *N = floor(time*SampleRate);
     return x;
