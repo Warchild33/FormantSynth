@@ -261,35 +261,81 @@ double* test_fm(double f_oc=800, double ratio=0.75, double SampleRate=48000, dou
     double t = 0;
     double dt = 1. / SampleRate;
     double phase = d(gen);
-    double alfa, beta;
-    ratio = 0.75;
-    alfa = 2 * M_PI * f_oc;
-    beta = 2 * M_PI * f_oc * ratio;
-    double J[] = {1,1,1.5,1}; // http://www.sfu.ca/~truax/Frequency_Modulation.html
+    double fm1, fm2;
+    double A = 0.1;
+    double S = f_oc / 200;
+    fm1 = f_oc;
+    fm2 = 4 * f_oc;
+    double I1, I2;
+    I1 = 17 * ( 8 - log(f_oc)) / (log(f_oc)*log(f_oc));
+    I2 = 20 * ( 8 - log(f_oc)) / f_oc;
     for(int n=0; n < floor(time*SampleRate); n++)
     {
         //x[n] = 0;
-        double OP1 = J[0]*sin(alfa*t);
-        double OP2 = J[1]*(sin((alfa+beta)*t) - sin((alfa-beta)*t));
-        double OP3 = J[2]*(sin((alfa+2*beta)*t) + sin((alfa-2*beta)*t));
-        double OP4 = J[3]*(sin((alfa+3*beta)*t) - sin((alfa-3*beta)*t));
-        double OP5 = J[3]*(sin((alfa+4*beta)*t) + sin((alfa-4*beta)*t));
 
-        x[n]+= OP1 + OP2 + OP3 + OP4 + OP5; //+ d(gen) ;
+        A = A * exp(-2 * 0.001 * t);
+        x[n]+= A * sin(2 * M_PI * f_oc * t + I1*sin( 2 * M_PI * (fm1 + S) * t ) + I2*sin(2 * M_PI * (fm2 + S) * t)  );
         t+=dt;
         //x[n]+= 0.3*sin((2*M_PI/(f_oc-50))*n);
         //x[n] *= d(gen);
         //
-        if(n < 1000)
-        p->setXY(0, n, x[n]);
+        //if(n < 1000)
+        //p->setXY(0, A, t);
     }
-     p->update_data();
+     p->autoscale = true;
+     //p->update_data();
     if(N)
       *N = floor(time*SampleRate);
     return x;
 }
 
+double* test_fm2(double f_oc=800, double ratio=0.75, double SampleRate=48000, double time=2, int* N=0)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<> d(0.2,0.25);
 
+    prn("f_oc=%f Hz", f_oc);
+    p->clearvals(1);
+
+    //отчетов сигнала в периоде импульса
+    int Nt = SampleRate / f_oc;
+    double* x = zeroes(0, floor(time*SampleRate));
+    //double* y = tri_nes(f_oc * ratio,0.75,SampleRate,time,N);
+
+    double t = 0;
+    double dt = 1. / SampleRate;
+    double phase = d(gen);
+    double fm1, fm2, fm3;
+    double A = 0.1;
+    double S = 0;//f_oc / 200;
+    fm1 = f_oc;
+    fm2 = 3*f_oc;
+    fm3 = 4*f_oc;
+    double I1, I2, I3, I4;
+    I1 = 7.5 / log(f_oc);
+    I2 = (8.5 - log(f_oc) / (3 + (f_oc/1000)));
+    I3 = 1.25 / sqrt(f_oc);
+    I4 = 10*(8.5 - log(f_oc)) / f_oc;
+    for(int n=0; n < floor(time*SampleRate); n++)
+    {
+        //x[n] = 0;
+
+        x[n]+= A * sin(2 * M_PI * f_oc * t + I2*sin( 2 * M_PI * (fm1 + S) * t )
+                                           + I3*sin(2 * M_PI * (fm2 + S) * t)
+                                           + I4*sin(2 * M_PI * (fm3 + S) * t) );
+        t+=dt;
+        //x[n]+= 0.3*sin((2*M_PI/(f_oc-50))*n);
+        //x[n] *= d(gen);
+        //
+        //if(n < 1000)
+       // p->setXY(0, n, x[n]);
+    }
+     //p->update_data();
+    if(N)
+      *N = floor(time*SampleRate);
+    return x;
+}
 double* noise_nes1(double f_oc=800, double percent=0.75, double SampleRate=48000, double time=2, int* N=0)
 {
     std::random_device rd;
