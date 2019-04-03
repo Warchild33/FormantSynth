@@ -92,3 +92,23 @@ void FM_Dialog::on_f6_valueChanged(double arg1)
 {
     synt->gui_params.f[6] = ui->f6->value();
 }
+
+void FM_Dialog::on_I5_valueChanged(double arg1)
+{
+    synt->gui_params.I[5] = arg1;
+}
+
+void FM_Dialog::on_I3_valueChanged(double arg1)
+{
+    synt->gui_params.I[3] = arg1;
+}
+
+void FM_Dialog::on_I4_valueChanged(double arg1)
+{
+    synt->gui_params.I[4] = arg1;
+}
+
+void FM_Dialog::on_I6_valueChanged(double arg1)
+{
+    synt->gui_params.I[6] = arg1;
+}

@@ -41,6 +41,14 @@ private slots:
 
     void on_f6_valueChanged(double arg1);
 
+    void on_I5_valueChanged(double arg1);
+
+    void on_I3_valueChanged(double arg1);
+
+    void on_I4_valueChanged(double arg1);
+
+    void on_I6_valueChanged(double arg1);
+
 private:
 
 };

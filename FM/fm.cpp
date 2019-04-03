@@ -139,10 +139,10 @@ double FMSynth::algo19(FmParams* p, double t, int n)
 
    // qDebug() << d[6];
 
-    double ev = Evenlope(p, t);
+    double ev = 1; Evenlope(p, t);
     p->out[6] = ev * p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + d[6]*p->out[6]);
     p->out[4] = ev * p->I[4] * sin( 2 * M_PI * (p->f[4]) * t + d[4]*p->out[6]);
-    p->out[5] = ev * p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + d[5]*p->out[6]);
+    p->out[5] = p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + d[5]*p->out[6]);
     p->out[3] = p->I[3] * sin( 2 * M_PI * p->f[3] * t );
     p->out[2] = p->I[2] * sin( 2 * M_PI * p->f[2] * t + p->out[3] ) ;
     p->out[1] = p->I[1] * sin( 2 * M_PI * p->f[1] * t + p->out[2]);
