@@ -269,6 +269,9 @@ double* test_fm(double f_oc=800, double ratio=0.75, double SampleRate=48000, dou
     double I1, I2;
     I1 = 17 * ( 8 - log(f_oc)) / (log(f_oc)*log(f_oc));
     I2 = 20 * ( 8 - log(f_oc)) / f_oc;
+    double T;
+    T = 10 * sqrt(0.1) / sqrt(f_oc);
+    qDebug() << "T=" << T;
     for(int n=0; n < floor(time*SampleRate); n++)
     {
         //x[n] = 0;
@@ -280,10 +283,10 @@ double* test_fm(double f_oc=800, double ratio=0.75, double SampleRate=48000, dou
         //x[n] *= d(gen);
         //
         //if(n < 1000)
-        //p->setXY(0, A, t);
+       // p->setXY(0, A, t);
     }
      p->autoscale = true;
-     //p->update_data();
+    // p->update_data();
     if(N)
       *N = floor(time*SampleRate);
     return x;

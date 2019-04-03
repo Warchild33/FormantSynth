@@ -53,7 +53,9 @@ SOURCES += main.cpp\
     print.cpp \
     Guitar/guitarsynth.cpp \
     SyntTest/synttestform.cpp \
-    SyntTest/testsynth.cpp
+    SyntTest/testsynth.cpp \
+    FM/fm.cpp \
+    FM/fm_dialog.cpp
 
 HEADERS  += mainwindow.h \
     fft/stft.h \
@@ -87,13 +89,16 @@ HEADERS  += mainwindow.h \
     Guitar/guitarsynth.h \
     SyntTest/synttestform.h \
     SyntTest/testsynth.h \
-    fft/istft.h
+    fft/istft.h \
+    FM/fm_dialog.h \
+    FM/fm.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \
     sounddriverdialog.ui \
     Formant/formantsyntform.ui \
-    SyntTest/nessyntform.ui
+    SyntTest/nessyntform.ui \
+    FM/fm_dialog.ui
 
 OTHER_FILES += \
     play_wav.sh \

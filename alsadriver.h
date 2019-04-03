@@ -17,7 +17,7 @@ public:
 
     AlsaDriver();
     AlsaDriver(AlsaDriver* parent);
-    int  open(char* device_name);
+    int  open(char* device_name, bool bTest);
     int  out_pcm(short* buf, unsigned long len);
     void out_buffer(Buffer* buf);
     int  close();

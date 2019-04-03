@@ -28,7 +28,7 @@ SoundDriverDialog::SoundDriverDialog(QWidget *parent) :
     //ui->comboBox->setCurrentText(settings.value("alsa_device").toString());
     ui->comboBox->setItemText(0,settings.value("alsa_device").toString());
     alsa = new AlsaDriver();
-    alsa->open((char*)ui->comboBox->currentText().toStdString().c_str());
+    alsa->open((char*)ui->comboBox->currentText().toStdString().c_str(),true);
 }
 
 void SoundDriverDialog::listdev()
@@ -81,6 +81,6 @@ void SoundDriverDialog::on_testButton_clicked()
 void SoundDriverDialog::on_comboBox_activated(const QString &arg1)
 {
     //alsa->close();
-    alsa->open((char*)ui->comboBox->currentText().toStdString().c_str());
+    alsa->open((char*)ui->comboBox->currentText().toStdString().c_str(), true);
     settings.setValue("alsa_device", arg1);
 }

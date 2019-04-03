@@ -5,8 +5,10 @@
 #include "formantsyntform.h"
 #include "sounddriverdialog.h"
 #include "formantsynthsvg.h"
+#include "FM/fm_dialog.h"
 #include "synttestform.h"
 #include "ui_nessyntform.h"
+#include "ui_fm_dialog.h"
 #include <QKeyEvent>
 
 Ploter* p;
@@ -72,7 +74,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(keyReleaseSig(int)), fwidget2, SLOT(on_key_release(int)));
     connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), fwidget2, SLOT(on_key_release(int)));
 
-    ui->tabWidget->setCurrentIndex(1);
+    FM_Dialog* fwidget3 = new FM_Dialog(this);
+    ui->tabWidget->insertTab(3,fwidget3,QIcon(),"FM");
+    connect(this, SIGNAL(keyPressSig(int)), fwidget3->synt, SLOT(on_key_press(int)));
+    connect(this, SIGNAL(keyReleaseSig(int)), fwidget3->synt, SLOT(on_key_release(int)));
+    connect(ui->pianoWidget, SIGNAL(sigMouseKeyDown(int)),  fwidget3->synt, SLOT(on_key_press(int)));
+    connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), fwidget3->synt, SLOT(on_key_release(int)));
+
+    ui->tabWidget->setCurrentIndex(3);
 
     Test test;
 
@@ -219,4 +228,15 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         active_synth->bEnabled = true;
 
     }
+    if( ui->tabWidget->currentIndex() == 3) // Nes
+    {
+        FM_Dialog* fwidget = (FM_Dialog*)ui->tabWidget->widget(index);
+        active_synth = fwidget->synt;
+        active_synth->bEnabled = true;
+        p->plot->setParent(fwidget->ui->plotFrame);
+        p->plot->setGeometry(fwidget->ui->plotFrame->rect());
+        p->plot->show();
+
+    }
+
 }

@@ -13,7 +13,7 @@ Syntezer::Syntezer()
 {
     QSettings settings("./settings/settings.ini", QSettings::IniFormat);
     alsa = new AlsaDriver();
-    alsa->open((char*)settings.value("alsa_device").toString().toStdString().c_str());
+    alsa->open((char*)settings.value("alsa_device").toString().toStdString().c_str(),false);
     //connect(this, SIGNAL(sigDisableNote(char)),&alsa->mixer_thread, SLOT(disable_note(char)));
     bKeyPressed = false;
     bEnabled = false;

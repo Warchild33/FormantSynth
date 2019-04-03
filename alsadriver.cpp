@@ -46,7 +46,7 @@ void AlsaDriver::createThreads(char* device_name)
     }
 }
 
-int AlsaDriver::open(char* device_name)
+int AlsaDriver::open(char* device_name, bool bTest)
 {
     int i;
     int err;
@@ -126,17 +126,22 @@ int AlsaDriver::open(char* device_name)
 
     snd_pcm_hw_params_free (hw_params);
 
-    if ((err = snd_pcm_prepare (playback_handle)) < 0) {
-        fprintf (stderr, "cannot prepare audio interface for use (%s)\n",
-             snd_strerror (err));
-        snd_pcm_close(playback_handle);
-        return 0;
-    }
 
-    for (i = 0; i < 10; ++i) {
-        if ((err = snd_pcm_writei (playback_handle, buf, 128)) != 128) {
-            fprintf (stderr, "write to audio interface failed (%s)\n",
+        if ((err = snd_pcm_prepare (playback_handle)) < 0) {
+            fprintf (stderr, "cannot prepare audio interface for use (%s)\n",
                  snd_strerror (err));
+            snd_pcm_close(playback_handle);
+            return 0;
+        }
+
+    if( bTest )
+    {
+
+        for (i = 0; i < 10; ++i) {
+            if ((err = snd_pcm_writei (playback_handle, buf, 128)) != 128) {
+                fprintf (stderr, "write to audio interface failed (%s)\n",
+                     snd_strerror (err));
+            }
         }
     }
     fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
@@ -212,7 +217,7 @@ void AlsaDriver::run()
 
     if( parent!=0 )
     {
-        if(!open((char*)settings.value("alsa_device").toString().toStdString().c_str()))
+        if(!open((char*)settings.value("alsa_device").toString().toStdString().c_str(), false))
             return;
         fprintf (stderr, "AlsaDriver thread id = %d device=dmix", QThread::currentThreadId());
     }
