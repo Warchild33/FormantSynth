@@ -25,6 +25,7 @@ public:
     void out_pcm(short* buffer, int len);
     void drop_pcm_frames();
     virtual Buffer* play_note(char note, double duration, double velocity)=0;
+    virtual void release_note(char note){};
     bool isEnabled() { return bEnabled; }
     void out_buffer(Buffer* buf);
 

@@ -84,6 +84,7 @@ void Syntezer::on_key_release(int key_code)
        key2noteBuffer.erase(key2noteBuffer.find(key_code));
        //fprintf(stderr,"disable note");
    }
+   release_note(key2note[key_code]);
 }
 
 

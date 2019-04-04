@@ -80,7 +80,10 @@ double FMSynth::Evenlope(FmParams* params, double t)
         i = 3;
         t0 = (rate[0] + rate[1] + rate[2]);
     }
-    double l = level[i] +  (level[i+1]-level[i]) * (t - t0) / rate[i];
+    double l;
+    if(t > (rate[0] + rate[1] + rate[2] + rate[3]))
+        return 0;
+    l = level[i] +  (level[i+1]-level[i]) * (t - t0) / rate[i];
     return l;
 
     //qDebug() << "rate i=" << i;
@@ -139,13 +142,13 @@ double FMSynth::algo19(FmParams* p, double t, int n)
 
    // qDebug() << d[6];
 
-    double ev = 1; Evenlope(p, t);
-    p->out[6] = ev * p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + d[6]*p->out[6]);
+    double ev = Evenlope(p, t);
+    p->out[6] = p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + d[6]*p->out[6]);
     p->out[4] = ev * p->I[4] * sin( 2 * M_PI * (p->f[4]) * t + d[4]*p->out[6]);
-    p->out[5] = p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + d[5]*p->out[6]);
+    p->out[5] = ev * p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + d[5]*p->out[6]);
     p->out[3] = p->I[3] * sin( 2 * M_PI * p->f[3] * t );
     p->out[2] = p->I[2] * sin( 2 * M_PI * p->f[2] * t + p->out[3] ) ;
-    p->out[1] = p->I[1] * sin( 2 * M_PI * p->f[1] * t + p->out[2]);
+    p->out[1] = ev *p->I[1] * sin( 2 * M_PI * p->f[1] * t + p->out[2]);
     return p->out[1] + p->out[4] + p->out[5];
 }
 
@@ -160,26 +163,29 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N)
         param.d[i] = gui_params.d[i];
     }
     //evenlope params
-    param.level[0]=0.1;
+    param.level[0]=0;
     param.level[1]=1;     //attack
     param.level[2]=0.8;   //decay
     param.level[3]=0.7;   //sustain
     param.level[4]=0.1;   //release
-    param.rate[0]=0.5;    //attack time
-    param.rate[1]=0.5;    //decay time
-    param.rate[2]=1;      //sustain time
-    param.rate[3]=0.5;    //release time
+    param.rate[0]=1;    //attack time
+    param.rate[1]=1;    //decay time
+    param.rate[2]=10;      //sustain time
+    param.rate[3]=1;    //release time
 
     double* x = zeroes(0, floor(time*SampleRate));
     double t = 0;
+    if(bReleaseNote)
+        t = 12;
     double dt = 1. / SampleRate;
     p->clearvals(0);
-    for(int n=0; n < floor(time*SampleRate); n++) //
+    for(int n=0; n < floor((time)*SampleRate); n++) //
     {
         x[n] = algo19(&param, t, n);
         t+=dt;
         if(n < 1000)
           p->setXY(0, t, x[n]);
+
     }
     p->autoscale = true;
     p->update_data();
@@ -201,19 +207,27 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N)
 
 //}
 
+double* FMSynth::selectTest(double* x, float f, double duration, int N)
+{
+    if(n_test == 1)
+        x = Test1(f,48000,duration,&N);
+    if(n_test == 2)
+        x = Test2(f,48000,duration,&N);
+    return x;
+}
+
 Buffer* FMSynth::play_note(char note, double duration, double velocity)
 {
     Buffer* buffer = new Buffer(48000,duration,2);
+
+    bReleaseNote = false;
 
     int N = floor( duration * 48000);
 
     double* x;
     float f = freq_table.getFreq(note);
 
-    if(n_test == 1)
-        x = Test1(f,48000,duration,&N);
-    if(n_test == 2)
-        x = Test2(f,48000,duration,&N);
+    x = selectTest(x, f, duration, N);
 
     double Amax = (*std::max_element(&x[0],&x[N-1]));
     normalize(0.5, x, Amax, 48000,duration);
@@ -231,4 +245,35 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
     buffer->note = note;
     out_buffer( buffer );
     return buffer;
+}
+
+void FMSynth::release_note(char note)
+{
+    double duration = 1;
+    Buffer* buffer = new Buffer(48000,duration,2);
+
+    bReleaseNote = true;
+
+    int N = floor( duration * 48000);
+
+    double* x;
+    float f = freq_table.getFreq(note);
+
+    x = selectTest(x, f, duration, N);
+
+    double Amax = (*std::max_element(&x[0],&x[N-1]));
+    normalize(0.5, x, Amax, 48000,duration);
+    double t = 0;
+    double dt = 1. / 48000;
+    for(int i=0; i<N; i++)
+    {
+        short sample = (x[i]) * 32768;
+        buffer->samples[i*2] = sample;
+        buffer->samples[i*2+1] = sample;
+    }
+   // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
+
+    delete [] x;
+    buffer->note = note;
+    out_buffer( buffer );
 }

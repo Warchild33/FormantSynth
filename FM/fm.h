@@ -37,14 +37,16 @@ public:
     FMSynth();
     FmParams  gui_params;
     int n_test;
+    bool bReleaseNote;
     double algo1(FmParams* p, double t);
     double algo17(FmParams* p, double t);
     double algo19(FmParams* p, double t, int n);
     Buffer* play_note(char note, double duration, double velocity);
-
+    void release_note(char note);
     double* Test1(double f_oc, double SampleRate, double time, int* N);
     double* Test2(double f_oc, double SampleRate, double time, int* N);
     void TestEvenlope();
     double Evenlope(FmParams* params, double t);
+    double* selectTest(double* x, float f, double duration, int N);
 };
 #endif // FM_H
