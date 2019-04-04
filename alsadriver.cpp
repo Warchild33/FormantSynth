@@ -276,7 +276,7 @@ void AlsaDriver::nonBlockingLoop()
                 continue;
             }
 
-            if( !buf->timeEnd.isNull() )
+            if( (!buf->timeEnd.isNull()) && (buf->timeEnd < QTime::currentTime()) )
             {
                 break;
             }

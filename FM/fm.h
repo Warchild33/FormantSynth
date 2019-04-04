@@ -42,7 +42,7 @@ public:
     double algo17(FmParams* p, double t);
     double algo19(FmParams* p, double t, int n);
     Buffer* play_note(char note, double duration, double velocity);
-    void release_note(char note, double key_time);
+    double release_note(Buffer* buffer, char note, double key_time);
     double* Test1(double f_oc, double SampleRate, double time, int* N);
     double* Test2(double f_oc, double SampleRate, double time, int* N, bool bReleaseNote);
     void TestEvenlope();

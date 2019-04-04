@@ -37,7 +37,7 @@ void FMSynth::TestEvenlope()
 //    Evenlope(&params, 0.3);
 //    Evenlope(&params, 0.6);
 //    Evenlope(&params, 1.5);
-//    Evenlope(&params, 2.2);
+    Evenlope(&params, 3);
 
 }
 
@@ -125,20 +125,19 @@ double* FMSynth::Test1(double f_oc=800, double SampleRate=48000, double time=2, 
     return x;
 }
 
+double amp_mod(double Amax, double fvib, double t)
+{
+    return Amax * sin( 2 * M_PI * fvib * t);
+}
+
 //testing algo 19
 double FMSynth::algo19(FmParams* p, double t, int n)
 {
     static double d[7];
 
-    d[6]+= p->d[6]/20000. ;
-    d[4]+= p->d[4]/20000. ;
-    d[5]+= p->d[5]/20000. ;
-    if( n%20000 == 0 )
-    {
-        d[6] = 0;
-        d[5] = 0;
-        d[4] = 0;
-    }
+    d[6] = amp_mod(p->d[6],0.5,t);
+    d[4] = amp_mod(p->d[4],0.5,t) ;
+    d[5] = amp_mod(p->d[5],0.5,t);
 
    // qDebug() << d[6];
 
@@ -178,9 +177,7 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool
     if(bReleaseNote)
     {
         t = t_last;
-        param.rate[0]=0.000001;    //attack time
-        param.rate[1]=0.000001;    //decay time
-        param.rate[2]=t_last;      //sustain time
+        param.rate[2]=0.00001+t_last-param.rate[0]-param.rate[1];      //sustain time
         param.rate[3]=1;    //release time
 
     }
@@ -190,8 +187,9 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool
     {
         x[n] = algo19(&param, t, n);
         t+=dt;
-        if(n < 1000)
-          p->setXY(0, t, x[n]);
+        if(n % 100 == 0)
+        //if(n < 100)
+          p->setXY(0, t-t_last, x[n]);
 
     }
     p->autoscale = true;
@@ -252,33 +250,39 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
     return buffer;
 }
 
-void FMSynth::release_note(char note, double key_time)
+double FMSynth::release_note(Buffer* buffer, char note, double key_time)
 {
-    double duration = 1;
-    Buffer* buffer = new Buffer(48000,duration,2);
 
     t_last = key_time;
 
-    int N = floor( duration * 48000);
+    int N = floor( buffer->duration * 48000);
 
     double* x;
     float f = freq_table.getFreq(note);
 
-    x = selectTest(x, f, duration, N, true);
+    x = selectTest(x, f, buffer->duration, N, true);
 
     double Amax = (*std::max_element(&x[0],&x[N-1]));
-    normalize(0.5, x, Amax, 48000,duration);
+    normalize(0.5, x, Amax, 48000,buffer->duration);
     double t = 0;
     double dt = 1. / 48000;
-    for(int i=0; i<N; i++)
+    int offset = key_time * 48000;
+    int release_time = 1;
+    for(int i=offset; i<N; i++)
+    {
+        buffer->samples[(i)*2] = 0;
+        buffer->samples[(i)*2+1] = 0;
+    }
+
+    for(int i=0; i<release_time*48000; i++)
     {
         short sample = (x[i]) * 32768;
-        buffer->samples[i*2] = sample;
-        buffer->samples[i*2+1] = sample;
+        buffer->samples[(i+offset)*2] = sample;
+        buffer->samples[(i+offset)*2+1] = sample;
     }
    // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
 
     delete [] x;
-    buffer->note = note;
-    out_buffer( buffer );
+    return release_time;
+    //out_buffer( buffer );
 }

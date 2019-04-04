@@ -69,14 +69,16 @@ void Syntezer::on_key_release(int key_code)
    bKeyPressed = false;
    if(!bEnabled) return;
    //emit sigDisableNote(key2note[key_code]);
+   Buffer* buf=0;
    if(key2noteBuffer.find(key_code)!=key2noteBuffer.end())
    {
-       Buffer* buf = key2noteBuffer[key_code];
-       buf->timeEnd = QTime::currentTime();       
-       key2noteBuffer.erase(key2noteBuffer.find(key_code));
+       buf = key2noteBuffer[key_code];
        //fprintf(stderr,"disable note");
+       double time_release = release_note(buf, key2note[key_code], (double)key_time[key_code].elapsed()/1000.) ;
+       buf->timeEnd = QTime::currentTime().addSecs(time_release);
+       key2noteBuffer.erase(key2noteBuffer.find(key_code));
+
    }
-   release_note(key2note[key_code], (double)key_time[key_code].elapsed()/1000.) ;
 }
 
 
