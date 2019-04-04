@@ -20,11 +20,12 @@ public:
     Key2NoteTable               key2note;
     bool                        bEnabled;
 
-    Syntezer();    
+    Syntezer();
     void parse_freqs_table(QString file);
     void out_pcm(short* buffer, int len);
     void drop_pcm_frames();
-    virtual Buffer* play_note(char note, double duration, double velocity)=0;
+    virtual Buffer* play_note(char note, double duration, double velocity){};
+    virtual void play_note2(Buffer* buffer, char note, double duration, double velocity){};
     virtual double release_note(Buffer* buffer, char note, double key_time){return 0;};
     bool isEnabled() { return bEnabled; }
     void out_buffer(Buffer* buf);

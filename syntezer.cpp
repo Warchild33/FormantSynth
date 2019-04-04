@@ -1,5 +1,7 @@
 #include <QTimer>
 #include <QSettings>
+#include <QtConcurrent>
+#include <QFuture>
 #include <stdio.h>
 #include <stdlib.h>
 #include "syntezer.h"
@@ -50,16 +52,17 @@ void Syntezer::on_key_press(int key_code)
 {
     if(key_code > 128) return;
     if(!bEnabled) return;
+    fprintf(stderr,"keycode=%d", key_code);
 
     if(key2noteBuffer.find(key_code) == key2noteBuffer.end())
     {
 
-        Buffer* buf = play_note(key2note[key_code], 10, 1);
-        buf->bWrited = false;
+        Buffer* buffer = play_note(key2note[key_code], 10, 1);
+        buffer->bWrited = false;
         key_time[key_code].start();
         bKeyPressed = true;
-        key2noteBuffer[key_code] = buf;
-        //fprintf(stderr,"keycode=%d", key_code);
+        key2noteBuffer[key_code] = buffer;
+
 
     }
 }

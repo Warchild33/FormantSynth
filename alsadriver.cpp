@@ -82,11 +82,11 @@ int AlsaDriver::open(char* device_name, bool bTest)
 
 
 
-      if ((err = snd_pcm_nonblock (playback_handle, 1)) < 0) {
-        fprintf (stderr, "cannot set non block (%s)\n",
-                 snd_strerror (err));
-        return 0;
-    }
+//      if ((err = snd_pcm_nonblock (playback_handle, 1)) < 0) {
+//        fprintf (stderr, "cannot set non block (%s)\n",
+//                 snd_strerror (err));
+//        return 0;
+//    }
 
 
     if ((err = snd_pcm_hw_params_set_access (playback_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0) {

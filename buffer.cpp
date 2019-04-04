@@ -13,6 +13,8 @@ Buffer::Buffer(int SampleRate, double duration, int channels)
     int size = SampleRate * duration * channels;
     samples.resize(size);
     samplesD.resize(size);
+    for(int i=0; i < samples.size(); i++)
+        samples[i] = 0;
     bWrited = false;
     timeStart = QTime::currentTime();
 }

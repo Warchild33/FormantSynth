@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui svg xml
+QT       += core gui svg xml concurrent
 LIBS+=-lqwt-qt5 -lasound
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QMAKE_CXXFLAGS+=-g -std=c++11 -Wreorder -Wc++11-narrowing

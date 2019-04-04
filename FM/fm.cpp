@@ -1,5 +1,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <QtConcurrentRun>
+#include <QtConcurrent>
+#include <QFuture>
 #include "fm.h"
 #include "envelope.h"
 #include "common.h"
@@ -141,10 +144,11 @@ double FMSynth::Evenlope(FmParams* params, double t)
 //testing feedback loop
 double FMSynth::algo17(FmParams* p, double t)
 {
-    p->out[2] = p->I[2] * sinT( 2 * M_PI * p->f[2] * t + p->out[2] );
-    return p->I[1] * sinT( 2 * M_PI * p->f[1] * t + p->out[2]);
+    p->out[2] = p->I[2] * sin( 2 * M_PI * p->f[2] * t + p->out[2] );
+    return p->I[1] * sin( 2 * M_PI * p->f[1] * t + p->out[2]);
 }
 
+static const int THREAD_COUNT = QThread::idealThreadCount();
 
 double* FMSynth::Test1(double f_oc=800, double SampleRate=48000, double time=2, int* N=0)
 {
@@ -157,23 +161,24 @@ double* FMSynth::Test1(double f_oc=800, double SampleRate=48000, double time=2, 
     double* x = zeroes(0, floor(time*SampleRate));
     double t = 0;
     double dt = 1. / SampleRate;
-    p->clearvals(0);
+    //p->clearvals(0);
+
 
     for(int n=0; n < floor(time*SampleRate); n++) //
-    {        
+    {
         x[n] = algo17(&param, t);
         t+=dt;
-        if(n < 1000)
-          p->setXY(0, t, x[n]);
+        //if(n < 1000)
+         // p->setXY(0, t, x[n]);
     }
-    p->autoscale = true;
-    p->update_data();
+    //p->autoscale = true;
+    //p->update_data();
     return x;
 }
 
 double amp_mod(double Amax, double fvib, double t)
 {
-    return Amax * sinT( 2 * M_PI * fvib * t);
+    return Amax * sin( 2 * M_PI * fvib * t);
 }
 
 //testing algo 19
@@ -188,12 +193,12 @@ double FMSynth::algo19(FmParams* p, double t, int n)
    // qDebug() << d[6];
 
     double ev = Evenlope(p, t);
-    p->out[6] = p->I[6] * sinT( 2 * M_PI * (p->f[6]) * t + d[6]*p->out[6]);
-    p->out[4] = ev * p->I[4] * sinT( 2 * M_PI * (p->f[4]) * t + d[4]*p->out[6]);
-    p->out[5] = ev * p->I[5] * sinT( 2 * M_PI * (p->f[5]) * t + d[5]*p->out[6]);
-    p->out[3] = p->I[3] * sinT( 2 * M_PI * p->f[3] * t );
-    p->out[2] = p->I[2] * sinT( 2 * M_PI * p->f[2] * t + p->out[3] ) ;
-    p->out[1] = ev *p->I[1] * sinT( 2 * M_PI * p->f[1] * t + p->out[2]);
+    p->out[6] = p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + d[6]*p->out[6]);
+    p->out[4] = ev * p->I[4] * sin( 2 * M_PI * (p->f[4]) * t + d[4]*p->out[6]);
+    p->out[5] = ev * p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + d[5]*p->out[6]);
+    p->out[3] = p->I[3] * sin( 2 * M_PI * p->f[3] * t );
+    p->out[2] = p->I[2] * sin( 2 * M_PI * p->f[2] * t + p->out[3] ) ;
+    p->out[1] = ev *p->I[1] * sin( 2 * M_PI * p->f[1] * t + p->out[2]);
     return p->out[1] + p->out[4] + p->out[5];
 }
 
@@ -209,11 +214,11 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool
     }
     //evenlope params
     param.level[0]=0;
-    param.level[1]=1;     //attack
+    param.level[1]=0.8;     //attack
     param.level[2]=0.8;   //decay
     param.level[3]=0.7;   //sustain
     param.level[4]=0.1;   //release
-    param.rate[0]=0.5;    //attack time
+    param.rate[0]=0.1;    //attack time
     param.rate[1]=0.5;    //decay time
     param.rate[2]=10;      //sustain time
     param.rate[3]=0.5;    //release time
@@ -228,7 +233,7 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool
 
     }
     double dt = 1. / SampleRate;
-    p->clearvals(0);
+    //p->clearvals(0);
     for(int n=0; n < floor((time)*SampleRate); n++) //
     {
         x[n] = algo19(&param, t, n);
@@ -238,8 +243,8 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool
         //  p->setXY(0, t-t_last, x[n]);
 
     }
-    p->autoscale = true;
-    p->update_data();
+    //p->autoscale = true;
+    //p->update_data();
     return x;
 }
 
@@ -248,87 +253,114 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool
 
 //double FMSynth::algo1(FmParams* p, double t)
 //{
-//    double OP6 = p->I[6] * sinT( 2 * M_PI * p->f[6] * t +  p->I[6] *sinT( 2 * M_PI * p->f[6] * t ) );
-//    double OP5 = p->I[5] * sinT( 2 * M_PI * p->f[5] * t );
-//    double OP4 = p->I[4] * sinT( 2 * M_PI * p->f[4] * t );
-//    double OP3 = p->I[3] * sinT( 2 * M_PI * p->f[3] * t + OP4 + OP5 + OP6 );
-//    double OP2 = p->I[2] * sinT( 2 * M_PI * p->f[2] * t );
-//    double OP1 = p->I[1] * sinT( 2 * M_PI * p->f[1] * t + OP2);
+//    double OP6 = p->I[6] * sin( 2 * M_PI * p->f[6] * t +  p->I[6] *sin( 2 * M_PI * p->f[6] * t ) );
+//    double OP5 = p->I[5] * sin( 2 * M_PI * p->f[5] * t );
+//    double OP4 = p->I[4] * sin( 2 * M_PI * p->f[4] * t );
+//    double OP3 = p->I[3] * sin( 2 * M_PI * p->f[3] * t + OP4 + OP5 + OP6 );
+//    double OP2 = p->I[2] * sin( 2 * M_PI * p->f[2] * t );
+//    double OP1 = p->I[1] * sin( 2 * M_PI * p->f[1] * t + OP2);
 //    return OP1 + OP3;
 
 //}
 
-double* FMSynth::selectTest(double* x, float f, double duration, int N, bool bReleaseNote)
+void FMSynth::selectTest(float f, double duration, int N, bool bReleaseNote)
 {
-    if(n_test == 1)
-        x = Test1(f,48000,duration,&N);
-    if(n_test == 2)
-        x = Test2(f,48000,duration,&N, bReleaseNote);
-    return x;
+        //x = Test2(f,48000,duration,&N, bReleaseNote);
+
 }
 
-Buffer* FMSynth::play_note(char note, double duration, double velocity)
+void FMSynth::handleFinished()
 {
-    Buffer* buffer = new Buffer(48000,duration,2);
-
-    int N = floor( duration * 48000);
-
-    double* x;
-    float f = freq_table.getFreq(note);
-
-    x = selectTest(x, f, duration, N, false);
-
-    double Amax = (*std::max_element(&x[0],&x[N-1]));
-    normalize(0.5, x, Amax, 48000,duration);
+    MyWatcher* watcher = (MyWatcher*)sender();
+    double* x = watcher->result();
+    double Amax = (*std::max_element(&x[0],&x[watcher->N-1]));
+    normalize(0.5, x, Amax, 48000,watcher->duration);
     double t = 0;
     double dt = 1. / 48000;
-    for(int i=0; i<N; i++)
+    for(int i=0; i<watcher->N; i++)
     {
         short sample = (x[i]) * 32768;
-        buffer->samples[i*2] = sample;
-        buffer->samples[i*2+1] = sample;
+        watcher->buffer->samples[i*2] = sample;
+        watcher->buffer->samples[i*2+1] = sample;
     }
    // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
 
     delete [] x;
-    buffer->note = note;
-    out_buffer( buffer );
+    out_buffer(watcher->buffer );
+}
+
+Buffer* FMSynth::play_note(char note, double duration, double velocity)
+{
+    Buffer* buffer = new Buffer(48000,10,2);
+
+    int N = floor( duration * 48000);
+
+    float f = freq_table.getFreq(note);
+
+    if(n_test == 1)
+    {
+        //QFuture <double*> future = QtConcurrent::run(this, &FMSynth::Test1, f, 48000,duration,&N);
+        //x = future.result();
+        //x = Test1(f,48000,duration,&N);
+    }
+
+    if(n_test == 2)
+    {
+        QElapsedTimer timer;
+        timer.start();
+        MyWatcher* watcher = new MyWatcher();
+        watcher->duration = duration;
+        watcher->note = note;
+        watcher->N = N;
+        watcher->buffer = buffer;
+
+        connect(watcher, SIGNAL(finished()), this, SLOT(handleFinished()));
+
+        QFuture<double*> future = QtConcurrent::run(this, &FMSynth::Test2, f,48000,duration,&N, false);
+        watcher->setFuture(future);
+        //x = Test2(f,48000,duration,&N, bReleaseNote);
+        qDebug() << "concurrent run " << timer.elapsed();
+    }
+
+
+
     return buffer;
 }
 
 double FMSynth::release_note(Buffer* buffer, char note, double key_time)
 {
 
-    t_last = key_time;
+//    t_last = key_time;
 
-    int N = floor( buffer->duration * 48000);
+//    int N = floor( buffer->duration * 48000);
 
-    double* x;
-    float f = freq_table.getFreq(note);
+//    double* x;
+//    float f = freq_table.getFreq(note);
 
-    x = selectTest(x, f, buffer->duration, N, true);
+//    x = selectTest(x, f, buffer->duration, N, true);
 
-    double Amax = (*std::max_element(&x[0],&x[N-1]));
-    normalize(0.5, x, Amax, 48000,buffer->duration);
-    double t = 0;
-    double dt = 1. / 48000;
-    int offset = key_time * 48000;
-    int release_time = 1;
-    for(int i=offset; i<N; i++)
-    {
-        buffer->samples[(i)*2] = 0;
-        buffer->samples[(i)*2+1] = 0;
-    }
+//    double Amax = (*std::max_element(&x[0],&x[N-1]));
+//    normalize(0.5, x, Amax, 48000,buffer->duration);
+//    double t = 0;
+//    double dt = 1. / 48000;
+//    int offset = key_time * 48000;
+//    int release_time = 1;
+//    for(int i=offset; i<N; i++)
+//    {
+//        buffer->samples[(i)*2] = 0;
+//        buffer->samples[(i)*2+1] = 0;
+//    }
 
-    for(int i=0; i<release_time*48000; i++)
-    {
-        short sample = (x[i]) * 32768;
-        buffer->samples[(i+offset)*2] = sample;
-        buffer->samples[(i+offset)*2+1] = sample;
-    }
-   // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
+//    for(int i=0; i<release_time*48000; i++)
+//    {
+//        short sample = (x[i]) * 32768;
+//        buffer->samples[(i+offset)*2] = sample;
+//        buffer->samples[(i+offset)*2+1] = sample;
+//    }
+//   // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
 
-    delete [] x;
-    return release_time;
-    //out_buffer( buffer );
+//    delete [] x;
+//    return release_time;
+//    //out_buffer( buffer );
+    return 0;
 }

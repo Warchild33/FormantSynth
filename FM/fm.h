@@ -1,6 +1,7 @@
 #ifndef FM_H
 #define FM_H
-
+#include <QFuture>
+#include <QFutureWatcher>
 #include "syntezer.h"
 
 struct FmParams
@@ -29,6 +30,19 @@ struct FmParams
     double out[7];
 };
 
+
+class MyWatcher : public QFutureWatcher<double*>
+{
+    Q_OBJECT
+public:
+    MyWatcher()
+    :QFutureWatcher<double*>(){};
+    double duration;
+    int N;
+    Buffer* buffer;
+    char note;
+};
+
 class FMSynth : public Syntezer
 {
     Q_OBJECT
@@ -47,6 +61,10 @@ public:
     double* Test2(double f_oc, double SampleRate, double time, int* N, bool bReleaseNote);
     void TestEvenlope();
     double Evenlope(FmParams* params, double t);
-    double* selectTest(double* x, float f, double duration, int N, bool bReleaseNote);
+    void selectTest(float f, double duration, int N, bool bReleaseNote);
+
+
+public slots:
+    void handleFinished();
 };
 #endif // FM_H
