@@ -24,15 +24,7 @@ Syntezer::Syntezer()
 
 void Syntezer::on_Timer()
 {
-    if( bKeyPressed )
-    {
-        if( key_time.elapsed() > 500)
-        {
-            //alsa->drop_pcm_frames();
-            //alsa->out_pcm(&output_samples[0], output_samples.size()/2);
-        }
-        key_time.start();
-    }
+
 }
 
 void Syntezer::out_pcm(short* buffer, int len)
@@ -64,7 +56,7 @@ void Syntezer::on_key_press(int key_code)
 
         Buffer* buf = play_note(key2note[key_code], 10, 1);
         buf->bWrited = false;
-        key_time.start();
+        key_time[key_code].start();
         bKeyPressed = true;
         key2noteBuffer[key_code] = buf;
         //fprintf(stderr,"keycode=%d", key_code);
@@ -84,7 +76,7 @@ void Syntezer::on_key_release(int key_code)
        key2noteBuffer.erase(key2noteBuffer.find(key_code));
        //fprintf(stderr,"disable note");
    }
-   release_note(key2note[key_code]);
+   release_note(key2note[key_code], (double)key_time[key_code].elapsed()/1000.) ;
 }
 
 

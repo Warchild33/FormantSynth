@@ -25,7 +25,7 @@ public:
     void out_pcm(short* buffer, int len);
     void drop_pcm_frames();
     virtual Buffer* play_note(char note, double duration, double velocity)=0;
-    virtual void release_note(char note){};
+    virtual void release_note(char note, double key_time){};
     bool isEnabled() { return bEnabled; }
     void out_buffer(Buffer* buf);
 
@@ -41,7 +41,7 @@ public slots:
     void on_Timer();
 
 private:
-    QElapsedTimer        key_time;
+    std::map<int, QElapsedTimer>        key_time;
 
     bool                 bKeyPressed;
 

@@ -153,7 +153,7 @@ double FMSynth::algo19(FmParams* p, double t, int n)
 }
 
 
-double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N)
+double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool bReleaseNote)
 {
     FmParams param;
     for(int i=0; i < 7; i++)
@@ -176,7 +176,14 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N)
     double* x = zeroes(0, floor(time*SampleRate));
     double t = 0;
     if(bReleaseNote)
-        t = 12;
+    {
+        t = t_last;
+        param.rate[0]=0.000001;    //attack time
+        param.rate[1]=0.000001;    //decay time
+        param.rate[2]=t_last;      //sustain time
+        param.rate[3]=1;    //release time
+
+    }
     double dt = 1. / SampleRate;
     p->clearvals(0);
     for(int n=0; n < floor((time)*SampleRate); n++) //
@@ -207,12 +214,12 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N)
 
 //}
 
-double* FMSynth::selectTest(double* x, float f, double duration, int N)
+double* FMSynth::selectTest(double* x, float f, double duration, int N, bool bReleaseNote)
 {
     if(n_test == 1)
         x = Test1(f,48000,duration,&N);
     if(n_test == 2)
-        x = Test2(f,48000,duration,&N);
+        x = Test2(f,48000,duration,&N, bReleaseNote);
     return x;
 }
 
@@ -220,14 +227,12 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
 {
     Buffer* buffer = new Buffer(48000,duration,2);
 
-    bReleaseNote = false;
-
     int N = floor( duration * 48000);
 
     double* x;
     float f = freq_table.getFreq(note);
 
-    x = selectTest(x, f, duration, N);
+    x = selectTest(x, f, duration, N, false);
 
     double Amax = (*std::max_element(&x[0],&x[N-1]));
     normalize(0.5, x, Amax, 48000,duration);
@@ -247,19 +252,19 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
     return buffer;
 }
 
-void FMSynth::release_note(char note)
+void FMSynth::release_note(char note, double key_time)
 {
     double duration = 1;
     Buffer* buffer = new Buffer(48000,duration,2);
 
-    bReleaseNote = true;
+    t_last = key_time;
 
     int N = floor( duration * 48000);
 
     double* x;
     float f = freq_table.getFreq(note);
 
-    x = selectTest(x, f, duration, N);
+    x = selectTest(x, f, duration, N, true);
 
     double Amax = (*std::max_element(&x[0],&x[N-1]));
     normalize(0.5, x, Amax, 48000,duration);
