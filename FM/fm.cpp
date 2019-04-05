@@ -150,7 +150,7 @@ double FMSynth::algo17(FmParams* p, double t)
 
 static const int THREAD_COUNT = QThread::idealThreadCount();
 
-double* FMSynth::Test1(double f_oc=800, double SampleRate=48000, double time=2, int* N=0)
+double* FMSynth::Test1(Buffer* buffer, double f_oc=800, double SampleRate=48000, double time=2, int* N=0)
 {
     FmParams param;
     for(int i=0; i < 7; i++)
@@ -161,18 +161,23 @@ double* FMSynth::Test1(double f_oc=800, double SampleRate=48000, double time=2, 
     double* x = zeroes(0, floor(time*SampleRate));
     double t = 0;
     double dt = 1. / SampleRate;
-    //p->clearvals(0);
+   // p->clearvals(0);
 
 
+    out_buffer(buffer);
     for(int n=0; n < floor(time*SampleRate); n++) //
     {
         x[n] = algo17(&param, t);
+        short sample = (x[n]) * 32768;
+        buffer->samples[n*2] = sample;
+        buffer->samples[n*2+1] = sample;
         t+=dt;
         //if(n < 1000)
-         // p->setXY(0, t, x[n]);
+        //  p->setXY(0, t, x[n]);
     }
+
     //p->autoscale = true;
-    //p->update_data();
+   //i p->update_data();
     return x;
 }
 
@@ -203,7 +208,7 @@ double FMSynth::algo19(FmParams* p, double t, int n)
 }
 
 
-double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool bReleaseNote)
+double* FMSynth::Test2(Buffer* buffer, double f_oc, double SampleRate, double time, bool bReleaseNote)
 {
     FmParams param;
     for(int i=0; i < 7; i++)
@@ -234,9 +239,18 @@ double* FMSynth::Test2(double f_oc, double SampleRate, double time, int* N, bool
     }
     double dt = 1. / SampleRate;
     //p->clearvals(0);
+
     for(int n=0; n < floor((time)*SampleRate); n++) //
     {
         x[n] = algo19(&param, t, n);
+        short sample = (x[n]) * 8000;
+        buffer->samples[n*2] = sample;
+        buffer->samples[n*2+1] = sample;
+        if(n == 100)
+            out_buffer(buffer);
+        if(buffer->bWrited)
+            break;
+
         t+=dt;
         //if(n % 100 == 0)
         //if(n < 100)
@@ -271,6 +285,7 @@ void FMSynth::selectTest(float f, double duration, int N, bool bReleaseNote)
 
 void FMSynth::handleFinished()
 {
+    return;
     MyWatcher* watcher = (MyWatcher*)sender();
     double* x = watcher->result();
     double Amax = (*std::max_element(&x[0],&x[watcher->N-1]));
@@ -284,7 +299,7 @@ void FMSynth::handleFinished()
         watcher->buffer->samples[i*2+1] = sample;
     }
    // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
-
+    qDebug() << "finished thread  " << QThread::currentThreadId();
     delete [] x;
     out_buffer(watcher->buffer );
 }
@@ -292,35 +307,28 @@ void FMSynth::handleFinished()
 Buffer* FMSynth::play_note(char note, double duration, double velocity)
 {
     Buffer* buffer = new Buffer(48000,10,2);
+    qDebug() << "starting thread  " << QThread::currentThreadId();
 
     int N = floor( duration * 48000);
 
     float f = freq_table.getFreq(note);
 
-    if(n_test == 1)
-    {
-        //QFuture <double*> future = QtConcurrent::run(this, &FMSynth::Test1, f, 48000,duration,&N);
-        //x = future.result();
-        //x = Test1(f,48000,duration,&N);
-    }
+    QElapsedTimer timer;
+    timer.start();
+    MyWatcher* watcher = new MyWatcher();
+    watcher->duration = duration;
+    watcher->note = note;
+    watcher->N = N;
+    watcher->buffer = buffer;
+    watcher->pause();
 
-    if(n_test == 2)
-    {
-        QElapsedTimer timer;
-        timer.start();
-        MyWatcher* watcher = new MyWatcher();
-        watcher->duration = duration;
-        watcher->note = note;
-        watcher->N = N;
-        watcher->buffer = buffer;
-
-        connect(watcher, SIGNAL(finished()), this, SLOT(handleFinished()));
-
-        QFuture<double*> future = QtConcurrent::run(this, &FMSynth::Test2, f,48000,duration,&N, false);
-        watcher->setFuture(future);
-        //x = Test2(f,48000,duration,&N, bReleaseNote);
-        qDebug() << "concurrent run " << timer.elapsed();
-    }
+    connect(watcher, SIGNAL(finished()), this, SLOT(handleFinished()));
+    QFuture<double*> future;
+    if(n_test == 2) future = QtConcurrent::run(this, &FMSynth::Test2, buffer, f,48000,duration,false);
+    if(n_test == 1) future = QtConcurrent::run(this, &FMSynth::Test1, buffer, f, 48000,duration,&N);
+    watcher->setFuture(future);
+    //x = Test2(f,48000,duration,&N, bReleaseNote);
+    qDebug() << "concurrent run " << timer.elapsed();
 
 
 
@@ -329,6 +337,7 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
 
 double FMSynth::release_note(Buffer* buffer, char note, double key_time)
 {
+
 
 //    t_last = key_time;
 

@@ -31,6 +31,11 @@ void FM_Dialog::on_I2_valueChanged(double arg1)
 void FM_Dialog::on_test1_clicked()
 {
     synt->n_test = 1;
+    synt->gui_params.f[1] = ui->f1->value();
+    synt->gui_params.f[2] = ui->f2->value();
+    synt->gui_params.I[1] = ui->I1->value();
+    synt->gui_params.I[2] = ui->I2->value();
+
 }
 
 void FM_Dialog::on_test2_clicked()

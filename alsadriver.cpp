@@ -201,10 +201,10 @@ void AlsaDriver::out_buffer(Buffer* buf)
     for(auto t = alsa_threads.begin(); t!=alsa_threads.end(); t++,cnt++)
     {
         if ((*t)->quenue.size() == 0)
-        {
-            fprintf(stderr,"write to thread %d\n", cnt);
+        {            
             (*t)->quenue.push_back(buf);
             (*t)->waitCondition.wakeAll();
+            fprintf(stderr,"write to thread %d\n", cnt);
             break;
         }
     }

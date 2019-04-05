@@ -4,7 +4,7 @@ Buffer::Buffer()
 {
     samples.push_back(0);
     samplesD.push_back(0);
-    bWrited = false;
+    bWrited = false;    
 }
 
 Buffer::Buffer(int SampleRate, double duration, int channels)

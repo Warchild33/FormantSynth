@@ -57,8 +57,8 @@ public:
     double algo19(FmParams* p, double t, int n);
     Buffer* play_note(char note, double duration, double velocity);
     double release_note(Buffer* buffer, char note, double key_time);
-    double* Test1(double f_oc, double SampleRate, double time, int* N);
-    double* Test2(double f_oc, double SampleRate, double time, int* N, bool bReleaseNote);
+    double* Test1(Buffer* buffer, double f_oc, double SampleRate, double time, int* N);
+    double* Test2(Buffer* buffer,double f_oc, double SampleRate, double time, bool bReleaseNote);
     void TestEvenlope();
     double Evenlope(FmParams* params, double t);
     void selectTest(float f, double duration, int N, bool bReleaseNote);

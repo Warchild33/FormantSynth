@@ -21,11 +21,13 @@ Syntezer::Syntezer()
     bEnabled = false;
     QTimer* timer = new QTimer();
     connect(timer,SIGNAL(timeout()), this, SLOT(on_Timer()));
-    timer->start(50);
+    timer->start(1000);
 }
+
 
 void Syntezer::on_Timer()
 {
+
 
 }
 
@@ -76,6 +78,7 @@ void Syntezer::on_key_release(int key_code)
    if(key2noteBuffer.find(key_code)!=key2noteBuffer.end())
    {
        buf = key2noteBuffer[key_code];
+       buf->bWrited = true;
        //fprintf(stderr,"disable note");
        double time_release = release_note(buf, key2note[key_code], (double)key_time[key_code].elapsed()/1000.) ;
        buf->timeEnd = QTime::currentTime().addSecs(time_release);
