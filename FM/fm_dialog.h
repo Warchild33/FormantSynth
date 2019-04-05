@@ -19,7 +19,7 @@ public:
     ~FM_Dialog();
 
 private slots:
-
+    void AssignGUIValues();
     void on_I1_valueChanged(double arg1);
 
     void on_I2_valueChanged(double arg1);
@@ -48,6 +48,11 @@ private slots:
     void on_I4_valueChanged(double arg1);
 
     void on_I6_valueChanged(double arg1);
+
+    void on_pushButton_3_clicked();
+
+    void on_rate10_sliderMoved();
+
 
 private:
 
