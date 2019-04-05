@@ -164,13 +164,17 @@ double* FMSynth::Test1(Buffer* buffer, double f_oc=800, double SampleRate=48000,
    // p->clearvals(0);
 
 
-    out_buffer(buffer);
+
     for(int n=0; n < floor(time*SampleRate); n++) //
     {
         x[n] = algo17(&param, t);
         short sample = (x[n]) * 32768;
         buffer->samples[n*2] = sample;
         buffer->samples[n*2+1] = sample;
+        if(n == 100)
+            out_buffer(buffer);
+        if(buffer->bWrited)
+            break;
         t+=dt;
         //if(n < 1000)
         //  p->setXY(0, t, x[n]);
