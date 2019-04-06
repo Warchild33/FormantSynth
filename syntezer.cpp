@@ -79,6 +79,7 @@ void Syntezer::on_key_release(int key_code)
    {
        buf = key2noteBuffer[key_code];
        buf->bWrited = true;
+       QThread::currentThread()->msleep(50);
        //fprintf(stderr,"disable note");
        double time_release = release_note(buf, key2note[key_code], (double)key_time[key_code].elapsed()/1000.) ;
        buf->timeEnd = QTime::currentTime().addSecs(time_release);

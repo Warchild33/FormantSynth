@@ -33,7 +33,7 @@
     <rect>
      <x>80</x>
      <y>70</y>
-     <width>121</width>
+     <width>41</width>
      <height>30</height>
     </rect>
    </property>
@@ -209,51 +209,6 @@
    </property>
    <property name="text">
     <string>Alogithm</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>70</y>
-     <width>111</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Search spectrum</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>70</y>
-     <width>84</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Play</string>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="doubleSpinBox_13">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>70</y>
-     <width>91</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="prefix">
-    <string>f_oc=</string>
-   </property>
-   <property name="maximum">
-    <double>10000.000000000000000</double>
-   </property>
-   <property name="value">
-    <double>800.000000000000000</double>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
@@ -1513,8 +1468,8 @@
   <widget class="QPushButton" name="test1">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>10</y>
+     <x>480</x>
+     <y>20</y>
      <width>84</width>
      <height>32</height>
     </rect>
@@ -1526,8 +1481,8 @@
   <widget class="QPushButton" name="test2">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>10</y>
+     <x>570</x>
+     <y>20</y>
      <width>84</width>
      <height>32</height>
     </rect>
@@ -1539,8 +1494,8 @@
   <widget class="QPushButton" name="pushButton_3">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>10</y>
+     <x>570</x>
+     <y>60</y>
      <width>84</width>
      <height>32</height>
     </rect>
@@ -1562,7 +1517,25 @@
     <string>TextLabel</string>
    </property>
   </widget>
+  <widget class="SvgWidget" name="algosvg" native="true">
+   <property name="geometry">
+    <rect>
+     <x>149</x>
+     <y>9</y>
+     <width>291</width>
+     <height>101</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SvgWidget</class>
+   <extends>QWidget</extends>
+   <header>svgwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

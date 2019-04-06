@@ -234,6 +234,10 @@ void FM_Dialog::on_pushButton_3_clicked()
          slider2->setValue(synt->gui_params.rate[6][j]*50);
 
      }
+    ui->algosvg->SvgLoad("./images/algo5.svg");
+    ui->algosvg->LoadDom("./images/algo5.svg");
+    ui->algosvg->repaint();
+
     AssignGUIValues();
 }
 
