@@ -54,6 +54,13 @@ private slots:
     void on_rate10_sliderMoved();
 
 
+    void on_d1_valueChanged(double arg1);
+
+
+    void on_pushButton_9_clicked();
+
+    void on_CopyTo1_clicked();
+
 private:
 
 };

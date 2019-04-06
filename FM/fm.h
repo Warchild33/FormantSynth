@@ -16,7 +16,7 @@ struct FmParams
             for(int j=0; j<4;j++)
             {
                 rate[i][j] = 1;
-                level[i][j] = 1;
+                level[i][j] = 0;
             }
         }
 

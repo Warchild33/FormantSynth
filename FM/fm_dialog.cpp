@@ -9,6 +9,23 @@ FM_Dialog::FM_Dialog(QWidget *parent) :
     ui(new Ui::FM_Dialog)
 {
     ui->setupUi(this);
+    connect(ui->CopyTo1, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
+    connect(ui->CopyTo2, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
+    connect(ui->CopyTo3, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
+    connect(ui->CopyTo4, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
+    connect(ui->CopyTo5, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
+    connect(ui->CopyTo6, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
+    for(int i=1; i <= 6; i++)
+     for(int j=0; j < 4; j++)
+     {
+         QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
+         connect(slider, SIGNAL(sliderReleased()), this, SLOT(on_rate10_sliderMoved()));
+         QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
+         slider2->setMinimum(1);
+         connect(slider2, SIGNAL(sliderReleased()), this, SLOT(on_rate10_sliderMoved()));
+        // synt->gui_params.rate[i][2] = 4;
+     }
+
     synt = new FMSynth();
 }
 
@@ -147,12 +164,10 @@ void FM_Dialog::AssignGUIValues()
      {
          QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
          synt->gui_params.level[i][j+1] = (float)slider->value()/100.;
-         connect(slider, SIGNAL(sliderReleased()), this, SLOT(on_rate10_sliderMoved()));
          QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
-         synt->gui_params.rate[i][j] = (float)slider2->value()/100.;
-         connect(slider2, SIGNAL(sliderReleased()), this, SLOT(on_rate10_sliderMoved()));
+         synt->gui_params.rate[i][j] = (float)slider2->value()/50.;
+        // synt->gui_params.rate[i][2] = 4;
      }
-    qDebug();
 
 }
 
@@ -179,6 +194,16 @@ void FM_Dialog::on_pushButton_3_clicked()
     ui->d3->setValue(0);
     ui->d2->setValue(0);
     ui->d1->setValue(3);
+    for(int i=1; i <=6; i++)
+    {
+        QDoubleSpinBox *w = this->findChild<QDoubleSpinBox *>("d"+QString::number(i));
+        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
+        w = this->findChild<QDoubleSpinBox *>("I"+QString::number(i));
+        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
+        w = this->findChild<QDoubleSpinBox *>("f"+QString::number(i));
+        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
+
+    }
     //evenlope params 6
     synt->gui_params.level[6][0]=0;
     synt->gui_params.level[6][1]=0.9;     //attack
@@ -206,7 +231,7 @@ void FM_Dialog::on_pushButton_3_clicked()
          QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
          slider->setValue(synt->gui_params.level[6][j+1]*100);
          QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
-         slider2->setValue(synt->gui_params.rate[6][j]*100);
+         slider2->setValue(synt->gui_params.rate[6][j]*50);
 
      }
     AssignGUIValues();
@@ -214,6 +239,64 @@ void FM_Dialog::on_pushButton_3_clicked()
 
 void FM_Dialog::on_rate10_sliderMoved()
 {
+    QSlider* slider = (QSlider*)sender();
     AssignGUIValues();
+    if(slider->objectName().contains("level"))
+        ui->label_4->setText(slider->objectName() + " " + QString::number(slider->value()/100.));
+    else
+        ui->label_4->setText(slider->objectName() + " " + QString::number(slider->value()/50.));
+
 }
 
+
+void FM_Dialog::on_d1_valueChanged(double arg1)
+{
+    synt->gui_params.I[1] = ui->I1->value();
+    synt->gui_params.I[2] = ui->I2->value();
+    synt->gui_params.I[3] = ui->I3->value();
+    synt->gui_params.I[4] = ui->I4->value();
+    synt->gui_params.I[5] = ui->I5->value();
+    synt->gui_params.I[6] = ui->I6->value();
+
+    synt->gui_params.f[1] = ui->f1->value();
+    synt->gui_params.f[2] = ui->f2->value();
+    synt->gui_params.f[3] = ui->f3->value();
+    synt->gui_params.f[4] = ui->f4->value();
+    synt->gui_params.f[5] = ui->f5->value();
+    synt->gui_params.f[6] = ui->f6->value();
+
+    synt->gui_params.d[1] = ui->d1->value();
+    synt->gui_params.d[2] = ui->d2->value();
+    synt->gui_params.d[3] = ui->d3->value();
+    synt->gui_params.d[4] = ui->d4->value();
+    synt->gui_params.d[5] = ui->d5->value();
+    synt->gui_params.d[6] = ui->d6->value();
+}
+
+
+void FM_Dialog::on_pushButton_9_clicked()
+{
+
+}
+
+void FM_Dialog::on_CopyTo1_clicked()
+{
+    QPushButton* but =  (QPushButton*)sender();
+    QString s = but->objectName();
+    s = s.right(s.length()-6);
+    int n = s.toInt();
+    QComboBox *combo = this->findChild<QComboBox *>("ComboTo"+QString::number(n));
+
+    if(combo->currentIndex()==0)
+    {
+        for(int i=1; i < 6; i++)
+         for(int j=0; j < 4; j++)
+         {
+             QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
+             slider->setValue(synt->gui_params.level[n][j+1]*100);
+             QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
+             slider2->setValue(synt->gui_params.rate[n][j]*50);
+         }
+    }
+     AssignGUIValues();
+}

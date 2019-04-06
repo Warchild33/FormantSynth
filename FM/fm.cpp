@@ -121,12 +121,12 @@ double FMSynth::Evenlope(int op_index, FmParams* params, double t)
     if((t > (rate[0] + rate[1])) && (t < (rate[0] + rate[1] + rate[2])))
     {
         i = 2;
-        t0 = (rate[0] + rate[1]);
+        t0 = (rate[0] + rate[1] );
     }
     if((t > (rate[0] + rate[1] + rate[2])) && (t < (rate[0] + rate[1] + rate[2] + rate[3])))
     {
         i = 3;
-        t0 = (rate[0] + rate[1] + rate[2]);
+        t0 = (rate[0] + rate[1] + rate[2] );
     }
     double l;
     if(t > (rate[0] + rate[1] + rate[2] + rate[3]))
@@ -214,15 +214,15 @@ double FMSynth::algo5(FmParams* p, double t, int n)
     double ev = Evenlope(6, p, t);
     double ev2 = Evenlope(2, p, t);
     static double d[7];
-    d[6] = amp_mod(p->d[6],0.5,t,p->faze[6]);
-    d[1] = amp_mod(p->d[1],0.5,t,p->faze[6]);
-    d[5] = amp_mod(p->d[5],0.5,t,p->faze[5]);
-    p->out[6] = ev * p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + p->out[6]);
-    p->out[5] = ev * p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + p->out[6]);
+    d[6] = p->d[6];//amp_mod(p->d[6],0.5,t,p->faze[6]);
+    d[1] = p->d[1];//amp_mod(p->d[1],0.5,t,p->faze[6]);
+    d[5] = p->d[5];//amp_mod(p->d[5],0.5,t,p->faze[5]);
+    p->out[6] = ev * p->I[6] * sin( 2 * M_PI * (p->f[6]+ d[6]) * t + p->out[6] );
+    p->out[5] = ev * p->I[5] * sin( 2 * M_PI * (p->f[5]+ d[5]) * t + p->out[6] );
     p->out[4] = ev * p->I[4] * sin( 2 * M_PI * (p->f[4])* t);
     p->out[3] = ev * p->I[3] * sin( 2 * M_PI *  p->f[3] * t + p->out[4]);
     p->out[2] = ev2 * p->I[2] * sin( 2 * M_PI * (p->f[2])* t);
-    p->out[1] = ev2 * p->I[1] * sin( 2 * M_PI * (p->f[1])* t+ p->out[2]);
+    p->out[1] = ev2 * p->I[1] * sin( 2 * M_PI * (p->f[1]+ d[1])* t+ p->out[2]);
     return (p->out[1] + p->out[3] + p->out[5])/3;
 
 }
@@ -240,13 +240,13 @@ double* FMSynth::Test3(Buffer* buffer, double f_oc, double SampleRate, double ti
             for(int j=0; j < 4; j++)
             {
                 param.level[i][j+1] = gui_params.level[i][j+1];
-                param.rate[i][j+1] = gui_params.rate[i][j];
+                param.rate[i][j] = gui_params.rate[i][j];
             }
     }
     double* x = zeroes(0, floor(time*SampleRate));
     double t = 0;
     double dt = 1. / SampleRate;
-    //p->clearvals(0);
+    p->clearvals(0);
 
     for(int n=0; n < floor((time)*SampleRate); n++) //
     {
@@ -261,12 +261,15 @@ double* FMSynth::Test3(Buffer* buffer, double f_oc, double SampleRate, double ti
 
         t+=dt;
         //if(n % 100 == 0)
-       // if(n < 1000)
-       //   p->setXY(0, t, x[n]);
+        //if(n < 10000)
+        //  p->setXY(0, t, x[n]);
+        double ev = Evenlope(6, &param, t);
+        if((n % 100)==0)
+          p->setXY(0, t, ev);
 
     }
     //p->autoscale = true;
-   // p->update_data();
+    p->update_data();
     return x;
 }
 
@@ -381,8 +384,8 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
 
     connect(watcher, SIGNAL(finished()), this, SLOT(handleFinished()));
     QFuture<double*> future;
-    if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,48000,duration,false);
-    //if(n_test == 3) Test3(buffer, f,48000,duration,false);
+    //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,48000,duration,false);
+    if(n_test == 3) Test3(buffer, f,48000,duration,false);
     if(n_test == 2) future = QtConcurrent::run(this, &FMSynth::Test2, buffer, f,48000,duration,false);
     //if(n_test == 1) future = QtConcurrent::run(this, &FMSynth::Test1, buffer, f, 48000,duration,&N);
     watcher->setFuture(future);
