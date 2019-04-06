@@ -5,9 +5,10 @@
 #-------------------------------------------------
 
 QT       += core gui svg xml concurrent
-LIBS+=-lqwt-qt5 -lasound
+lessThan(QT_MAJOR_VERSION, 5): LIBS+=-lqwt -lasound
+greaterThan(QT_MAJOR_VERSION, 4): LIBS+=-lqwt-qt5 -lasound
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-QMAKE_CXXFLAGS+=-g -std=c++11 -Wreorder -Wc++11-narrowing
+QMAKE_CXXFLAGS+=-g -std=c++11 -Wreorder
 
 TARGET = FormantSynth
 TEMPLATE = app

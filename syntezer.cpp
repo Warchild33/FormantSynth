@@ -1,6 +1,5 @@
 #include <QTimer>
 #include <QSettings>
-#include <QtConcurrent>
 #include <QFuture>
 #include <stdio.h>
 #include <stdlib.h>

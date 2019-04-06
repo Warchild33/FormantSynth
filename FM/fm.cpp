@@ -1,7 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <QtConcurrentRun>
-#include <QtConcurrent>
 #include <QFuture>
 #include "fm.h"
 #include "envelope.h"
