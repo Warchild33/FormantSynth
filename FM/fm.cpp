@@ -146,7 +146,7 @@ double FMSynth::Evenlope(int op_index, FmParams* params, double t, bool bRelease
 
 }
 //testing feedback loop
-double FMSynth::algo17(FmParams* p, double t)
+double FMSynth::algotest(FmParams* p, double t)
 {
     p->out[2] = p->I[2] * sin( 2 * M_PI * p->f[2] * t + p->out[2] );
     return p->I[1] * sin( 2 * M_PI * p->f[1] * t + p->out[2]);
@@ -169,7 +169,7 @@ double* FMSynth::Test1(Buffer* buffer, double f_oc=800, double SampleRate=48000,
 
     for(int n=0; n < floor(time*SampleRate); n++) //
     {
-        x[n] = algo17(&param, t);
+        x[n] = algotest(&param, t);
         short sample = (x[n]) * 32768;
         buffer->samples[n*2] = sample;
         buffer->samples[n*2+1] = sample;
@@ -228,6 +228,32 @@ double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double ke
     p->out[2] = ev2 * p->I[2] * sin( 2 * M_PI * (p->f[2])* t);
     p->out[1] = ev2 * p->I[1] * sin( 2 * M_PI * (p->f[1]+ d[1])* t+ p->out[2]);
     return (p->out[1] + p->out[3] + p->out[5])/3;
+}
+
+double FMSynth::algo17(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
+{
+
+    p->out[6] = Evenlope(6, p, t, bReleaseNote, key_time) * p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t);
+    p->out[5] = Evenlope(5, p, t, bReleaseNote, key_time) * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
+    p->out[4] = Evenlope(4, p, t, bReleaseNote, key_time) * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
+    p->out[3] = Evenlope(3, p, t, bReleaseNote, key_time) * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
+    p->out[2] = Evenlope(2, p, t, bReleaseNote, key_time) * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t+ p->out[2]);
+    p->out[1] = Evenlope(1, p, t, bReleaseNote, key_time) * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
+    return p->out[1];
+
+}
+
+double FMSynth::algo16(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
+{
+
+    p->out[6] = Evenlope(6, p, t, bReleaseNote, key_time) * p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t + p->out[6]);
+    p->out[5] = Evenlope(5, p, t, bReleaseNote, key_time) * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
+    p->out[4] = Evenlope(4, p, t, bReleaseNote, key_time) * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
+    p->out[3] = Evenlope(3, p, t, bReleaseNote, key_time) * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
+    p->out[2] = Evenlope(2, p, t, bReleaseNote, key_time) * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t);
+    p->out[1] = Evenlope(1, p, t, bReleaseNote, key_time) * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
+    return p->out[1];
+
 
 }
 
@@ -239,6 +265,7 @@ FmParams FMSynth::getParams(double f_oc)
         param.f[i] = f_oc * gui_params.f[i];
         param.I[i] = gui_params.I[i];
         param.d[i] = gui_params.d[i];
+        param.algo_n = gui_params.algo_n;
         param.faze[i] = 2 * M_PI * (double) rand()/ RAND_MAX;
         for(int i=1; i <=6; i++)
             for(int j=0; j < 4; j++)
@@ -261,6 +288,56 @@ double FMSynth::find_max_release_rate(FmParams& param)
                  max = gui_params.rate[i][3];
         }
     return max;
+}
+
+
+void FMSynth::Algorithm(AlgoParams& param)
+{
+    param.fm_params = getParams(param.f_oc);
+
+    double x;
+    int offset=0;
+    double t = 0;
+    double dt = 1. / 48000;
+
+    //p->clearvals(0);
+
+    if(param.bReleaseNote)
+    {
+        offset = floor((param.key_time)*48000);
+        t = param.key_time;
+    }
+
+
+    for(int n=offset; n < offset+floor((param.time)*48000); n++) //
+    {
+        switch(param.fm_params.algo_n)
+        {
+            case 16: x = algo16(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
+            break;
+            case 17: x = algo17(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
+            break;
+        }
+
+
+        short sample = x * 10000;
+        if( param.buffer->bWrited) break;
+        param.buffer->samples[n*2] = sample;
+        param.buffer->samples[n*2+1] = sample;
+        if(n == 100 && !param.bReleaseNote)
+            out_buffer(param.buffer);
+
+        t+=dt;
+        //if(n % 100 == 0)
+        //if(n < 10000)
+        //  p->setXY(0, t, x);
+        //double ev = Evenlope(6, &param, t, bReleaseNote, key_time);
+        //if((n % 100)==0)
+        //  p->setXY(0, t, ev);
+
+    }
+    //p->autoscale = true;
+    //p->update_data();
 }
 
 double* FMSynth::Test3(Buffer* buffer, double f_oc, double time, bool bReleaseNote, double key_time)
@@ -303,6 +380,7 @@ double* FMSynth::Test3(Buffer* buffer, double f_oc, double time, bool bReleaseNo
     //p->update_data();
     return &x;
 }
+
 
 
 double* FMSynth::Test2(Buffer* buffer, double f_oc, double SampleRate, double time, bool bReleaseNote)
@@ -376,23 +454,8 @@ void FMSynth::selectTest(float f, double duration, int N, bool bReleaseNote)
 
 void FMSynth::handleFinished()
 {
-    return;
-    MyWatcher* watcher = (MyWatcher*)sender();
-    double* x = watcher->result();
-    double Amax = (*std::max_element(&x[0],&x[watcher->N-1]));
-    normalize(0.5, x, Amax, 48000,watcher->duration);
-    double t = 0;
-    double dt = 1. / 48000;
-    for(int i=0; i<watcher->N; i++)
-    {
-        short sample = (x[i]) * 32768;
-        watcher->buffer->samples[i*2] = sample;
-        watcher->buffer->samples[i*2+1] = sample;
-    }
-   // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
-    qDebug() << "finished thread  " << QThread::currentThreadId();
-    delete [] x;
-    out_buffer(watcher->buffer );
+
+
 }
 
 Buffer* FMSynth::play_note(char note, double duration, double velocity)
@@ -404,24 +467,24 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
 
     float f = freq_table.getFreq(note);
 
-    QElapsedTimer timer;
-    timer.start();
-    MyWatcher* watcher = new MyWatcher();
-    watcher->duration = duration;
-    watcher->note = note;
-    watcher->N = N;
-    watcher->buffer = buffer;
-    watcher->pause();
-
-    connect(watcher, SIGNAL(finished()), this, SLOT(handleFinished()));
     QFuture<double*> future;
+    if(n_test == 4)
+    {
+        AlgoParams param;
+        param.bReleaseNote = false;
+        param.buffer = buffer;
+        param.f_oc = f;
+        param.key_time = 0;
+        param.time = duration;
+        //QtConcurrent::run(this, &FMSynth::Algorithm, param);
+        Algorithm(param);
+    }
     if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,duration,false,0);
     //if(n_test == 3) Test3(buffer, f,48000,duration,false,0);
     if(n_test == 2) future = QtConcurrent::run(this, &FMSynth::Test2, buffer, f,48000,duration,false);
-    //if(n_test == 1) future = QtConcurrent::run(this, &FMSynth::Test1, buffer, f, 48000,duration,&N);
-    watcher->setFuture(future);
+    //if(n_test == 1) future = QtConcurrent::run(this, &FMSynth::Test1, buffer, f, 48000,duration,&N);    
     if(n_test == 1) Test1(buffer, f, 48000, duration, &N);
-    qDebug() << "concurrent run " << timer.elapsed();
+
 
 
 
@@ -434,38 +497,19 @@ double FMSynth::release_note(Buffer* buffer, char note, double key_time)
         QFuture<double*> future;
      //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,find_max_release_rate(gui_params),true,key_time);
      if(n_test == 3) Test3(buffer, f,find_max_release_rate(gui_params),true, key_time);
+     QFuture<double*> future;
+     if(n_test == 4)
+     {
+         AlgoParams param;
+         param.bReleaseNote = false;
+         param.buffer = buffer;
+         param.f_oc = f;
+         param.key_time = key_time;
+         param.time = find_max_release_rate(gui_params);
+         //QtConcurrent::run(this, &FMSynth::Algorithm, param);
+         Algorithm(param);
+     }
 
-//    t_last = key_time;
 
-//    int N = floor( buffer->duration * 48000);
-
-//    double* x;
-//    float f = freq_table.getFreq(note);
-
-//    x = selectTest(x, f, buffer->duration, N, true);
-
-//    double Amax = (*std::max_element(&x[0],&x[N-1]));
-//    normalize(0.5, x, Amax, 48000,buffer->duration);
-//    double t = 0;
-//    double dt = 1. / 48000;
-//    int offset = key_time * 48000;
-//    int release_time = 1;
-//    for(int i=offset; i<N; i++)
-//    {
-//        buffer->samples[(i)*2] = 0;
-//        buffer->samples[(i)*2+1] = 0;
-//    }
-
-//    for(int i=0; i<release_time*48000; i++)
-//    {
-//        short sample = (x[i]) * 32768;
-//        buffer->samples[(i+offset)*2] = sample;
-//        buffer->samples[(i+offset)*2+1] = sample;
-//    }
-//   // wavwrite("./wave/test_fm.wav",&buffer->samples[0],buffer->samples.size()*2,48000,2);
-
-//    delete [] x;
-//    return release_time;
-//    //out_buffer( buffer );
     return find_max_release_rate(gui_params);
 }

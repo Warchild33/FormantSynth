@@ -61,6 +61,10 @@ private slots:
 
     void on_CopyTo1_clicked();
 
+    void on_test1_2_clicked();
+
+    void on_comboBox_activated(const QString &arg1);
+
 private:
 
 };

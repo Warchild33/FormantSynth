@@ -26,6 +26,17 @@ FM_Dialog::FM_Dialog(QWidget *parent) :
         // synt->gui_params.rate[i][2] = 4;
      }
 
+    for(int i=1; i <=6; i++)
+    {
+        QDoubleSpinBox *w = this->findChild<QDoubleSpinBox *>("d"+QString::number(i));
+        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
+        w = this->findChild<QDoubleSpinBox *>("I"+QString::number(i));
+        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
+        w = this->findChild<QDoubleSpinBox *>("f"+QString::number(i));
+        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
+
+    }
+
     synt = new FMSynth();
 }
 
@@ -157,6 +168,7 @@ void FM_Dialog::AssignGUIValues()
     synt->gui_params.d[4] = ui->d4->value();
     synt->gui_params.d[5] = ui->d5->value();
     synt->gui_params.d[6] = ui->d6->value();
+    synt->gui_params.algo_n = ui->algoCombo->currentIndex()+1;
 
     //evenlope
     for(int i=1; i <= 6; i++)
@@ -194,16 +206,7 @@ void FM_Dialog::on_pushButton_3_clicked()
     ui->d3->setValue(0);
     ui->d2->setValue(0);
     ui->d1->setValue(3);
-    for(int i=1; i <=6; i++)
-    {
-        QDoubleSpinBox *w = this->findChild<QDoubleSpinBox *>("d"+QString::number(i));
-        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
-        w = this->findChild<QDoubleSpinBox *>("I"+QString::number(i));
-        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
-        w = this->findChild<QDoubleSpinBox *>("f"+QString::number(i));
-        connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
 
-    }
     //evenlope params 6
     synt->gui_params.level[6][0]=0;
     synt->gui_params.level[6][1]=0.9;     //attack
@@ -303,4 +306,122 @@ void FM_Dialog::on_CopyTo1_clicked()
          }
     }
      AssignGUIValues();
+}
+
+void FM_Dialog::on_test1_2_clicked()
+{
+    synt->n_test = 4;
+    ui->I6->setValue(0.87);
+    ui->I5->setValue(0.75);
+    ui->I4->setValue(0.99);
+    ui->I3->setValue(0.68);
+    ui->I2->setValue(0.80);
+    ui->I1->setValue(0.99);
+
+    ui->f6->setValue(0.5);
+    ui->f5->setValue(1.01);
+    ui->f4->setValue(0.5);
+    ui->f3->setValue(1);
+    ui->f2->setValue(0.52);
+    ui->f1->setValue(0.51);
+
+    ui->d6->setValue(1);
+    ui->d5->setValue(0);
+    ui->d4->setValue(0);
+    ui->d3->setValue(7);
+    ui->d2->setValue(0);
+    ui->d1->setValue(0);
+
+    //evenlope params 6
+    synt->gui_params.level[6][0]=0;
+    synt->gui_params.level[6][1]=0.9;     //attack
+    synt->gui_params.level[6][2]=0.9;   //decay
+    synt->gui_params.level[6][3]=0.0;   //sustain
+    synt->gui_params.level[6][4]=0;   //release
+    synt->gui_params.rate[6][0]=0.01;    //attack time
+    synt->gui_params.rate[6][1]=0.1;    //decay time
+    synt->gui_params.rate[6][2]=0.4;      //sustain time
+    synt->gui_params.rate[6][3]=0.2;    //release time
+    int n = 6;
+    //copy to all
+    ui->algoCombo->setCurrentIndex(17-1);
+
+    for(int i=1; i <= 6; i++)
+     for(int j=0; j < 4; j++)
+     {
+         QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
+         slider->setValue(synt->gui_params.level[6][j+1]*100);
+         QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
+         slider2->setValue(synt->gui_params.rate[6][j]*50);
+
+     }
+    ui->algosvg->SvgLoad("./images/algo17.svg");
+    ui->algosvg->LoadDom("./images/algo17.svg");
+    ui->algosvg->repaint();
+
+    AssignGUIValues();
+
+
+}
+
+void FM_Dialog::on_comboBox_activated(const QString &arg1)
+{
+    if( arg1 == "bass1" )
+    {
+        synt->n_test = 4;
+        ui->I6->setValue(0.85);
+        ui->I5->setValue(0.62);
+        ui->I4->setValue(0.93);
+        ui->I3->setValue(0.99);
+        ui->I2->setValue(0.80);
+        ui->I1->setValue(0.99);
+
+        ui->f6->setValue(9);
+        ui->f5->setValue(0.5);
+        ui->f4->setValue(5.0);
+        ui->f3->setValue(0.5);
+        ui->f2->setValue(0.5);
+        ui->f1->setValue(0.5);
+
+        ui->d6->setValue(0);
+        ui->d5->setValue(0);
+        ui->d4->setValue(0);
+        ui->d3->setValue(0);
+        ui->d2->setValue(0);
+        ui->d1->setValue(0);
+
+        //evenlope params 6
+        synt->gui_params.level[6][0]=0;
+        synt->gui_params.level[6][1]=0.9;     //attack
+        synt->gui_params.level[6][2]=0.9;   //decay
+        synt->gui_params.level[6][3]=0.0;   //sustain
+        synt->gui_params.level[6][4]=0;   //release
+        synt->gui_params.rate[6][0]=0.01;    //attack time
+        synt->gui_params.rate[6][1]=0.1;    //decay time
+        synt->gui_params.rate[6][2]=0.4;      //sustain time
+        synt->gui_params.rate[6][3]=0.2;    //release time
+        int n = 6;
+        //copy to all
+        ui->algoCombo->setCurrentIndex(16-1);
+
+        for(int i=1; i <= 6; i++)
+         for(int j=0; j < 4; j++)
+         {
+             QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
+             slider->setValue(synt->gui_params.level[6][j+1]*100);
+             QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
+             slider2->setValue(synt->gui_params.rate[6][j]*50);
+
+         }
+        ui->algosvg->SvgLoad("./images/algo16.svg");
+        ui->algosvg->LoadDom("./images/algo16.svg");
+        ui->algosvg->repaint();
+
+        AssignGUIValues();
+    }
+
+    if( arg1 == "bass2" )
+    {
+        on_test1_2_clicked();
+    }
 }

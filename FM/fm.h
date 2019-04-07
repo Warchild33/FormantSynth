@@ -19,11 +19,9 @@ struct FmParams
                 level[i][j] = 0;
             }
         }
-
+        algo_n = 17;
     }
     double faze[7];
-    double f_oc;
-    double A;
     double f[7];
     double I[7];
     double d[7];
@@ -31,6 +29,7 @@ struct FmParams
     double rate[7][4];
     double level[7][5];
     double out[7];
+    int    algo_n;
 };
 
 
@@ -46,6 +45,16 @@ public:
     char note;
 };
 
+struct AlgoParams
+{
+    Buffer* buffer;
+    double f_oc;
+    double time;
+    bool bReleaseNote;
+    double key_time;
+    FmParams fm_params;
+};
+
 class FMSynth : public Syntezer
 {
     Q_OBJECT
@@ -55,16 +64,18 @@ public:
     FmParams  gui_params;
     int n_test;
     double t_last;
-    double algo1(FmParams* p, double t);
-    double algo17(FmParams* p, double t);
+    double algotest(FmParams* p, double t);
     double algo19(FmParams* p, double t, int n);
     double algo5(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
+    double algo17(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
+    double algo16(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     Buffer* play_note(char note, double duration, double velocity);
     double release_note(Buffer* buffer, char note, double key_time);
     double* Test1(Buffer* buffer, double f_oc, double SampleRate, double time, int* N);
     double* Test2(Buffer* buffer,double f_oc, double SampleRate, double time, bool bReleaseNote);
     double* Test3(Buffer* buffer,double f_oc, double time, bool bReleaseNote, double key_time);
-    void TestEvenlope();
+    void  Algorithm(AlgoParams& param);
+    void  TestEvenlope();
     double Evenlope(int op_index, FmParams* params, double t, bool bReleaseNote, double key_time);
     double find_max_release_rate(FmParams& param);
     void selectTest(float f, double duration, int N, bool bReleaseNote);
