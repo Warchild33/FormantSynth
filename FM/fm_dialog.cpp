@@ -1,8 +1,9 @@
 #include "fm_dialog.h"
 #include "fm.h"
+#include "ploter.h"
 #include "ui_fm_dialog.h"
 
-
+extern Ploter* p;
 
 FM_Dialog::FM_Dialog(QWidget *parent) :
     QDialog(parent),
@@ -286,14 +287,49 @@ void FM_Dialog::on_pushButton_3_clicked()
     AssignGUIValues();
 }
 
+void FM_Dialog::Show_Envelope(int n_op)
+{
+    int levels[4];
+    int rates[4];
+    for(int i=0; i < 4; i++)
+    {
+        levels[i] = synt->gui_params.level[n_op][i+1];
+        rates[i] = synt->gui_params.rate[n_op][i];
+    }
+    EnvelopeFM ev(levels, rates);
+
+    p->clearvals(0);
+    for(int n=0; n < 2*48000; n++)
+    {
+        p->setXY(0,(float)n/48000.,ev.render());
+    }
+    p->update_data();
+
+}
+
 void FM_Dialog::on_rate10_sliderMoved()
 {
     QSlider* slider = (QSlider*)sender();
+    QString s = slider->objectName();
+    if(s.contains("rate"))
+      s = s.right(s.length()-4).left(1);
+    if(s.contains("level"))
+        s = s.right(s.length()-5).left(1);
+    Show_Envelope(s.toInt());
+
     AssignGUIValues();
+    QString templ = "<html><head/><body><p><span style=\" font-size:16pt;\">%1</span></p></body></html>";
+
     if(slider->objectName().contains("level"))
-        ui->label_4->setText(slider->objectName() + " " + QString::number(slider->value()/100.));
+    {
+        templ = templ.arg("L " + QString::number(slider->value()));
+        ui->label_4->setText(templ);
+    }
     else
-        ui->label_4->setText(slider->objectName() + " " + QString::number(slider->value()/50.));
+    {
+        templ = templ.arg("R " + QString::number(slider->value()));
+        ui->label_4->setText(templ);
+    }
 
 }
 
@@ -525,4 +561,9 @@ void FM_Dialog::on_comboBox_activated(const QString &arg1)
     {
         on_test1_2_clicked();
     }
+}
+
+void FM_Dialog::on_rate11_sliderMoved(int position)
+{
+
 }

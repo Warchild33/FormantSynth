@@ -246,7 +246,7 @@ double FMSynth::algo17(FmParams* p, double t, int n, bool bReleaseNote, double k
 
 double FMSynth::algo16(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
 {
-    if( (n%100) == 0)
+    //if( (n%100) == 0)
     for(int i=1; i <=6; i++)
     {
         p->ev[i] = p->envelope[i]->render();
@@ -317,7 +317,7 @@ void FMSynth::Algorithm(AlgoParams& param)
     double t = 0;
     double dt = 1. / 48000;
 
-        p->clearvals(0);
+     p->clearvals(0);
 
     if(param.bReleaseNote)
     {
@@ -349,7 +349,7 @@ void FMSynth::Algorithm(AlgoParams& param)
         //if(n < 10000)
         //  p->setXY(0, t, x);
         if((n % 100)==0)
-            p->setXY(0, t, x);
+            p->setXY(0, t, param.fm_params.ev[1]);
 
     }
     //p->autoscale = true;
@@ -363,7 +363,7 @@ double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double ke
     d[1] = p->d[1];//amp_mod(p->d[1],0.5,t,p->faze[6]);
     d[5] = p->d[5];//amp_mod(p->d[5],0.5,t,p->faze[5]);
 
-    if( (n%100) == 0)
+    //if( (n%100) == 0)
     for(int i=1; i <=6; i++)
     {
         p->ev[i] = p->envelope[i]->render();
@@ -409,9 +409,9 @@ double* FMSynth::Test3(Buffer* buffer, double f_oc, double time, bool bReleaseNo
             out_buffer(buffer);
 
         t+=dt;
-        if(n % 100 == 0)
         //if(n % 100 == 0)
-            p->setXY(0, t, x);
+        //if(n % 100 == 0)
+         //  p->setXY(0, t, param.ev[3]);
         //double ev = Evenlope(2, &param, t, bReleaseNote, key_time);
         //p->setXY(0, t, ev);
 

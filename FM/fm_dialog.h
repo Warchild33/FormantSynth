@@ -16,6 +16,7 @@ public:
     FMSynth* synt;
     Ui::FM_Dialog *ui;
     explicit FM_Dialog(QWidget *parent = 0);
+    void Show_Envelope(int n_op);
     ~FM_Dialog();
 
 private slots:
@@ -64,6 +65,8 @@ private slots:
     void on_test1_2_clicked();
 
     void on_comboBox_activated(const QString &arg1);
+
+    void on_rate11_sliderMoved(int position);
 
 private:
 

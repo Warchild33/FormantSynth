@@ -8,7 +8,7 @@ public:
     int levels[4];
     int rate[4];
 
-    int level, targetlevel;
+    double level, targetlevel;
     int i, state;
     bool down, rising;
     double decayIncrement;

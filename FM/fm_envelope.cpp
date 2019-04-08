@@ -47,7 +47,7 @@ EnvelopeFM::EnvelopeFM(int levels[4], int rate[4])
 double EnvelopeFM::render()
 {
     if (state < 3 || (state < 4 && !down)) {
-            int lev;
+            double lev;
             lev = level;
             if (rising) {
                 lev += decayIncrement * (2 + (targetlevel - lev) / 256);
