@@ -15,6 +15,7 @@ AlsaDriver::AlsaDriver()
     bExitThread = false;
     parent = 0;
     Nthreads = 8;
+
     if(playback_handle != 0)
     {
         createThreads((char*)settings.value("alsa_device").toString().toStdString().c_str());
@@ -51,7 +52,7 @@ int AlsaDriver::open(char* device_name, bool bTest)
     int i;
     int err;
     short buf[128];
-
+    //return 0;
     this->device_name = device_name;
 
     if ((err = snd_pcm_open(&playback_handle, device_name, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK)) < 0) {
@@ -144,7 +145,7 @@ int AlsaDriver::open(char* device_name, bool bTest)
             }
         }
     }
-    fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
+    //fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
 
     createThreads(device_name);
 
@@ -219,7 +220,7 @@ void AlsaDriver::run()
     {
         if(!open((char*)settings.value("alsa_device").toString().toStdString().c_str(), false))
             return;
-        fprintf (stderr, "AlsaDriver thread id = %d device=dmix", QThread::currentThreadId());
+        //fprintf (stderr, "AlsaDriver thread id = %d device=dmix", QThread::currentThreadId());
     }
 
     while(1)

@@ -170,14 +170,14 @@ void FM_Dialog::AssignGUIValues()
     synt->gui_params.d[6] = ui->d6->value();
     synt->gui_params.algo_n = ui->algoCombo->currentIndex()+1;
 
-    //evenlope
+//    //evenlope
     for(int i=1; i <= 6; i++)
      for(int j=0; j < 4; j++)
      {
          QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
-         synt->gui_params.level[i][j+1] = (float)slider->value()/100.;
+         synt->gui_params.level[i][j+1] = (float)slider->value();
          QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
-         synt->gui_params.rate[i][j] = (float)slider2->value()/50.;
+         synt->gui_params.rate[i][j] = (float)slider2->value();
         // synt->gui_params.rate[i][2] = 4;
      }
 
@@ -209,32 +209,74 @@ void FM_Dialog::on_pushButton_3_clicked()
 
     //evenlope params 6
     synt->gui_params.level[6][0]=0;
-    synt->gui_params.level[6][1]=0.9;     //attack
-    synt->gui_params.level[6][2]=0.9;   //decay
-    synt->gui_params.level[6][3]=0;   //sustain
+    synt->gui_params.level[6][1]=99;     //attack
+    synt->gui_params.level[6][2]=95;   //decay
+    synt->gui_params.level[6][3]=0.0;   //sustain
     synt->gui_params.level[6][4]=0;   //release
-    synt->gui_params.rate[6][0]=0.01;    //attack time
-    synt->gui_params.rate[6][1]=0.1;    //decay time
-    synt->gui_params.rate[6][2]=0.4;      //sustain time
-    synt->gui_params.rate[6][3]=0.2;    //release time
+    synt->gui_params.rate[6][0]=95;    //attack rate
+    synt->gui_params.rate[6][1]=29;    //decay rate
+    synt->gui_params.rate[6][2]=10;      //sustain rate
+    synt->gui_params.rate[6][3]=10;    //release rate
 
-    //evenlope params 2
+    synt->gui_params.level[5][0]=0;
+    synt->gui_params.level[5][1]=99;     //attack
+    synt->gui_params.level[5][2]=95;   //decay
+    synt->gui_params.level[5][3]=0.0;   //sustain
+    synt->gui_params.level[5][4]=0;   //release
+    synt->gui_params.rate[5][0]=95.;    //attack rate
+    synt->gui_params.rate[5][1]=20;    //decay rate
+    synt->gui_params.rate[5][2]=10;      //sustain rate
+    synt->gui_params.rate[5][3]=10;    //release rate
+
+    synt->gui_params.level[4][0]=0;
+    synt->gui_params.level[4][1]=90;     //attack
+    synt->gui_params.level[4][2]=95;   //decay
+    synt->gui_params.level[4][3]=0.0;   //sustain
+    synt->gui_params.level[4][4]=0;   //release
+    synt->gui_params.rate[4][0]=95.;    //attack rate
+    synt->gui_params.rate[4][1]=29;    //decay rate
+    synt->gui_params.rate[4][2]=10;      //sustain rate
+    synt->gui_params.rate[4][3]=10;    //release rate
+
+    synt->gui_params.level[3][0]=0;
+    synt->gui_params.level[3][1]=99;     //attack
+    synt->gui_params.level[3][2]=97;   //decay
+    synt->gui_params.level[3][3]=0.0;   //sustain
+    synt->gui_params.level[3][4]=0;   //release
+    synt->gui_params.rate[3][0]=95;    //attack rate
+    synt->gui_params.rate[3][1]=20;    //decay rate
+    synt->gui_params.rate[3][2]=10;      //sustain rate
+    synt->gui_params.rate[3][3]=10;    //release rate
+
     synt->gui_params.level[2][0]=0;
-    synt->gui_params.level[2][1]=0.9;     //attack
-    synt->gui_params.level[2][2]=0.7;   //decay
-    synt->gui_params.level[2][3]=0;   //sustain
+    synt->gui_params.level[2][1]=90;     //attack
+    synt->gui_params.level[2][2]=75;   //decay
+    synt->gui_params.level[2][3]=0.0;   //sustain
     synt->gui_params.level[2][4]=0;   //release
-    synt->gui_params.rate[2][0]=0.01;    //attack time
-    synt->gui_params.rate[2][1]=0.1;    //decay time
-    synt->gui_params.rate[2][2]=0.4;      //sustain time
-    synt->gui_params.rate[2][3]=0.2;    //release time
+    synt->gui_params.rate[2][0]=97;    //attack rate
+    synt->gui_params.rate[2][1]=50;    //decay rate
+    synt->gui_params.rate[2][2]=10;      //sustain rate
+    synt->gui_params.rate[2][3]=10;    //release rate
+
+    synt->gui_params.level[1][0]=0;
+    synt->gui_params.level[1][1]=99;     //attack
+    synt->gui_params.level[1][2]=76;   //decay
+    synt->gui_params.level[1][3]=0.0;   //sustain
+    synt->gui_params.level[1][4]=0;   //release
+    synt->gui_params.rate[1][0]=96;    //attack rate
+    synt->gui_params.rate[1][1]=25;    //decay rate
+    synt->gui_params.rate[1][2]=10;      //sustain rate
+    synt->gui_params.rate[1][3]=10;    //release rate
+
+
+
     for(int i=1; i <= 6; i++)
      for(int j=0; j < 4; j++)
      {
          QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
-         slider->setValue(synt->gui_params.level[6][j+1]*100);
+         slider->setValue(synt->gui_params.level[6][j+1]);
          QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
-         slider2->setValue(synt->gui_params.rate[6][j]*50);
+         slider2->setValue(synt->gui_params.rate[6][j]);
 
      }
     ui->algosvg->SvgLoad("./images/algo5.svg");
@@ -352,7 +394,7 @@ void FM_Dialog::on_test1_2_clicked()
          QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
          slider->setValue(synt->gui_params.level[6][j+1]*100);
          QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
-         slider2->setValue(synt->gui_params.rate[6][j]*50);
+         slider2->setValue(synt->gui_params.rate[6][j]*100);
 
      }
     ui->algosvg->SvgLoad("./images/algo17.svg");
@@ -362,6 +404,11 @@ void FM_Dialog::on_test1_2_clicked()
     AssignGUIValues();
 
 
+}
+
+double rate2time(double rate)
+{
+    return 1 - rate/100.;
 }
 
 void FM_Dialog::on_comboBox_activated(const QString &arg1)
@@ -392,14 +439,67 @@ void FM_Dialog::on_comboBox_activated(const QString &arg1)
 
         //evenlope params 6
         synt->gui_params.level[6][0]=0;
-        synt->gui_params.level[6][1]=0.9;     //attack
-        synt->gui_params.level[6][2]=0.9;   //decay
+        synt->gui_params.level[6][1]=93;     //attack
+        synt->gui_params.level[6][2]=28;   //decay
         synt->gui_params.level[6][3]=0.0;   //sustain
         synt->gui_params.level[6][4]=0;   //release
-        synt->gui_params.rate[6][0]=0.01;    //attack time
-        synt->gui_params.rate[6][1]=0.1;    //decay time
-        synt->gui_params.rate[6][2]=0.4;      //sustain time
-        synt->gui_params.rate[6][3]=0.2;    //release time
+        synt->gui_params.rate[6][0]=94;    //attack RATE
+        synt->gui_params.rate[6][1]=56;    //decay RATE
+        synt->gui_params.rate[6][2]=26;      //sustain RATE
+        synt->gui_params.rate[6][3]=55;    //release RATE
+
+        synt->gui_params.level[5][0]=0;
+        synt->gui_params.level[5][1]=99;     //attack
+        synt->gui_params.level[5][2]=0.0;   //decay
+        synt->gui_params.level[5][3]=0.0;   //sustain
+        synt->gui_params.level[5][4]=0;   //release
+        synt->gui_params.rate[5][0]=99;    //attack RATE
+        synt->gui_params.rate[5][1]=0;    //decay RATE
+        synt->gui_params.rate[5][2]=0;      //sustain RATE
+        synt->gui_params.rate[5][3]=0;    //release RATE
+
+        synt->gui_params.level[4][0]=0;
+        synt->gui_params.level[4][1]=90;     //attack
+        synt->gui_params.level[4][2]=32;   //decay
+        synt->gui_params.level[4][3]=2;   //sustain
+        synt->gui_params.level[4][4]=0;   //release
+        synt->gui_params.rate[4][0]=90;    //attack RATE
+        synt->gui_params.rate[4][1]=40;    //decay RATE
+        synt->gui_params.rate[4][2]=7;      //sustain RATE
+        synt->gui_params.rate[4][3]=55;    //release RATE
+
+        synt->gui_params.level[3][0]=0;
+        synt->gui_params.level[3][1]=79;     //attack
+        synt->gui_params.level[3][2]=65;   //decay
+        synt->gui_params.level[3][3]=0.0;   //sustain
+        synt->gui_params.level[3][4]=0;   //release
+        synt->gui_params.rate[3][0]=88;    //attack RATE
+        synt->gui_params.rate[3][1]=98;    //decay RATE
+        synt->gui_params.rate[3][2]=32;      //sustain RATE
+        synt->gui_params.rate[3][3]=30;    //release RATE
+
+        synt->gui_params.level[2][0]=0;
+        synt->gui_params.level[2][1]=99;     //attack
+        synt->gui_params.level[2][2]=0.0;   //decay
+        synt->gui_params.level[2][3]=0.0;   //sustain
+        synt->gui_params.level[2][4]=0;   //release
+        synt->gui_params.rate[2][0]=99;    //attack RATE
+        synt->gui_params.rate[2][1]=20;    //decay RATE
+        synt->gui_params.rate[2][2]=0;      //sustain RATE
+        synt->gui_params.rate[2][3]=0;    //release RATE
+
+        synt->gui_params.level[1][0]=0;
+        synt->gui_params.level[1][1]=99;     //attack
+        synt->gui_params.level[1][2]=95;   //decay
+        synt->gui_params.level[1][3]=32;   //sustain
+        synt->gui_params.level[1][4]=0;   //release
+        synt->gui_params.rate[1][0]=95;    //attack RATE
+        synt->gui_params.rate[1][1]=62;    //decay RATE
+        synt->gui_params.rate[1][2]=10;      //sustain RATE
+        synt->gui_params.rate[1][3]=58;    //release RATE
+
+
+
         int n = 6;
         //copy to all
         ui->algoCombo->setCurrentIndex(16-1);
@@ -408,9 +508,10 @@ void FM_Dialog::on_comboBox_activated(const QString &arg1)
          for(int j=0; j < 4; j++)
          {
              QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
-             slider->setValue(synt->gui_params.level[6][j+1]*100);
+             slider->setValue(synt->gui_params.level[i][j+1]);
              QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
-             slider2->setValue(synt->gui_params.rate[6][j]*50);
+             slider2->setValue(synt->gui_params.rate[i][j]);
+
 
          }
         ui->algosvg->SvgLoad("./images/algo16.svg");

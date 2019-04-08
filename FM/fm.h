@@ -3,6 +3,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include "syntezer.h"
+#include "fm_envelope.h"
 
 struct FmParams
 {
@@ -13,6 +14,7 @@ struct FmParams
             out[i] = 0;
             d[i] = 0;
             f[i] = 1;
+            ev[i] = 0;
             for(int j=0; j<4;j++)
             {
                 rate[i][j] = 1;
@@ -25,10 +27,13 @@ struct FmParams
     double f[7];
     double I[7];
     double d[7];
+    double ev[7];
     //evenlope
     double rate[7][4];
     double level[7][5];
     double out[7];
+    EnvelopeFM* envelope[7];
+    double lfo;
     int    algo_n;
 };
 
@@ -77,6 +82,7 @@ public:
     void  Algorithm(AlgoParams& param);
     void  TestEvenlope();
     double Evenlope(int op_index, FmParams* params, double t, bool bReleaseNote, double key_time);
+    double Evenlope2(int op_index, FmParams* params, double t, bool bReleaseNote, double key_time);
     double find_max_release_rate(FmParams& param);
     void selectTest(float f, double duration, int N, bool bReleaseNote);
 

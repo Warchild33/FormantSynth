@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     SyntTest/synttestform.cpp \
     SyntTest/testsynth.cpp \
     FM/fm.cpp \
-    FM/fm_dialog.cpp
+    FM/fm_dialog.cpp \
+    FM/fm_envelope.cpp
 
 HEADERS  += mainwindow.h \
     fft/stft.h \
@@ -92,7 +93,8 @@ HEADERS  += mainwindow.h \
     SyntTest/testsynth.h \
     fft/istft.h \
     FM/fm_dialog.h \
-    FM/fm.h
+    FM/fm.h \
+    FM/fm_envelope.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \

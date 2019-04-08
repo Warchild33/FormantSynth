@@ -3,8 +3,10 @@
 #include <QtConcurrentRun>
 #include <QFuture>
 #include "fm.h"
+#include "gen.h"
 #include "envelope.h"
 #include "common.h"
+#include "fm_envelope.h"
 #include "ploter.h"
 /*
 double algo0(double A, double f_oc, double fm1, double fm2, double I1, double I2)
@@ -24,6 +26,7 @@ FMSynth::FMSynth()
 :Syntezer()
 {
     TestEvenlope();
+
     n_test = 1;
 
     //generate sin table
@@ -72,16 +75,29 @@ inline double sinT(double angle_rad)
 void FMSynth::TestEvenlope()
 {
     FmParams params;
-    params.level[1][0]=0.1;
-    params.level[1][1]=1;     //attack
-    params.level[1][2]=0.8;   //decay
-    params.level[1][3]=0.7;   //sustain
-    params.level[1][4]=0.1;   //release
-    params.rate[1][0]=0.5;    //attack time
-    params.rate[1][1]=0.5;    //decay time
-    params.rate[1][2]=1;      //sustain time
-    params.rate[1][3]=0.5;    //release time
-//    Evenlope(&params, 0.3);
+    params.level[3][0]=0;
+    params.level[3][1]=99;     //attack
+    params.level[3][2]=97;   //decay
+    params.level[3][3]=0.0;   //sustain
+    params.level[3][4]=0;   //release
+    params.rate[3][0]=95;    //attack rate
+    params.rate[3][1]=20;    //decay rate
+    params.rate[3][2]=10;      //sustain rate
+    params.rate[3][3]=10;    //release rate
+
+    int level[4]={99,97,0,0};
+    int rate[4]={95,20,10,10};
+    EnvelopeFM ev(level, rate);
+
+//    double t=0;
+//    double dt=0.01;
+//    p->clearvals(0);
+//    for(t = 0; t < 5; t+=dt)
+//    {
+//        double ev = Evenlope(3, &params, t, false, 0);
+//        p->setXY(0, t, ev);
+//    }
+//    p->update_data();
 //    Evenlope(&params, 0.6);
 //    Evenlope(&params, 1.5);
 //    Evenlope(1, &params, 3);
@@ -145,6 +161,7 @@ double FMSynth::Evenlope(int op_index, FmParams* params, double t, bool bRelease
 
 
 }
+
 //testing feedback loop
 double FMSynth::algotest(FmParams* p, double t)
 {
@@ -213,22 +230,6 @@ double FMSynth::algo19(FmParams* p, double t, int n)
     return p->out[1] + p->out[4] + p->out[5];
 }
 
-double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
-{
-    double ev = Evenlope(6, p, t, bReleaseNote, key_time);
-    double ev2 = Evenlope(2, p, t, bReleaseNote, key_time);
-    static double d[7];
-    d[6] = p->d[6];//amp_mod(p->d[6],0.5,t,p->faze[6]);
-    d[1] = p->d[1];//amp_mod(p->d[1],0.5,t,p->faze[6]);
-    d[5] = p->d[5];//amp_mod(p->d[5],0.5,t,p->faze[5]);
-    p->out[6] = ev * p->I[6] * sin( 2 * M_PI * (p->f[6]+ d[6]) * t + p->out[6] );
-    p->out[5] = ev * p->I[5] * sin( 2 * M_PI * (p->f[5]+ d[5]) * t + p->out[6] );
-    p->out[4] = ev * p->I[4] * sin( 2 * M_PI * (p->f[4])* t);
-    p->out[3] = ev * p->I[3] * sin( 2 * M_PI *  p->f[3] * t + p->out[4]);
-    p->out[2] = ev2 * p->I[2] * sin( 2 * M_PI * (p->f[2])* t);
-    p->out[1] = ev2 * p->I[1] * sin( 2 * M_PI * (p->f[1]+ d[1])* t+ p->out[2]);
-    return (p->out[1] + p->out[3] + p->out[5])/3;
-}
 
 double FMSynth::algo17(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
 {
@@ -245,13 +246,18 @@ double FMSynth::algo17(FmParams* p, double t, int n, bool bReleaseNote, double k
 
 double FMSynth::algo16(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
 {
+    if( (n%100) == 0)
+    for(int i=1; i <=6; i++)
+    {
+        p->ev[i] = p->envelope[i]->render();
+    }
 
-    p->out[6] = Evenlope(6, p, t, bReleaseNote, key_time) * p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t + p->out[6]);
-    p->out[5] = Evenlope(5, p, t, bReleaseNote, key_time) * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
-    p->out[4] = Evenlope(4, p, t, bReleaseNote, key_time) * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
-    p->out[3] = Evenlope(3, p, t, bReleaseNote, key_time) * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
-    p->out[2] = Evenlope(2, p, t, bReleaseNote, key_time) * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t);
-    p->out[1] = Evenlope(1, p, t, bReleaseNote, key_time) * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
+    p->out[6] = p->ev[6]* p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t + p->out[6]);
+    p->out[5] = p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
+    p->out[4] = p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
+    p->out[3] = p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
+    p->out[2] = p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t);
+    p->out[1] = p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
     return p->out[1];
 
 
@@ -260,19 +266,30 @@ double FMSynth::algo16(FmParams* p, double t, int n, bool bReleaseNote, double k
 FmParams FMSynth::getParams(double f_oc)
 {
     FmParams param;
+    int levels[4];
+    int rates[4];
+    const double OCTAVE_1024 = 1.0006771307;
     for(int i=0; i < 7; i++)
     {
         param.f[i] = f_oc * gui_params.f[i];
         param.I[i] = gui_params.I[i];
         param.d[i] = gui_params.d[i];
+        param.f[i] = param.f[i] * pow(OCTAVE_1024, param.d[i]);
+
         param.algo_n = gui_params.algo_n;
         param.faze[i] = 2 * M_PI * (double) rand()/ RAND_MAX;
         for(int i=1; i <=6; i++)
+        {
             for(int j=0; j < 4; j++)
             {
                 param.level[i][j+1] = gui_params.level[i][j+1];
                 param.rate[i][j] = gui_params.rate[i][j];
+                levels[j] = gui_params.level[i][j+1];
+                rates[j] = gui_params.rate[i][j];
             }
+            param.envelope[i] = new EnvelopeFM(levels, rates);
+        }
+
     }
 
     return param;
@@ -300,7 +317,7 @@ void FMSynth::Algorithm(AlgoParams& param)
     double t = 0;
     double dt = 1. / 48000;
 
-    //p->clearvals(0);
+        p->clearvals(0);
 
     if(param.bReleaseNote)
     {
@@ -320,7 +337,7 @@ void FMSynth::Algorithm(AlgoParams& param)
         }
 
 
-        short sample = x * 10000;
+        short sample = x * 20000;
         if( param.buffer->bWrited) break;
         param.buffer->samples[n*2] = sample;
         param.buffer->samples[n*2+1] = sample;
@@ -331,14 +348,36 @@ void FMSynth::Algorithm(AlgoParams& param)
         //if(n % 100 == 0)
         //if(n < 10000)
         //  p->setXY(0, t, x);
-        //double ev = Evenlope(6, &param, t, bReleaseNote, key_time);
-        //if((n % 100)==0)
-        //  p->setXY(0, t, ev);
+        if((n % 100)==0)
+            p->setXY(0, t, x);
 
     }
     //p->autoscale = true;
-    //p->update_data();
+    p->update_data();
 }
+
+double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
+{
+    static double d[7];
+    d[6] = p->d[6];//amp_mod(p->d[6],0.5,t,p->faze[6]);
+    d[1] = p->d[1];//amp_mod(p->d[1],0.5,t,p->faze[6]);
+    d[5] = p->d[5];//amp_mod(p->d[5],0.5,t,p->faze[5]);
+
+    if( (n%100) == 0)
+    for(int i=1; i <=6; i++)
+    {
+        p->ev[i] = p->envelope[i]->render();
+    }
+
+    p->out[6] =  p->ev[6] * p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + p->out[6] ) * p->lfo;
+    p->out[5] =  p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + p->out[6] ) * p->lfo ;
+    p->out[4] =  p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4])* t) * p->lfo ;
+    p->out[3] =  p->ev[3] * p->I[3] *  sin( 2 * M_PI *  p->f[3] * t + p->out[4]) * p->lfo;
+    p->out[2] =  p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2])* t) * p->lfo;
+    p->out[1] =  p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1]+ d[1])* t+ p->out[2]) * p->lfo;
+    return (p->out[1] + p->out[3] + p->out[5])/3;
+}
+
 
 double* FMSynth::Test3(Buffer* buffer, double f_oc, double time, bool bReleaseNote, double key_time)
 {
@@ -348,17 +387,19 @@ double* FMSynth::Test3(Buffer* buffer, double f_oc, double time, bool bReleaseNo
     double t = 0;
     double dt = 1. / 48000;
     double t_end;
-    //p->clearvals(0);
+
+    p->clearvals(0);
 
     if(bReleaseNote)
     {
         offset = floor((key_time)*48000);
         t = key_time;
     }
-
+    double* lfo_osc = tri_nes(2,0.75,48000,time);
 
     for(int n=offset; n < offset+floor((time)*48000); n++) //
     {       
+        param.lfo = (0.8 + 0.2 *lfo_osc[n]);
         x = algo5(&param, t, n, bReleaseNote, key_time);
         short sample = x * 10000;
         if( buffer->bWrited) break;
@@ -368,16 +409,15 @@ double* FMSynth::Test3(Buffer* buffer, double f_oc, double time, bool bReleaseNo
             out_buffer(buffer);
 
         t+=dt;
+        if(n % 100 == 0)
         //if(n % 100 == 0)
-        //if(n < 10000)
-        //  p->setXY(0, t, x);
-        //double ev = Evenlope(6, &param, t, bReleaseNote, key_time);
-        //if((n % 100)==0)
-        //  p->setXY(0, t, ev);
+            p->setXY(0, t, x);
+        //double ev = Evenlope(2, &param, t, bReleaseNote, key_time);
+        //p->setXY(0, t, ev);
 
     }
     //p->autoscale = true;
-    //p->update_data();
+    p->update_data();
     return &x;
 }
 
@@ -479,8 +519,8 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
         //QtConcurrent::run(this, &FMSynth::Algorithm, param);
         Algorithm(param);
     }
-    if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,duration,false,0);
-    //if(n_test == 3) Test3(buffer, f,48000,duration,false,0);
+    //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,duration,false,0);
+    if(n_test == 3) Test3(buffer,f, duration,false,0);
     if(n_test == 2) future = QtConcurrent::run(this, &FMSynth::Test2, buffer, f,48000,duration,false);
     //if(n_test == 1) future = QtConcurrent::run(this, &FMSynth::Test1, buffer, f, 48000,duration,&N);    
     if(n_test == 1) Test1(buffer, f, 48000, duration, &N);
@@ -493,11 +533,11 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
 
 double FMSynth::release_note(Buffer* buffer, char note, double key_time)
 {
+    return 0;
      float f = freq_table.getFreq(note);
         QFuture<double*> future;
      //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,find_max_release_rate(gui_params),true,key_time);
      if(n_test == 3) Test3(buffer, f,find_max_release_rate(gui_params),true, key_time);
-     QFuture<double*> future;
      if(n_test == 4)
      {
          AlgoParams param;
