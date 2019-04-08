@@ -52,7 +52,7 @@ int AlsaDriver::open(char* device_name, bool bTest)
     int i;
     int err;
     short buf[128];
-    return 0;
+    //return 0;
     this->device_name = device_name;
 
     if ((err = snd_pcm_open(&playback_handle, device_name, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK)) < 0) {

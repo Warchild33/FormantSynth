@@ -32,6 +32,16 @@
      <string>bass2</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>strings1</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>E.organ1</string>
+    </property>
+   </item>
   </widget>
   <widget class="QComboBox" name="algoCombo">
    <property name="geometry">

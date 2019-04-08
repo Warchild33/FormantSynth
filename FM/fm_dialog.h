@@ -19,6 +19,8 @@ public:
     void Show_Envelope(int n_op);
     ~FM_Dialog();
 
+    void initSliders();
+
 private slots:
     void AssignGUIValues();
     void on_I1_valueChanged(double arg1);
@@ -67,6 +69,11 @@ private slots:
     void on_comboBox_activated(const QString &arg1);
 
     void on_rate11_sliderMoved(int position);
+
+    void initEnvelope(int op, int r1, int r2, int r3, int r4, int l1, int l2, int l3, int l4);
+    void initFreqs(double f1, double f2, double f3, double f4, double f5, double f6);
+    void initLevels(double I1, double I2, double I3, double I4, double I5, double I6);
+    void initDetune(double d1, double d2, double d3, double d4, double d5, double d6);
 
 private:
 

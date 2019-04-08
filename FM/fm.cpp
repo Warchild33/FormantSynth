@@ -252,16 +252,34 @@ double FMSynth::algo16(FmParams* p, double t, int n, bool bReleaseNote, double k
         p->ev[i] = p->envelope[i]->render();
     }
 
-    p->out[6] = p->ev[6]* p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t + p->out[6]);
-    p->out[5] = p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
-    p->out[4] = p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
-    p->out[3] = p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
-    p->out[2] = p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t);
-    p->out[1] = p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
+    p->out[6] = p->ev[6]* p->I[6] * sin( 2 * M_PI * (p->f[6])* t + p->out[6]);
+    p->out[5] = p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5])* t+ p->out[6]);
+    p->out[4] = p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4])* t);
+    p->out[3] = p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3])* t+ p->out[4]);
+    p->out[2] = p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2])* t);
+    p->out[1] = p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1])* t+ p->out[2]+p->out[3]+p->out[5]);
     return p->out[1];
+}
+
+double FMSynth::algo32(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
+{
+    //if( (n%100) == 0)
+    for(int i=1; i <=6; i++)
+    {
+        p->ev[i] = p->envelope[i]->render();
+    }
+
+    p->out[6] = p->ev[6]* p->I[6] * sin( 2 * M_PI * (p->f[6])* t + p->out[6]);
+    p->out[5] = p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5])* t);
+    p->out[4] = p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4])* t);
+    p->out[3] = p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3])* t);
+    p->out[2] = p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2])* t);
+    p->out[1] = p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1])* t);
+    return (p->out[1] + p->out[2] + p->out[3] + p->out[4] + p->out[5] + p->out[6])/6;
 
 
 }
+
 
 FmParams FMSynth::getParams(double f_oc)
 {
@@ -334,6 +352,8 @@ void FMSynth::Algorithm(AlgoParams& param)
             break;
             case 17: x = algo17(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
             break;
+            case 32: x = algo32(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
+            break;
         }
 
 
@@ -349,7 +369,7 @@ void FMSynth::Algorithm(AlgoParams& param)
         //if(n < 10000)
         //  p->setXY(0, t, x);
         if((n % 100)==0)
-            p->setXY(0, t, param.fm_params.ev[1]);
+            p->setXY(0, t, x);
 
     }
     //p->autoscale = true;
@@ -358,12 +378,6 @@ void FMSynth::Algorithm(AlgoParams& param)
 
 double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
 {
-    static double d[7];
-    d[6] = p->d[6];//amp_mod(p->d[6],0.5,t,p->faze[6]);
-    d[1] = p->d[1];//amp_mod(p->d[1],0.5,t,p->faze[6]);
-    d[5] = p->d[5];//amp_mod(p->d[5],0.5,t,p->faze[5]);
-
-    //if( (n%100) == 0)
     for(int i=1; i <=6; i++)
     {
         p->ev[i] = p->envelope[i]->render();
@@ -374,7 +388,7 @@ double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double ke
     p->out[4] =  p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4])* t) * p->lfo ;
     p->out[3] =  p->ev[3] * p->I[3] *  sin( 2 * M_PI *  p->f[3] * t + p->out[4]) * p->lfo;
     p->out[2] =  p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2])* t) * p->lfo;
-    p->out[1] =  p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1]+ d[1])* t+ p->out[2]) * p->lfo;
+    p->out[1] =  p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1])* t+ p->out[2]) * p->lfo;
     return (p->out[1] + p->out[3] + p->out[5])/3;
 }
 

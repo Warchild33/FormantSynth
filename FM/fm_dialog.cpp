@@ -447,115 +447,119 @@ double rate2time(double rate)
     return 1 - rate/100.;
 }
 
+void FM_Dialog::initEnvelope(int op, int r1, int r2, int r3, int r4, int l1, int l2, int l3, int l4)
+{
+    synt->gui_params.level[op][1]=l1;   //attack
+    synt->gui_params.level[op][2]=l2;   //decay
+    synt->gui_params.level[op][3]=l3;   //sustain
+    synt->gui_params.level[op][4]=l4;   //release
+    synt->gui_params.rate[op][0]=r1;    //attack RATE
+    synt->gui_params.rate[op][1]=r2;    //decay RATE
+    synt->gui_params.rate[op][2]=r3;    //sustain RATE
+    synt->gui_params.rate[op][3]=r4;    //release RATE
+
+}
+
+void FM_Dialog::initSliders()
+{
+    for(int i=1; i <= 6; i++)
+     for(int j=0; j < 4; j++)
+     {
+         QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
+         slider->setValue(synt->gui_params.level[i][j+1]);
+         QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
+         slider2->setValue(synt->gui_params.rate[i][j]);
+
+
+     }
+}
+
+void FM_Dialog::initFreqs(double f1, double f2, double f3, double f4, double f5, double f6)
+{
+    ui->f6->setValue(f6);
+    ui->f5->setValue(f5);
+    ui->f4->setValue(f4);
+    ui->f3->setValue(f3);
+    ui->f2->setValue(f2);
+    ui->f1->setValue(f1);
+}
+
+void FM_Dialog::initLevels(double I1, double I2, double I3, double I4, double I5, double I6)
+{
+    ui->I6->setValue(I6);
+    ui->I5->setValue(I5);
+    ui->I4->setValue(I4);
+    ui->I3->setValue(I3);
+    ui->I2->setValue(I2);
+    ui->I1->setValue(I1);
+}
+
+void FM_Dialog::initDetune(double d1, double d2, double d3, double d4, double d5, double d6)
+{
+    ui->d6->setValue(d6);
+    ui->d5->setValue(d5);
+    ui->d4->setValue(d4);
+    ui->d3->setValue(d3);
+    ui->d2->setValue(d2);
+    ui->d1->setValue(d1);
+}
+
 void FM_Dialog::on_comboBox_activated(const QString &arg1)
 {
     if( arg1 == "bass1" )
     {
         synt->n_test = 4;
-        ui->I6->setValue(0.85);
-        ui->I5->setValue(0.62);
-        ui->I4->setValue(0.93);
-        ui->I3->setValue(0.99);
-        ui->I2->setValue(0.80);
-        ui->I1->setValue(0.99);
+        initLevels(0.99,0.80,0.99,0.93,0.62,0.85);
+        initFreqs(0.5,0.5,0.5,5.0,0.5,9);
+        initDetune(0,0,0,0,0,0);
+        initEnvelope(6,94,56,26,55,93,28,0,0);
+        initEnvelope(5,99,0,0,0,99,0,0,0);
+        initEnvelope(4,90,40,7,55,90,32,2,0);
+        initEnvelope(3,88,98,32,30,79,65,0,0);
+        initEnvelope(2,99,20,0,0,99,0,0,0);
+        initEnvelope(1,95,62,10,58,99,95,32,0);
 
-        ui->f6->setValue(9);
-        ui->f5->setValue(0.5);
-        ui->f4->setValue(5.0);
-        ui->f3->setValue(0.5);
-        ui->f2->setValue(0.5);
-        ui->f1->setValue(0.5);
-
-        ui->d6->setValue(0);
-        ui->d5->setValue(0);
-        ui->d4->setValue(0);
-        ui->d3->setValue(0);
-        ui->d2->setValue(0);
-        ui->d1->setValue(0);
-
-        //evenlope params 6
-        synt->gui_params.level[6][0]=0;
-        synt->gui_params.level[6][1]=93;     //attack
-        synt->gui_params.level[6][2]=28;   //decay
-        synt->gui_params.level[6][3]=0.0;   //sustain
-        synt->gui_params.level[6][4]=0;   //release
-        synt->gui_params.rate[6][0]=94;    //attack RATE
-        synt->gui_params.rate[6][1]=56;    //decay RATE
-        synt->gui_params.rate[6][2]=26;      //sustain RATE
-        synt->gui_params.rate[6][3]=55;    //release RATE
-
-        synt->gui_params.level[5][0]=0;
-        synt->gui_params.level[5][1]=99;     //attack
-        synt->gui_params.level[5][2]=0.0;   //decay
-        synt->gui_params.level[5][3]=0.0;   //sustain
-        synt->gui_params.level[5][4]=0;   //release
-        synt->gui_params.rate[5][0]=99;    //attack RATE
-        synt->gui_params.rate[5][1]=0;    //decay RATE
-        synt->gui_params.rate[5][2]=0;      //sustain RATE
-        synt->gui_params.rate[5][3]=0;    //release RATE
-
-        synt->gui_params.level[4][0]=0;
-        synt->gui_params.level[4][1]=90;     //attack
-        synt->gui_params.level[4][2]=32;   //decay
-        synt->gui_params.level[4][3]=2;   //sustain
-        synt->gui_params.level[4][4]=0;   //release
-        synt->gui_params.rate[4][0]=90;    //attack RATE
-        synt->gui_params.rate[4][1]=40;    //decay RATE
-        synt->gui_params.rate[4][2]=7;      //sustain RATE
-        synt->gui_params.rate[4][3]=55;    //release RATE
-
-        synt->gui_params.level[3][0]=0;
-        synt->gui_params.level[3][1]=79;     //attack
-        synt->gui_params.level[3][2]=65;   //decay
-        synt->gui_params.level[3][3]=0.0;   //sustain
-        synt->gui_params.level[3][4]=0;   //release
-        synt->gui_params.rate[3][0]=88;    //attack RATE
-        synt->gui_params.rate[3][1]=98;    //decay RATE
-        synt->gui_params.rate[3][2]=32;      //sustain RATE
-        synt->gui_params.rate[3][3]=30;    //release RATE
-
-        synt->gui_params.level[2][0]=0;
-        synt->gui_params.level[2][1]=99;     //attack
-        synt->gui_params.level[2][2]=0.0;   //decay
-        synt->gui_params.level[2][3]=0.0;   //sustain
-        synt->gui_params.level[2][4]=0;   //release
-        synt->gui_params.rate[2][0]=99;    //attack RATE
-        synt->gui_params.rate[2][1]=20;    //decay RATE
-        synt->gui_params.rate[2][2]=0;      //sustain RATE
-        synt->gui_params.rate[2][3]=0;    //release RATE
-
-        synt->gui_params.level[1][0]=0;
-        synt->gui_params.level[1][1]=99;     //attack
-        synt->gui_params.level[1][2]=95;   //decay
-        synt->gui_params.level[1][3]=32;   //sustain
-        synt->gui_params.level[1][4]=0;   //release
-        synt->gui_params.rate[1][0]=95;    //attack RATE
-        synt->gui_params.rate[1][1]=62;    //decay RATE
-        synt->gui_params.rate[1][2]=10;      //sustain RATE
-        synt->gui_params.rate[1][3]=58;    //release RATE
-
-
-
-        int n = 6;
         //copy to all
         ui->algoCombo->setCurrentIndex(16-1);
 
-        for(int i=1; i <= 6; i++)
-         for(int j=0; j < 4; j++)
-         {
-             QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
-             slider->setValue(synt->gui_params.level[i][j+1]);
-             QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
-             slider2->setValue(synt->gui_params.rate[i][j]);
+        initSliders();
 
-
-         }
         ui->algosvg->SvgLoad("./images/algo16.svg");
         ui->algosvg->LoadDom("./images/algo16.svg");
         ui->algosvg->repaint();
 
         AssignGUIValues();
     }
+
+    if( arg1 == "strings1" )
+    {
+
+    }
+
+    if( arg1 == "E.organ1" )
+    {
+        synt->n_test = 4;
+        initFreqs(0.5,1.01,1.5,0.5,1.0,3.0);
+        initLevels(0.94,0.94,0.94,0.94,0.94,0.94);
+        initDetune(-2,-6,4,5,2,0);
+        initEnvelope(1,99,80,22,90,99,99,99,0);
+        initEnvelope(2,99,20,22,90,99,99,97,0);
+        initEnvelope(3,99,80,54,82,99,99,99,0);
+        initEnvelope(4,99,80,22,90,99,99,99,0);
+        initEnvelope(5,99,80,22,90,99,99,99,0);
+        initEnvelope(6,99,54,22,90,99,0,0,0);
+
+        ui->algoCombo->setCurrentIndex(32-1);
+
+        initSliders();
+
+        ui->algosvg->SvgLoad("./images/algo32.svg");
+        ui->algosvg->LoadDom("./images/algo32.svg");
+        ui->algosvg->repaint();
+
+        AssignGUIValues();
+    }
+
 
     if( arg1 == "bass2" )
     {
