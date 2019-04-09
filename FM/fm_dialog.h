@@ -75,6 +75,12 @@ private slots:
     void initLevels(double I1, double I2, double I3, double I4, double I5, double I6);
     void initDetune(double d1, double d2, double d3, double d4, double d5, double d6);
 
+    void on_OSC_clicked(bool checked);
+
+    void on_algoCombo_currentIndexChanged(int index);
+
+    void on_algoCombo_currentIndexChanged(const QString &arg1);
+
 private:
 
 };

@@ -28,6 +28,7 @@ FMSynth::FMSynth()
     TestEvenlope();
 
     n_test = 1;
+    bShowOSC = false;
 
     //generate sin table
     for (int i = 1; i <= 1000; i++)
@@ -261,6 +262,24 @@ double FMSynth::algo16(FmParams* p, double t, int n, bool bReleaseNote, double k
     return p->out[1];
 }
 
+double FMSynth::algo2(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
+{
+    //if( (n%100) == 0)
+    for(int i=1; i <=6; i++)
+    {
+        p->ev[i] = p->envelope[i]->render();
+    }
+
+    p->out[6] = p->ev[6]* p->I[6] * sin( 2 * M_PI * (p->f[6])* t);
+    p->out[5] = p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5])* t);
+    p->out[4] = p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4])* t);
+    p->out[3] = p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3])* t+ p->out[4]+p->out[5]+p->out[6]);
+    p->out[2] = p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2])* t + p->out[2]);
+    p->out[1] = p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1])* t + p->out[2]);
+    return (p->out[1] + p->out[3])/2;
+}
+
+
 double FMSynth::algo32(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
 {
     //if( (n%100) == 0)
@@ -335,7 +354,8 @@ void FMSynth::Algorithm(AlgoParams& param)
     double t = 0;
     double dt = 1. / 48000;
 
-     p->clearvals(0);
+    if( bShowOSC)
+       p->clearvals(0);
 
     if(param.bReleaseNote)
     {
@@ -348,6 +368,10 @@ void FMSynth::Algorithm(AlgoParams& param)
     {
         switch(param.fm_params.algo_n)
         {
+            case 2: x = algo2(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
+            break;
+            case 5: x = algo5(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
+            break;
             case 16: x = algo16(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
             break;
             case 17: x = algo17(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
@@ -368,12 +392,17 @@ void FMSynth::Algorithm(AlgoParams& param)
         //if(n % 100 == 0)
         //if(n < 10000)
         //  p->setXY(0, t, x);
-        if((n % 100)==0)
+        if( bShowOSC)
+        //if((n % 100)==0)
             p->setXY(0, t, x);
 
     }
-    //p->autoscale = true;
-    p->update_data();
+    if( bShowOSC)
+    {
+      p->set_autoscale(true);
+      p->zoomer->setAxis(QwtPlot::xBottom, QwtPlot::yRight);
+      p->update_data();
+    }
 }
 
 double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double key_time)

@@ -5,6 +5,7 @@
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_series_data.h>
+#include <qwt_plot_zoomer.h>
 
 typedef struct complex_float
 {
@@ -36,9 +37,11 @@ public:
 
     static Ploter*         instance;
     static Ploter*   getInstance();
+    QwtPlotZoomer* zoomer;
 
     Ploter(QWidget* parent);
 
+    void setZoomer();
     void setXY(int n, double px, double py);
     void setXYonly(int n, double px, double py);
     void clearvals(int n);

@@ -15,6 +15,7 @@ struct FmParams
             d[i] = 0;
             f[i] = 1;
             ev[i] = 0;
+            lfo = 1;
             for(int j=0; j<4;j++)
             {
                 rate[i][j] = 1;
@@ -34,7 +35,7 @@ struct FmParams
     double out[7];
     EnvelopeFM* envelope[7];
     double lfo;
-    int    algo_n;
+    int    algo_n;    
 };
 
 
@@ -69,12 +70,14 @@ public:
     FmParams  gui_params;
     int n_test;
     double t_last;
+    bool   bShowOSC;
     double algotest(FmParams* p, double t);
     double algo19(FmParams* p, double t, int n);
     double algo5(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     double algo17(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     double algo16(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     double algo32(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
+    double algo2(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     Buffer* play_note(char note, double duration, double velocity);
     double release_note(Buffer* buffer, char note, double key_time);
     double* Test1(Buffer* buffer, double f_oc, double SampleRate, double time, int* N);

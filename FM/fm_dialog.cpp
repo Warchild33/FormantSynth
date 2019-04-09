@@ -531,8 +531,27 @@ void FM_Dialog::on_comboBox_activated(const QString &arg1)
         AssignGUIValues();
     }
 
-    if( arg1 == "strings1" )
+    if( arg1 == "orchestra" )
     {
+        synt->n_test = 4;
+        initFreqs(1,1,2,2,2,2);
+        initLevels(0.99,0.83,0.96,0.72,0.80,0.82);
+        initDetune(0,-6,6,0,0,0);
+        initEnvelope(6,72,76,10,32,99,92,0,0);
+        initEnvelope(5,76,73,10,55,99,94,0,0);
+        initEnvelope(4,56,74,10,45,98,98,36,0);
+        initEnvelope(3,54,15,10,47,99,92,0,0);
+        initEnvelope(2,56,43,32,61,99,93,90,0);
+        initEnvelope(1,80,56,10,45,98,98,36,0);
+        ui->algoCombo->setCurrentIndex(2-1);
+
+        initSliders();
+
+        ui->algosvg->SvgLoad("./images/algo2.svg");
+        ui->algosvg->LoadDom("./images/algo2.svg");
+        ui->algosvg->repaint();
+
+        AssignGUIValues();
 
     }
 
@@ -560,6 +579,31 @@ void FM_Dialog::on_comboBox_activated(const QString &arg1)
         AssignGUIValues();
     }
 
+    if( arg1 == "E.piano" )
+    {
+        synt->n_test = 4;
+        initLevels(0.79,0.99,0.89,0.99,0.58,0.99);
+        initFreqs(1,14,1,1,1,1);
+        initDetune(3,0,0,0,-7,7);
+        initEnvelope(6,95,29,10,10,99,95,0,0);
+        initEnvelope(5,95,20,10,10,99,95,0,0);
+        initEnvelope(4,95,29,10,10,90,95,0,0);
+        initEnvelope(3,95,20,10,10,99,97,0,0);
+        initEnvelope(2,97,50,10,10,90,75,0,0);
+        initEnvelope(1,96,25,10,10,99,76,0,0);
+
+        ui->algoCombo->setCurrentIndex(5-1);
+
+        initSliders();
+
+        ui->algosvg->SvgLoad("./images/algo5.svg");
+        ui->algosvg->LoadDom("./images/algo5.svg");
+        ui->algosvg->repaint();
+
+        AssignGUIValues();
+
+    }
+
 
     if( arg1 == "bass2" )
     {
@@ -569,5 +613,25 @@ void FM_Dialog::on_comboBox_activated(const QString &arg1)
 
 void FM_Dialog::on_rate11_sliderMoved(int position)
 {
+
+}
+
+void FM_Dialog::on_OSC_clicked(bool checked)
+{
+    synt->bShowOSC =checked;
+}
+
+void FM_Dialog::on_algoCombo_currentIndexChanged(int index)
+{
+
+}
+
+void FM_Dialog::on_algoCombo_currentIndexChanged(const QString &arg1)
+{
+    ui->algosvg->SvgLoad("./images/algo"+arg1+".svg");
+    ui->algosvg->LoadDom("./images/algo"+arg1+".svg");
+    ui->algosvg->repaint();
+
+    synt->gui_params.algo_n = ui->algoCombo->currentIndex()+1;
 
 }

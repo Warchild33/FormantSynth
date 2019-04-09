@@ -1,6 +1,8 @@
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_series_data.h>
+#include <qwt_plot_zoomer.h>
+#include <qwt_plot_panner.h>
 #include <QMutex>
 //#include <math.h>
 #include "ploter.h"
@@ -91,8 +93,21 @@ Ploter::Ploter(QWidget* parent)
     //plot->setMarkerXPos(mX, 6.284);
     d_curves[1]->setStyle(QwtPlotCurve::Dots);
 
-
 }
+
+void Ploter::setZoomer()
+{
+    zoomer = new QwtPlotZoomer( plot->canvas() );
+    zoomer->setKeyPattern( QwtEventPattern::KeyRedo, Qt::Key_I, Qt::ShiftModifier );
+    zoomer->setKeyPattern( QwtEventPattern::KeyUndo, Qt::Key_O, Qt::ShiftModifier );
+    zoomer->setKeyPattern( QwtEventPattern::KeyHome, Qt::Key_Home );
+
+    QwtPlotPanner *panner = new QwtPlotPanner(plot->canvas());
+    panner->setAxisEnabled(QwtPlot::yRight, true);
+    panner->setAxisEnabled(QwtPlot::xBottom, true);
+    panner->setMouseButton(Qt::MidButton);
+}
+
 
 
 // вкл интерполяцию
@@ -141,8 +156,8 @@ void Ploter::set_autoscale(bool flag)
     }
     else
     {
-        plot->setAxisScale(QwtPlot::xBottom, 0, 1000, 0);
-        plot->setAxisScale(QwtPlot::yLeft, -5000, 5000, 0);
+        //plot->setAxisScale(QwtPlot::xBottom, 0, 1000, 0);
+        plot->setAxisScale(QwtPlot::yLeft, 0, 0.01, 0);
     }
     plot->replot();
 }
@@ -305,7 +320,6 @@ void Ploter::update_data()
 {
     for(int n=0; n<16; n++)
       d_curves[n]->setSamples(vx[n],vy[n]);
-
 }
 
 void Ploter::set_curves_count(int N)

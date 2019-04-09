@@ -62,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     p->plot->setParent(nwidget->ui->plotFrame);
     p->plot->setGeometry(nwidget->ui->plotFrame->rect());
     p->plot->show();
+    p->setZoomer();
 
 
     FormantSynthSvg* fwidget2 = new FormantSynthSvg(this);
