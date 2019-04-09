@@ -53,12 +53,17 @@ public:
 
 struct AlgoParams
 {
+    AlgoParams()
+    {
+        offset = 0;
+    }
     Buffer* buffer;
     double f_oc;
     double time;
     bool bReleaseNote;
     double key_time;
     FmParams fm_params;
+    long offset;
 };
 
 class FMSynth : public Syntezer
@@ -89,6 +94,7 @@ public:
     double Evenlope2(int op_index, FmParams* params, double t, bool bReleaseNote, double key_time);
     double find_max_release_rate(FmParams& param);
     void selectTest(float f, double duration, int N, bool bReleaseNote);
+    void write_note(Buffer* buffer, long offset, char note, double duration);
 
 
     FmParams getParams(double f_oc);

@@ -19,6 +19,8 @@ public:
     FreqTable                   freq_table;
     Key2NoteTable               key2note;
     bool                        bEnabled;
+    bool                        bAsynch;
+    bool                        bDoOutBuffer;
 
     Syntezer();
     void parse_freqs_table(QString file);
@@ -27,8 +29,10 @@ public:
     virtual Buffer* play_note(char note, double duration, double velocity){};
     virtual void play_note2(Buffer* buffer, char note, double duration, double velocity){};
     virtual double release_note(Buffer* buffer, char note, double key_time){return 0;};
+    virtual void write_note(Buffer* buffer, long offset, char note, double duration){};
     bool isEnabled() { return bEnabled; }
     void out_buffer(Buffer* buf);
+
 
     void prepareKeyTable();
 

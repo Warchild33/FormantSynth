@@ -68,7 +68,7 @@ void Syntezer::on_key_press(int key_code)
     }
 }
 
-void sleep(int ms){
+void msleep(int ms){
    static QMutex mutex;
    static QMutexLocker locker(&mutex);
    mutex.tryLock(ms);
@@ -80,13 +80,15 @@ void Syntezer::on_key_release(int key_code)
    if(!bEnabled) return;
    //emit sigDisableNote(key2note[key_code]);
    Buffer* buf=0;
+   bDoOutBuffer = true;
+   bAsynch = true;
    if(key2noteBuffer.find(key_code)!=key2noteBuffer.end())
    {
        buf = key2noteBuffer[key_code];
        buf->bWrited = true;
        //QThread::currentThread()->msleep(50);
        //fprintf(stderr,"disable note");
-       sleep(50);
+       msleep(50);
        double time_release = release_note(buf, key2note[key_code], (double)key_time[key_code].elapsed()/1000.) ;
        buf->timeEnd = QTime::currentTime().addSecs(time_release);
        key2noteBuffer.erase(key2noteBuffer.find(key_code));

@@ -7,13 +7,14 @@
 #include "formantsynthsvg.h"
 #include "FM/fm_dialog.h"
 #include "synttestform.h"
+#include "happybirsday.h"
 #include "ui_nessyntform.h"
 #include "ui_fm_dialog.h"
 #include <QKeyEvent>
 
 Ploter* p;
 Ploter* p2;
-
+Happybirsday* hb_song;
 //double* wavread(const std::string &filename, WAVEFORMATEX *pwfx, int* N);
 //double mag(complex_double d);
 
@@ -24,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    isPlaying = false;
 
     //p->plot->setGeometry(ui->waveFrame->rect());
 
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     input_file = "oh-yeah-everything-is-fine.wav";
     connect(ui->actionSound_driver, SIGNAL(triggered(bool)), this, SLOT(on_sound_Settings()));
+    connect(ui->actionPlay_happy_birsday, SIGNAL(triggered(bool)), this, SLOT(play_test_song()));
 
 
     FormantSyntForm* fwidget = new FormantSyntForm(this);
@@ -97,6 +99,25 @@ void MainWindow::on_sound_Settings()
 {
     SoundDriverDialog* dialog = new SoundDriverDialog(this);
     dialog->show();
+}
+
+void MainWindow::play_test_song()
+{
+    //synt.alsa->close();
+    if( !isPlaying)
+    {
+        hb_song = new Happybirsday();
+        hb_song->set_synth(active_synth);
+        std::vector<Notestruct>* notes = new std::vector<Notestruct>();
+        *notes = hb_song->parse_hb_notes("./midi_data/happy_birsday.txt");
+        hb_song->generate_play_wave(*notes);
+    }
+    else
+    {
+        hb_song->Stop();
+        delete hb_song;
+    }
+    isPlaying = !isPlaying;
 }
 
 /*

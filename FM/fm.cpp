@@ -351,21 +351,13 @@ void FMSynth::Algorithm(AlgoParams& param)
     param.fm_params = getParams(param.f_oc);
 
     double x;
-    int offset=0;
     double t = 0;
     double dt = 1. / 48000;
 
     if( bShowOSC)
        p->clearvals(0);
 
-    if(param.bReleaseNote)
-    {
-        offset = floor((param.key_time)*48000);
-        t = param.key_time;
-    }
-
-
-    for(int n=offset; n < offset+floor((param.time)*48000); n++) //
+    for(int n=param.offset; n < param.offset + floor((param.time)*48000); n++) //
     {
         switch(param.fm_params.algo_n)
         {
@@ -382,11 +374,15 @@ void FMSynth::Algorithm(AlgoParams& param)
         }
 
 
-        short sample = x * 20000;
+
         if( param.buffer->bWrited) break;
+        param.buffer->samplesD[n*2] =  (param.buffer->samplesD[n*2] + x);
+        param.buffer->samplesD[n*2+1] =(param.buffer->samplesD[n*2] + x);
+        short sample = param.buffer->samplesD[n*2] * 10000;
         param.buffer->samples[n*2] = sample;
         param.buffer->samples[n*2+1] = sample;
-        if(n == 100 && !param.bReleaseNote)
+
+        if(n == 100 && bDoOutBuffer)
             out_buffer(param.buffer);
 
         t+=dt;
@@ -547,9 +543,24 @@ void FMSynth::handleFinished()
 
 }
 
+void FMSynth::write_note(Buffer* buffer, long offset, char note, double duration)
+{
+    float f = freq_table.getFreq(note);
+    AlgoParams param;
+    param.bReleaseNote = false;
+    param.buffer = buffer;
+    param.f_oc = f;
+    param.offset = offset;
+    param.key_time = 0;
+    param.time = duration;
+    bShowOSC = false;
+    bDoOutBuffer = false;
+    Algorithm(param);
+}
+
 Buffer* FMSynth::play_note(char note, double duration, double velocity)
 {
-    Buffer* buffer = new Buffer(48000,10,2);
+    Buffer* buffer = new Buffer(48000,duration*1.5,2);
     qDebug() << "starting thread  " << QThread::currentThreadId();
 
     int N = floor( duration * 48000);
@@ -565,8 +576,16 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
         param.f_oc = f;
         param.key_time = 0;
         param.time = duration;
-        //QtConcurrent::run(this, &FMSynth::Algorithm, param);
-        Algorithm(param);
+
+        if(!bShowOSC)
+        {
+            if( bAsynch )
+               QtConcurrent::run(this, &FMSynth::Algorithm, param);
+            else
+                Algorithm(param);
+        }
+        else
+          Algorithm(param);
     }
     //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,duration,false,0);
     if(n_test == 3) Test3(buffer,f, duration,false,0);
@@ -583,20 +602,21 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
 double FMSynth::release_note(Buffer* buffer, char note, double key_time)
 {
     return 0;
-     float f = freq_table.getFreq(note);
+    float f = freq_table.getFreq(note);
         QFuture<double*> future;
      //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,find_max_release_rate(gui_params),true,key_time);
      if(n_test == 3) Test3(buffer, f,find_max_release_rate(gui_params),true, key_time);
      if(n_test == 4)
      {
          AlgoParams param;
-         param.bReleaseNote = false;
+         param.bReleaseNote = true;
          param.buffer = buffer;
          param.f_oc = f;
          param.key_time = key_time;
-         param.time = find_max_release_rate(gui_params);
-         //QtConcurrent::run(this, &FMSynth::Algorithm, param);
-         Algorithm(param);
+         param.time = 10;
+         if(!bShowOSC) QtConcurrent::run(this, &FMSynth::Algorithm, param);
+         else
+           Algorithm(param);
      }
 
 

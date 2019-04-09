@@ -95,8 +95,15 @@
     </property>
     <addaction name="actionSound_driver"/>
    </widget>
+   <widget class="QMenu" name="menuPlay">
+    <property name="title">
+     <string>&amp;Play</string>
+    </property>
+    <addaction name="actionPlay_happy_birsday"/>
+   </widget>
    <addaction name="menuTests"/>
    <addaction name="menuSettings"/>
+   <addaction name="menuPlay"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -115,6 +122,11 @@
   <action name="actionSound_driver">
    <property name="text">
     <string>&amp;Sound driver</string>
+   </property>
+  </action>
+  <action name="actionPlay_happy_birsday">
+   <property name="text">
+    <string>Play happy birsday</string>
    </property>
   </action>
  </widget>
