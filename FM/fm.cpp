@@ -28,6 +28,7 @@ FMSynth::FMSynth()
     TestEvenlope();
 
     n_test = 1;
+    n_op_osc = 0;
     bShowOSC = false;
 
     //generate sin table
@@ -393,8 +394,13 @@ void FMSynth::Algorithm(AlgoParams& param)
         //if(n < 10000)
         //  p->setXY(0, t, x);
         if( bShowOSC)
-        //if((n % 100)==0)
-            p->setXY(0, t, x);
+        {
+            if(n_op_osc==0)
+                p->setXY(0, t, x);
+             else
+                p->setXY(0, t, param.fm_params.out[n_op_osc]);
+
+        }
 
     }
     if( bShowOSC)

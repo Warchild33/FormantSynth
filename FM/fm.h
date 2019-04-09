@@ -69,8 +69,8 @@ public:
     FMSynth();
     FmParams  gui_params;
     int n_test;
-    double t_last;
     bool   bShowOSC;
+    int    n_op_osc;
     double algotest(FmParams* p, double t);
     double algo19(FmParams* p, double t, int n);
     double algo5(FmParams* p, double t, int n, bool bReleaseNote, double key_time);

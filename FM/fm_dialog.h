@@ -81,6 +81,9 @@ private slots:
 
     void on_algoCombo_currentIndexChanged(const QString &arg1);
 
+    void on_comboBox_2_currentIndexChanged(int index);
+    void on_sliderMoved(int);
+
 private:
 
 };

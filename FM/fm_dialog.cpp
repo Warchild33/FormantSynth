@@ -21,9 +21,11 @@ FM_Dialog::FM_Dialog(QWidget *parent) :
      {
          QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
          connect(slider, SIGNAL(sliderReleased()), this, SLOT(on_rate10_sliderMoved()));
+         connect(slider, SIGNAL(valueChanged(int)), this, SLOT(on_sliderMoved(int)) );
          QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
          slider2->setMinimum(1);
          connect(slider2, SIGNAL(sliderReleased()), this, SLOT(on_rate10_sliderMoved()));
+         connect(slider2, SIGNAL(valueChanged(int)), this, SLOT(on_sliderMoved(int)) );
         // synt->gui_params.rate[i][2] = 4;
      }
 
@@ -304,6 +306,44 @@ void FM_Dialog::Show_Envelope(int n_op)
         p->setXY(0,(float)n/48000.,ev.render());
     }
     p->update_data();
+    p->set_autoscale(true);
+
+}
+
+void FM_Dialog::on_sliderMoved(int value)
+{
+    QSlider* slider = (QSlider*)sender();
+    QString s = slider->objectName();
+    QString n,i;
+    if(s.contains("rate"))
+    {
+      n = s.right(s.length()-4).left(1);
+      i = s.right(s.length()-4).right(1);
+      synt->gui_params.rate[n.toInt()][i.toInt()] = value;
+    }
+    if(s.contains("level"))
+    {
+        n = s.right(s.length()-5).left(1);
+        i = s.right(s.length()-5).right(1);
+        synt->gui_params.level[n.toInt()][i.toInt()+1] = value;
+    }
+
+
+
+    Show_Envelope(n.toInt());
+
+    QString templ = "<html><head/><body><p><span style=\" font-size:16pt;\">%1</span></p></body></html>";
+
+    if(slider->objectName().contains("level"))
+    {
+        templ = templ.arg("L " + QString::number(slider->value()));
+        ui->label_4->setText(templ);
+    }
+    else
+    {
+        templ = templ.arg("R " + QString::number(slider->value()));
+        ui->label_4->setText(templ);
+    }
 
 }
 
@@ -634,4 +674,9 @@ void FM_Dialog::on_algoCombo_currentIndexChanged(const QString &arg1)
 
     synt->gui_params.algo_n = ui->algoCombo->currentIndex()+1;
 
+}
+
+void FM_Dialog::on_comboBox_2_currentIndexChanged(int index)
+{
+    synt->n_op_osc = index;
 }
