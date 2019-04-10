@@ -73,6 +73,7 @@ public:
 
     FMSynth();
     FmParams  gui_params;
+    FmParams  patches[10];
     int n_test;
     bool   bShowOSC;
     int    n_op_osc;
@@ -95,11 +96,13 @@ public:
     double find_max_release_rate(FmParams& param);
     void selectTest(float f, double duration, int N, bool bReleaseNote);
     void write_note(Buffer* buffer, long offset, char note, double duration);
-
+    void SavePatch(QString filename);
+    void LoadPatch(QString filename, int n);
+    void SetCurrentPatch(int n);
 
     FmParams getParams(double f_oc);
 
 public slots:
-    void handleFinished();
+
 };
 #endif // FM_H

@@ -25,6 +25,8 @@ signals:
 
 private slots:
     void on_sound_Settings();
+    void on_save_patch();
+    void on_load_patch();
 
     void play_test_song();
 

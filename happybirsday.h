@@ -22,6 +22,7 @@ struct Notestruct
         buf = 0;
     }
     char note;
+    char channel;
     float t_start;
     float t_end;
     bool  isPlayed;

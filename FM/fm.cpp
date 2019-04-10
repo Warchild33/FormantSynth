@@ -2,6 +2,7 @@
 #include <math.h>
 #include <QtConcurrentRun>
 #include <QFuture>
+#include <QFile>
 #include "fm.h"
 #include "gen.h"
 #include "envelope.h"
@@ -38,6 +39,33 @@ FMSynth::FMSynth()
     }
     sinT( -4*M_PI );
     sinT( 4*M_PI );
+}
+
+void FMSynth::SavePatch(QString filename)
+{
+    QFile file(filename);
+    if( file.open(QFile::WriteOnly | QFile::Truncate) )
+    {
+        file.write((const char*)&gui_params, sizeof(gui_params));
+        file.close();
+    }
+}
+
+void FMSynth::LoadPatch(QString filename, int n)
+{
+    if(n < 0 || n > 10) return;
+    QFile file(filename);
+    if( file.open(QFile::ReadOnly | QFile::Truncate) )
+    {
+        file.read((char*)&patches[n], sizeof(gui_params));
+        file.close();
+    }
+}
+
+void FMSynth::SetCurrentPatch(int n)
+{
+    if(n < 0 || n > 10) return;
+    gui_params = patches[n];
 }
 
 inline double sinT(double angle_rad)
@@ -172,39 +200,6 @@ double FMSynth::algotest(FmParams* p, double t)
 }
 
 static const int THREAD_COUNT = QThread::idealThreadCount();
-
-double* FMSynth::Test1(Buffer* buffer, double f_oc=800, double SampleRate=48000, double time=2, int* N=0)
-{
-    FmParams param;
-    for(int i=0; i < 7; i++)
-    {
-        param.f[i] = f_oc;
-        param.I[i] = gui_params.I[i];
-    }
-    double* x = zeroes(0, floor(time*SampleRate));
-    double t = 0;
-    double dt = 1. / SampleRate;
-    p->clearvals(0);
-
-    for(int n=0; n < floor(time*SampleRate); n++) //
-    {
-        x[n] = algotest(&param, t);
-        short sample = (x[n]) * 32768;
-        buffer->samples[n*2] = sample;
-        buffer->samples[n*2+1] = sample;
-        if(n == 100)
-            out_buffer(buffer);
-        if(buffer->bWrited)
-            break;
-        t+=dt;
-        if(n < 1000)
-          p->setXY(0, t, x[n]);
-    }
-
-    p->autoscale = true;
-    p->update_data();
-    return x;
-}
 
 double amp_mod(double Amax, double fvib, double t, double faze)
 {
@@ -378,7 +373,7 @@ void FMSynth::Algorithm(AlgoParams& param)
         if( param.buffer->bWrited) break;
         param.buffer->samplesD[n*2] =  (param.buffer->samplesD[n*2] + x);
         param.buffer->samplesD[n*2+1] =(param.buffer->samplesD[n*2] + x);
-        short sample = param.buffer->samplesD[n*2] * 10000;
+        short sample = param.buffer->samplesD[n*2] * 5000;
         param.buffer->samples[n*2] = sample;
         param.buffer->samples[n*2+1] = sample;
 
@@ -424,101 +419,6 @@ double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double ke
 }
 
 
-double* FMSynth::Test3(Buffer* buffer, double f_oc, double time, bool bReleaseNote, double key_time)
-{
-    FmParams param = getParams(f_oc);
-    double x;
-    int offset=0;
-    double t = 0;
-    double dt = 1. / 48000;
-    double t_end;
-
-    p->clearvals(0);
-
-    if(bReleaseNote)
-    {
-        offset = floor((key_time)*48000);
-        t = key_time;
-    }
-    double* lfo_osc = tri_nes(2,0.75,48000,time);
-
-    for(int n=offset; n < offset+floor((time)*48000); n++) //
-    {       
-        param.lfo = (0.8 + 0.2 *lfo_osc[n]);
-        x = algo5(&param, t, n, bReleaseNote, key_time);
-        short sample = x * 10000;
-        if( buffer->bWrited) break;
-        buffer->samples[n*2] = sample;
-        buffer->samples[n*2+1] = sample;
-        if(n == 100 && !bReleaseNote)
-            out_buffer(buffer);
-
-        t+=dt;
-        //if(n % 100 == 0)
-        //if(n % 100 == 0)
-         //  p->setXY(0, t, param.ev[3]);
-        //double ev = Evenlope(2, &param, t, bReleaseNote, key_time);
-        //p->setXY(0, t, ev);
-
-    }
-    //p->autoscale = true;
-    p->update_data();
-    return &x;
-}
-
-
-
-double* FMSynth::Test2(Buffer* buffer, double f_oc, double SampleRate, double time, bool bReleaseNote)
-{
-    FmParams param;
-    for(int i=0; i < 7; i++)
-    {
-        param.f[i] = f_oc * gui_params.f[i];
-        param.I[i] = gui_params.I[i];
-        param.d[i] = gui_params.d[i];
-        param.faze[i] = 2 * M_PI * (double) rand()/ RAND_MAX;
-    }
-    //evenlope params
-    param.level[6][0]=0;
-    param.level[6][1]=0.8;     //attack
-    param.level[6][2]=0.8;   //decay
-    param.level[6][3]=0.7;   //sustain
-    param.level[6][4]=0.1;   //release
-    param.rate[6][0]=0.1;    //attack time
-    param.rate[6][1]=0.5;    //decay time
-    param.rate[6][2]=10;      //sustain time
-    param.rate[6][3]=0.5;    //release time
-
-    double* x = zeroes(0, floor(time*SampleRate));
-    double t = 0;
-
-    double dt = 1. / SampleRate;
-    //p->clearvals(0);
-
-    for(int n=0; n < floor((time)*SampleRate); n++) //
-    {
-        x[n] = algo19(&param, t, n);
-        short sample = (x[n]) * 8000;
-        buffer->samples[n*2] = sample;
-        buffer->samples[n*2+1] = sample;
-        if(n == 100)
-            out_buffer(buffer);
-        if(buffer->bWrited)
-            break;
-
-        t+=dt;
-        //if(n % 100 == 0)
-        //if(n < 100)
-        //  p->setXY(0, t-t_last, x[n]);
-
-    }
-    //p->autoscale = true;
-    //p->update_data();
-    return x;
-}
-
-
-
 //double FMSynth::algo1(FmParams* p, double t)
 //{
 //    double OP6 = p->I[6] * sin( 2 * M_PI * p->f[6] * t +  p->I[6] *sin( 2 * M_PI * p->f[6] * t ) );
@@ -531,17 +431,6 @@ double* FMSynth::Test2(Buffer* buffer, double f_oc, double SampleRate, double ti
 
 //}
 
-void FMSynth::selectTest(float f, double duration, int N, bool bReleaseNote)
-{
-        //x = Test2(f,48000,duration,&N, bReleaseNote);
-
-}
-
-void FMSynth::handleFinished()
-{
-
-
-}
 
 void FMSynth::write_note(Buffer* buffer, long offset, char note, double duration)
 {
@@ -562,8 +451,6 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
 {
     Buffer* buffer = new Buffer(48000,duration*1.5,2);
     qDebug() << "starting thread  " << QThread::currentThreadId();
-
-    int N = floor( duration * 48000);
 
     float f = freq_table.getFreq(note);
 
@@ -588,10 +475,6 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
           Algorithm(param);
     }
     //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,duration,false,0);
-    if(n_test == 3) Test3(buffer,f, duration,false,0);
-    if(n_test == 2) future = QtConcurrent::run(this, &FMSynth::Test2, buffer, f,48000,duration,false);
-    //if(n_test == 1) future = QtConcurrent::run(this, &FMSynth::Test1, buffer, f, 48000,duration,&N);    
-    if(n_test == 1) Test1(buffer, f, 48000, duration, &N);
 
 
 
@@ -602,23 +485,5 @@ Buffer* FMSynth::play_note(char note, double duration, double velocity)
 double FMSynth::release_note(Buffer* buffer, char note, double key_time)
 {
     return 0;
-    float f = freq_table.getFreq(note);
-        QFuture<double*> future;
-     //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,find_max_release_rate(gui_params),true,key_time);
-     if(n_test == 3) Test3(buffer, f,find_max_release_rate(gui_params),true, key_time);
-     if(n_test == 4)
-     {
-         AlgoParams param;
-         param.bReleaseNote = true;
-         param.buffer = buffer;
-         param.f_oc = f;
-         param.key_time = key_time;
-         param.time = 10;
-         if(!bShowOSC) QtConcurrent::run(this, &FMSynth::Algorithm, param);
-         else
-           Algorithm(param);
-     }
 
-
-    return find_max_release_rate(gui_params);
 }

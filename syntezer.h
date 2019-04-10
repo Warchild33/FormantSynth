@@ -30,8 +30,11 @@ public:
     virtual void play_note2(Buffer* buffer, char note, double duration, double velocity){};
     virtual double release_note(Buffer* buffer, char note, double key_time){return 0;};
     virtual void write_note(Buffer* buffer, long offset, char note, double duration){};
+    virtual void SetCurrentPatch(int n){};
+    virtual void LoadPatch(QString filename, int n){}
     bool isEnabled() { return bEnabled; }
     void out_buffer(Buffer* buf);
+
 
 
     void prepareKeyTable();

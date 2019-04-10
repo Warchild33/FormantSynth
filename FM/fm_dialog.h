@@ -13,6 +13,7 @@ class FM_Dialog : public QDialog
 {
     Q_OBJECT
 public:
+    bool disableAsignFromGUI;
     FMSynth* synt;
     Ui::FM_Dialog *ui;
     explicit FM_Dialog(QWidget *parent = 0);
@@ -20,9 +21,11 @@ public:
     ~FM_Dialog();
 
     void initSliders();
+    void AssignToGUI();
 
 private slots:
     void AssignGUIValues();
+
     void on_I1_valueChanged(double arg1);
 
     void on_I2_valueChanged(double arg1);

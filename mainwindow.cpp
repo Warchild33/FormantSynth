@@ -1,3 +1,5 @@
+#include <QFileDialog>
+#include <QtConcurrentRun>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "test.h"
@@ -15,6 +17,7 @@
 Ploter* p;
 Ploter* p2;
 Happybirsday* hb_song;
+FM_Dialog* fwidget3;
 //double* wavread(const std::string &filename, WAVEFORMATEX *pwfx, int* N);
 //double mag(complex_double d);
 
@@ -38,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent) :
     input_file = "oh-yeah-everything-is-fine.wav";
     connect(ui->actionSound_driver, SIGNAL(triggered(bool)), this, SLOT(on_sound_Settings()));
     connect(ui->actionPlay_happy_birsday, SIGNAL(triggered(bool)), this, SLOT(play_test_song()));
+    connect(ui->actionLoadPatch, SIGNAL(triggered(bool)), this, SLOT(on_load_patch()));
+    connect(ui->actionSavePatch, SIGNAL(triggered(bool)), this, SLOT(on_save_patch()));
 
 
     FormantSyntForm* fwidget = new FormantSyntForm(this);
@@ -77,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(keyReleaseSig(int)), fwidget2, SLOT(on_key_release(int)));
     connect(ui->pianoWidget, SIGNAL(sigMouseKeyRelease(int)), fwidget2, SLOT(on_key_release(int)));
 
-    FM_Dialog* fwidget3 = new FM_Dialog(this);
+    fwidget3 = new FM_Dialog(this);
     ui->tabWidget->insertTab(3,fwidget3,QIcon(),"FM");
     connect(this, SIGNAL(keyPressSig(int)), fwidget3->synt, SLOT(on_key_press(int)));
     connect(this, SIGNAL(keyReleaseSig(int)), fwidget3->synt, SLOT(on_key_release(int)));
@@ -89,6 +94,26 @@ MainWindow::MainWindow(QWidget *parent) :
     Test test;
 
 }
+
+void MainWindow::on_save_patch()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,
+          tr("Save patch"), "./patches/", tr("Patch Files (*.patch)"));
+    if(!fileName.contains("patch"))
+        fileName+=".patch";
+    fwidget3->synt->SavePatch(fileName);
+
+}
+
+void MainWindow::on_load_patch()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+          tr("Open patch"), "./patches/", tr("Patch Files (*.patch)"));
+    fwidget3->synt->LoadPatch(fileName,0);
+    fwidget3->synt->SetCurrentPatch(0);
+    fwidget3->AssignToGUI();
+}
+
 
 MainWindow::~MainWindow()
 {
@@ -106,11 +131,17 @@ void MainWindow::play_test_song()
     //synt.alsa->close();
     if( !isPlaying)
     {
+        QString fileName = QFileDialog::getOpenFileName(this,
+              tr("Open txt"), "./midi_data/", tr("Midi Files (*.txt)"));
+        active_synth->LoadPatch("./patches/E.piano.patch",0);
+        active_synth->LoadPatch("./patches/bass1.patch",1);
+        active_synth->LoadPatch("./patches/bass1.patch",9);
         hb_song = new Happybirsday();
         hb_song->set_synth(active_synth);
         std::vector<Notestruct>* notes = new std::vector<Notestruct>();
-        *notes = hb_song->parse_hb_notes("./midi_data/happy_birsday.txt");
-        hb_song->generate_play_wave(*notes);
+        *notes = hb_song->parse_hb_notes(fileName);
+        //hb_song->generate_play_wave(*notes);
+        QtConcurrent::run(hb_song, &Happybirsday::generate_play_wave, *notes);
     }
     else
     {

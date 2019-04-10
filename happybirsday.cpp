@@ -38,6 +38,8 @@ std::vector<Notestruct> Happybirsday::parse_hb_notes(QString file)
             st.note = parts[3].toInt();
             st.t_start = parts[1].toFloat();
             st.t_end = st.t_start + parts[2].toFloat();
+            st.channel = parts[5].toInt();
+            if(parts[1].toFloat()!=-1)
             output.push_back(st);
         }
    }
@@ -49,14 +51,19 @@ void Happybirsday::generate_play_wave(std::vector<Notestruct>& song)
     int n_note = 0;
     float total_time = (*(song.end()-1)).t_end+2;
     buffer = new Buffer(48000,total_time,2);
+    isPlaying =  true;
     bool bBufferSended = false;
     for(auto ns=song.begin(); ns!=song.end(); ns++,n_note++)
     {
         float t_start = (*ns).t_start;
         float t_end = (*ns).t_end;
-        synt->write_note(buffer,long(t_start*48000),(*ns).note,t_end-t_start);
+        int channel = (*ns).channel;
+        synt->SetCurrentPatch(channel);
+        if( isPlaying &&  channel!=9) //only piano channel
+          synt->write_note(buffer,long(t_start*48000),(*ns).note,t_end-t_start);
         //if(progress_bar)
         //   progress_bar->setValue(((float)n_note/song.size()) * 100);
+
         if((t_start > 2) && !bBufferSended)
         {
             synt->out_buffer(buffer);
