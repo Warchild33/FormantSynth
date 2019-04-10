@@ -18,6 +18,7 @@ public:
     void Play(QString fn="pulse_filt.wav");
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
+    void closeEvent(QCloseEvent* event);
     ~MainWindow();
 signals:
     void keyPressSig(int);

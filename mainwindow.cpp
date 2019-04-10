@@ -16,7 +16,7 @@
 
 Ploter* p;
 Ploter* p2;
-Happybirsday* hb_song;
+Happybirsday* hb_song=0;
 FM_Dialog* fwidget3;
 //double* wavread(const std::string &filename, WAVEFORMATEX *pwfx, int* N);
 //double mag(complex_double d);
@@ -131,13 +131,15 @@ void MainWindow::play_test_song()
     //synt.alsa->close();
     if( !isPlaying)
     {
+        FMSynth* synt = new FMSynth();
+        synt->bEnabled = true;
         QString fileName = QFileDialog::getOpenFileName(this,
               tr("Open txt"), "./midi_data/", tr("Midi Files (*.txt)"));
-        active_synth->LoadPatch("./patches/E.piano.patch",0);
-        active_synth->LoadPatch("./patches/bass1.patch",1);
-        active_synth->LoadPatch("./patches/bass1.patch",9);
+        synt->LoadPatch("./patches/E.piano.patch",0);
+        synt->LoadPatch("./patches/bass1.patch",1);
+        synt->LoadPatch("./patches/bass1.patch",9);
         hb_song = new Happybirsday();
-        hb_song->set_synth(active_synth);
+        hb_song->set_synth(synt);
         std::vector<Notestruct>* notes = new std::vector<Notestruct>();
         *notes = hb_song->parse_hb_notes(fileName);
         //hb_song->generate_play_wave(*notes);
@@ -292,4 +294,13 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     }
 
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+   if( hb_song)
+   {
+       hb_song->Stop();
+       delete hb_song;
+   }
 }

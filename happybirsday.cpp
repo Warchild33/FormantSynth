@@ -175,7 +175,7 @@ void Happybirsday::Stop()
     isPlaying = false;
     if(buffer!=0)
     {
-        buffer->timeEnd = QTime::currentTime();
+        buffer->timeEnd = QTime::currentTime().addMSecs(1000);
     }
 }
 
