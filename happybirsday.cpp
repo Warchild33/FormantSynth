@@ -38,7 +38,10 @@ std::vector<Notestruct> Happybirsday::parse_hb_notes(QString file)
             st.note = parts[3].toInt();
             st.t_start = parts[1].toFloat();
             st.t_end = st.t_start + parts[2].toFloat();
-            st.channel = parts[5].toInt();
+            if(parts.size()>5)
+                st.channel = parts[5].toInt();
+            else
+                st.channel = 0;
             if(parts[1].toFloat()!=-1)
             output.push_back(st);
         }
