@@ -140,10 +140,13 @@ void MainWindow::play_test_song()
         synt->LoadPatch("./patches/bass1.patch",9);
         hb_song = new Happybirsday();
         hb_song->set_synth(synt);
+        connect(hb_song,SIGNAL(noteShow(QString)),ui->pianoWidget,SLOT(on_key_show(QString)));
+        connect(hb_song,SIGNAL(noteHide(QString)),ui->pianoWidget,SLOT(on_key_hide(QString)));
         std::vector<Notestruct>* notes = new std::vector<Notestruct>();
         *notes = hb_song->parse_hb_notes(fileName);
         //hb_song->generate_play_wave(*notes);
         QtConcurrent::run(hb_song, &Happybirsday::generate_play_wave, *notes);
+        hb_song->Play(notes,0);
     }
     else
     {

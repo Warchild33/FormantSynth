@@ -2,6 +2,7 @@
 #include "happybirsday.h"
 #include "filter.h"
 #include "wave_in.h"
+#include "freqtable.h"
 #include "envelope.h"
 #include "common.h"
 #include "buffer.h"
@@ -14,6 +15,9 @@
 Happybirsday::Happybirsday()
 {
     buffer = 0;
+    timer.restart();
+    startTimer(100);
+
 }
 
 std::vector<Notestruct> Happybirsday::parse_hb_notes(QString file)
@@ -67,7 +71,7 @@ void Happybirsday::generate_play_wave(std::vector<Notestruct>& song)
         //if(progress_bar)
         //   progress_bar->setValue(((float)n_note/song.size()) * 100);
 
-        if((t_start > 2) && !bBufferSended)
+        if(!bBufferSended)
         {
             synt->out_buffer(buffer);
             bBufferSended = true;
@@ -121,40 +125,33 @@ void Happybirsday::timerEvent(QTimerEvent *)
         for(auto ns=song->begin(); ns!=song->end(); ns++,n_note++)
         {
             float f= freq_table.getFreq((*ns).note);
+            QString name = freq_table.getNoteName((*ns).note);
             float t_start = (*ns).t_start;
             float t_end = (*ns).t_end;
-            if((*ns).isPlayed == false)
+            if((*ns).channel > 0) continue;
+            if(!(*ns).isPlayed)
             {
-                if(((t_start - t) >= 0) && ((t_start - t) < 0.2))
+                if((t >=t_start ) && (t <= t_end) )
                 {
-                    (*ns).isPlayed = true;
-                    //generate_voice(f, 0, t_end-t_start, 400.00, 2000.00, 2550.00, 0.0066, 3, &buf->samples);
-                    Buffer* buf = synt->play_note((*ns).note,t_end-t_start,1);
-                    buf->bWrited = false;
-                    //fprintf(stderr,"===========>>> play_note %d\n",(*ns).note);
-                    (*ns).buf = buf;
-                    if(progress_bar)
-                      progress_bar->setValue(((float)n_note/song->size()) * 100);
+                    if(!(*ns).isShown)
+                    {
+                        emit noteShow(name);
+                        (*ns).isShown = true;
+                    }
 
                 }
-            }
-            else
-            {
-                if(((t_end - t) < 0.1) && ((t_end - t) > 0))
+                else
                 {
-                    if((*ns).buf)
+                    if(t >=t_end)
                     {
-
-                        //synt->release_note((*ns).buf,(*ns).note,t_end-t_start);
-
-                        (*ns).buf->bWrited = true;
-                        msleep(50);
-                        (*ns).buf->timeEnd = QTime::currentTime().addMSecs(50);
-                        (*ns).buf = 0;
+                        (*ns).isPlayed = true;
+                        emit noteHide(name);
                     }
                 }
 
             }
+
+
 
 
         }
@@ -166,8 +163,6 @@ void Happybirsday::Play(std::vector<Notestruct>* song, QProgressBar* progress_ba
     this->song = song;
     this->progress_bar = progress_bar;
     isPlaying = true;
-    //timer.restart();
-    //startTimer(1);
 }
 
 void Happybirsday::Stop()

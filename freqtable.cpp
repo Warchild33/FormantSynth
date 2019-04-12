@@ -34,10 +34,20 @@ MidiNote FreqTable::getNoteByName(QString note_name)
     return note;
 }
 
+QString FreqTable::getNoteName(int note)
+{
+    if( note2name.find(note)!=note2name.end())
+    {
+        return note2name[note];
+    }
+    return "";
+}
+
 void FreqTable::parse_fields(int field, int octave, QStringList parts, QString name)
 {
     int n1 = parts[field].toInt();
     midi_freq[n1] = parts[field+1].toFloat();
+    note2name[n1] = name + QString::number(octave);
     QString key = name + QString::number(octave);
     note_table[key] = MidiNote(key,midi_freq[n1],n1,octave);
 }

@@ -10,6 +10,7 @@
 struct PianoKey
 {
     QPointF pixel;
+    int    code;
     bool   on;
     QString name;
     QRectF  rect;
@@ -41,6 +42,7 @@ class PianoWidget : public SvgWidget
 public:
     QImage background;
     std::map<int, PianoKey> piano_keys;
+    std::map<QString, PianoKey> note2key;
     explicit PianoWidget(QWidget *parent = nullptr);
     void paintEvent(QPaintEvent* event);
     void mousePressEvent(QMouseEvent* event);
@@ -48,6 +50,7 @@ public:
     void create_table();
 
     void drawKeys(QPainter& painter);
+    void drawKey(PianoKey key, bool down);
 
 signals:
     void sigMouseKeyDown(int key);
@@ -56,6 +59,8 @@ signals:
 public slots:
     void on_key_press(int key_code);
     void on_key_release(int key_code);
+    void on_key_show(QString key_name);
+    void on_key_hide(QString key_name);
 
 };
 

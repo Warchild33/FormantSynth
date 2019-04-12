@@ -43,6 +43,25 @@ void PianoWidget::drawKeys(QPainter& painter)
     }
 }
 
+void PianoWidget::on_key_show(QString key_name)
+{
+
+    if( note2key.find(key_name)==note2key.end() )
+        return;
+    PianoKey k = note2key[key_name];
+    piano_keys[k.code].on = true;
+    repaint();
+}
+
+void PianoWidget::on_key_hide(QString key_name)
+{
+    if( note2key.find(key_name)==note2key.end() )
+        return;
+    PianoKey k = note2key[key_name];
+    piano_keys[k.code].on = false;
+    repaint();
+}
+
 void PianoWidget::on_key_press(int key_code)
 {
     if( piano_keys.find(key_code)==piano_keys.end() )
@@ -105,6 +124,13 @@ void PianoWidget::create_table()
     piano_keys['C'] = PianoKey("Gb6", getRect("Gb6"));
     piano_keys['V'] = PianoKey("Ab6", getRect("Ab6"));
     piano_keys['B'] = PianoKey("Bb6", getRect("Bb6"));
+
+    for(auto it=piano_keys.begin(); it!=piano_keys.end(); it++)
+    {
+        PianoKey key = (*it).second;
+        key.code = (*it).first;
+        note2key[key.name] = key;
+    }
 
     /*
 

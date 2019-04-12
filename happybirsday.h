@@ -19,6 +19,7 @@ struct Notestruct
     Notestruct()
     {
         isPlayed = false;
+        isShown = false;
         buf = 0;
     }
     char note;
@@ -26,6 +27,7 @@ struct Notestruct
     float t_start;
     float t_end;
     bool  isPlayed;
+    bool  isShown;
     Buffer* buf;
 };
 
@@ -51,6 +53,9 @@ public:
     void timerEvent(QTimerEvent *);
     void Play(std::vector<Notestruct>* song, QProgressBar* progress_bar);
     void Stop();
+signals:
+    void noteShow(QString noteName);
+    void noteHide(QString noteName);
 
 
 };

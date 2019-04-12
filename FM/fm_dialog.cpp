@@ -10,6 +10,7 @@ FM_Dialog::FM_Dialog(QWidget *parent) :
     ui(new Ui::FM_Dialog)
 {
     ui->setupUi(this);
+    disableAsignFromGUI = false;
     connect(ui->CopyTo1, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
     connect(ui->CopyTo2, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
     connect(ui->CopyTo3, SIGNAL(clicked(bool)),this, SLOT(on_CopyTo1_clicked()));
@@ -38,7 +39,7 @@ FM_Dialog::FM_Dialog(QWidget *parent) :
         w = this->findChild<QDoubleSpinBox *>("f"+QString::number(i));
         connect(w, SIGNAL(valueChanged(double)),this,SLOT(on_d1_valueChanged(double)));
     }
-    disableAsignFromGUI = false;
+
     synt = new FMSynth();
 }
 
