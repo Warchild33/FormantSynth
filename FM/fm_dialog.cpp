@@ -498,9 +498,55 @@ void FM_Dialog::on_comboBox_activated(const QString &arg1)
     }
 
 
-    if( arg1 == "bass2" )
+    if( arg1 == "piano1" )
     {
-        on_test1_2_clicked();
+        initLevels(0.86,0.85,0.97,0.95,0.87,0.94);
+        initFreqs(1,1,7,1,1,0.5);
+        initDetune(-4,4,-3,3,-2,2);
+        initEnvelope(1,90,30,28,43,99,95,0,0);
+        initEnvelope(2,98,26,6,32,91,90,0,0);
+        initEnvelope(3,94,80,19,12,83,67,0,0);
+        initEnvelope(4,90,64,28,45,99,97,0,0);
+        initEnvelope(5,98,20,6,2,91,90,0,0);
+        initEnvelope(6,80,73,15,10,99,19,0,0);
+
+        ui->algoCombo->setCurrentIndex(3-1);
+
+        initSliders();
+
+        ui->algosvg->SvgLoad("./images/algo3.svg");
+        ui->algosvg->LoadDom("./images/algo3.svg");
+        ui->algosvg->repaint();
+
+        AssignGUIValues();
+
+
+    }
+
+    if( arg1 == "piano2" )
+    {
+
+        initLevels(0.86,0.85,0.97,0.95,0.87,0.94);
+        initFreqs(1,1,7,1,1,0.5);
+        initDetune(-4,4,-3,3,-2,2);
+        initEnvelope(1,90,30,28,43,99,95,0,0);
+        initEnvelope(2,98,26,6,32,91,90,0,0);
+        initEnvelope(3,94,80,19,12,83,67,0,0);
+        initEnvelope(4,90,64,28,45,99,97,0,0);
+        initEnvelope(5,98,20,6,2,91,90,0,0);
+        initEnvelope(6,80,73,15,10,99,19,0,0);
+
+        ui->algoCombo->setCurrentIndex(1-1);
+
+        initSliders();
+
+        ui->algosvg->SvgLoad("./images/algo3.svg");
+        ui->algosvg->LoadDom("./images/algo3.svg");
+        ui->algosvg->repaint();
+
+        AssignGUIValues();
+
+
     }
 }
 

@@ -275,6 +275,48 @@ double FMSynth::algo2(FmParams* p, double t, int n, bool bReleaseNote, double ke
     return (p->out[1] + p->out[3])/2;
 }
 
+double FMSynth::algo3(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
+{
+    //if( (n%100) == 0)
+    for(int i=1; i <=6; i++)
+    {
+        p->ev[i] = p->envelope[i]->render();
+    }
+
+    p->out[6] = p->ev[6]* p->I[6] * sin( 2 * M_PI * (p->f[6])* t + p->out[6]);
+    p->out[5] = p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5])* t);
+    p->out[4] = p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4])* t);
+    p->out[3] = p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3])*t);
+    p->out[2] = p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2])* t);
+    p->out[1] = p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1])* t + p->out[2] + p->out[3]);
+    return (p->out[6] + p->out[5] + p->out[4] + p->out[1])/4;
+}
+
+double FMSynth::algo1(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
+{
+    double A = 0.1;
+    double f_oc = p->f[1];
+    double S = f_oc / 200;
+    double fm1 = f_oc;
+    double fm2 = 4 * f_oc;
+    static double I1=0, I2=0;
+
+    if( n==0 )
+    {
+        I1 = 17 * ( 8 - log(p->f[1])) / (log(p->f[1])*log(p->f[1]));
+        I2 = 20 * ( 8 - log(p->f[1])) / f_oc;
+    }
+
+    //if( (n%100) == 0)
+    for(int i=1; i <=6; i++)
+    {
+        p->ev[i] = p->envelope[i]->render();
+    }
+    return p->ev[1]*sin(2 * M_PI * f_oc * t + I1*sin( 2 * M_PI * (fm1 + S) * t ) + I2*sin(2 * M_PI * (fm2 + S) * t)  );
+
+}
+
+
 
 double FMSynth::algo32(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
 {
@@ -356,7 +398,11 @@ void FMSynth::Algorithm(AlgoParams& param)
     {
         switch(param.fm_params.algo_n)
         {
+            case 1: x = algo1(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
+            break;
             case 2: x = algo2(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
+            break;
+            case 3: x = algo3(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
             break;
             case 5: x = algo5(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
             break;

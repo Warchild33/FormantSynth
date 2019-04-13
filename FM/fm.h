@@ -78,12 +78,14 @@ public:
     bool   bShowOSC;
     int    n_op_osc;
     double algotest(FmParams* p, double t);
+    double algo1(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     double algo19(FmParams* p, double t, int n);
     double algo5(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     double algo17(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     double algo16(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     double algo32(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     double algo2(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
+    double algo3(FmParams* p, double t, int n, bool bReleaseNote, double key_time);
     Buffer* play_note(char note, double duration, double velocity);
     double release_note(Buffer* buffer, char note, double key_time);
     double* Test1(Buffer* buffer, double f_oc, double SampleRate, double time, int* N);
