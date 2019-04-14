@@ -230,13 +230,17 @@ double FMSynth::algo19(FmParams* p, double t, int n)
 
 double FMSynth::algo17(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
 {
+    for(int i=1; i <=6; i++)
+    {
+        p->ev[i] = p->envelope[i]->render();
+    }
 
-    p->out[6] = Evenlope(6, p, t, bReleaseNote, key_time) * p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t);
-    p->out[5] = Evenlope(5, p, t, bReleaseNote, key_time) * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
-    p->out[4] = Evenlope(4, p, t, bReleaseNote, key_time) * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
-    p->out[3] = Evenlope(3, p, t, bReleaseNote, key_time) * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
-    p->out[2] = Evenlope(2, p, t, bReleaseNote, key_time) * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t+ p->out[2]);
-    p->out[1] = Evenlope(1, p, t, bReleaseNote, key_time) * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
+    p->out[6] = p->ev[6] * p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t);
+    p->out[5] = p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
+    p->out[4] = p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
+    p->out[3] = p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
+    p->out[2] = p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t+ p->out[2]);
+    p->out[1] = p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
     return p->out[1];
 
 }
@@ -301,7 +305,7 @@ double FMSynth::algo1(FmParams* p, double t, int n, bool bReleaseNote, double ke
     double fm2 = 4 * f_oc;
     static double I1=0, I2=0;
 
-    if( n==0 )
+    //if( n==0 )
     {
         I1 = 17 * ( 8 - log(p->f[1])) / (log(p->f[1])*log(p->f[1]));
         I2 = 20 * ( 8 - log(p->f[1])) / f_oc;

@@ -66,7 +66,7 @@ void Happybirsday::generate_play_wave(std::vector<Notestruct>& song)
         float t_end = (*ns).t_end;
         int channel = (*ns).channel;
         synt->SetCurrentPatch(channel);
-        if( isPlaying &&  channel!=9) //only piano channel
+        if( isPlaying &&  synt->isChannelEnabled(channel)) //only piano channel
           synt->write_note(buffer,long(t_start*48000),(*ns).note,t_end-t_start);
         //if(progress_bar)
         //   progress_bar->setValue(((float)n_note/song.size()) * 100);

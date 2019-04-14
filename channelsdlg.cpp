@@ -26,6 +26,22 @@ ChannelsDlg::ChannelsDlg(QWidget *parent) :
 
 }
 
+int  ChannelsDlg::getEnabledChannels()
+{
+    int word=0;
+    word|=(ui->checkBox_1->isChecked() << 0);
+    word|=(ui->checkBox_2->isChecked() << 1);
+    word|=(ui->checkBox_3->isChecked() << 2);
+    word|=(ui->checkBox_4->isChecked() << 3);
+    word|=(ui->checkBox_5->isChecked() << 4);
+    word|=(ui->checkBox_6->isChecked() << 5);
+    word|=(ui->checkBox_7->isChecked() << 6);
+    word|=(ui->checkBox_8->isChecked() << 7);
+    word|=(ui->checkBox_9->isChecked() << 8);
+    word|=(ui->checkBox_10->isChecked() << 9);
+    return word;
+}
+
 QString ChannelsDlg::getPatch(int i)
 {
     QComboBox* combo = this->findChild<QComboBox*>("comboBox"+QString::number(i));

@@ -29,6 +29,11 @@
    </item>
    <item>
     <property name="text">
+     <string>bass2</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
      <string>orchestra</string>
     </property>
    </item>

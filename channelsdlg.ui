@@ -14,36 +14,6 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="1">
-    <widget class="QComboBox" name="comboBox1"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="label_15">
-     <property name="text">
-      <string>6</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QComboBox" name="comboBox6"/>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="label_16">
-     <property name="text">
-      <string>7</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1">
-    <widget class="QComboBox" name="comboBox7"/>
-   </item>
    <item row="9" column="0">
     <widget class="QLabel" name="label_17">
      <property name="text">
@@ -51,24 +21,7 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_12">
-     <property name="text">
-      <string>3</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
+   <item row="4" column="2">
     <widget class="QComboBox" name="comboBox3"/>
    </item>
    <item row="6" column="0">
@@ -78,21 +31,22 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
-    <widget class="QComboBox" name="comboBox5"/>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="comboBox0"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_11">
-     <property name="text">
-      <string>2</string>
+   <item row="11" column="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QComboBox" name="comboBox2"/>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_16">
+     <property name="text">
+      <string>7</string>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label_10">
@@ -108,11 +62,24 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="7" column="2">
+    <widget class="QComboBox" name="comboBox6"/>
+   </item>
+   <item row="2" column="2">
+    <widget class="QComboBox" name="comboBox1"/>
+   </item>
+   <item row="5" column="2">
     <widget class="QComboBox" name="comboBox4"/>
    </item>
-   <item row="9" column="1">
+   <item row="9" column="2">
     <widget class="QComboBox" name="comboBox8"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_12">
+     <property name="text">
+      <string>3</string>
+     </property>
+    </widget>
    </item>
    <item row="10" column="0">
     <widget class="QLabel" name="label_18">
@@ -121,16 +88,128 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
+   <item row="10" column="2">
     <widget class="QComboBox" name="comboBox9"/>
    </item>
-   <item row="0" column="1">
+   <item row="8" column="2">
+    <widget class="QComboBox" name="comboBox7"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_11">
+     <property name="text">
+      <string>2</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QComboBox" name="comboBox2"/>
+   </item>
+   <item row="6" column="2">
+    <widget class="QComboBox" name="comboBox5"/>
+   </item>
+   <item row="1" column="2">
+    <widget class="QComboBox" name="comboBox0"/>
+   </item>
+   <item row="0" column="2">
     <widget class="QLabel" name="label_19">
      <property name="text">
       <string>PATCHES</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_15">
+     <property name="text">
+      <string>6</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QCheckBox" name="checkBox_1">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="checkBox_2">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="checkBox_3">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QCheckBox" name="checkBox_4">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QCheckBox" name="checkBox_5">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QCheckBox" name="checkBox_6">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QCheckBox" name="checkBox_7">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QCheckBox" name="checkBox_8">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QCheckBox" name="checkBox_9">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QCheckBox" name="checkBox_10">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

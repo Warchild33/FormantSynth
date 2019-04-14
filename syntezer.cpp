@@ -96,4 +96,7 @@ void Syntezer::on_key_release(int key_code)
    }
 }
 
-
+bool Syntezer::isChannelEnabled(int n_channel)
+{
+    return (enabledChannels >> n_channel)&1;
+}

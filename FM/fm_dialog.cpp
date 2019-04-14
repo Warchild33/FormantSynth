@@ -320,9 +320,9 @@ void FM_Dialog::on_CopyTo1_clicked()
          for(int j=0; j < 4; j++)
          {
              QSlider *slider = this->findChild<QSlider *>("level"+QString::number(i)+QString::number(j));
-             slider->setValue(synt->gui_params.level[n][j+1]*100);
+             slider->setValue(synt->gui_params.level[n][j+1]);
              QSlider *slider2 = this->findChild<QSlider *>("rate"+QString::number(i)+QString::number(j));
-             slider2->setValue(synt->gui_params.rate[n][j]*50);
+             slider2->setValue(synt->gui_params.rate[n][j]);
          }
     }
      AssignGUIValues();
@@ -422,6 +422,32 @@ void FM_Dialog::on_comboBox_activated(const QString &arg1)
         ui->algosvg->repaint();
 
         AssignGUIValues();
+    }
+
+    if( arg1 == "bass2" )
+    {
+        synt->n_test = 4;
+        initLevels(0.99,0.80,0.68,0.99,0.75,0.87);
+        initFreqs(0.51,0.52,1.0,0.5,1.01,0.5);
+        initDetune(0,0,0,0,0,1);
+        initEnvelope(6,25,50,24,56,96,97,0,0);
+        initEnvelope(5,99,51,0,0,99,74,0,0);
+        initEnvelope(4,80,39,28,53,89,57,0,0);
+        initEnvelope(3,73,25,32,30,97,78,0,0);
+        initEnvelope(2,28,37,42,50,99,0,0,0);
+        initEnvelope(1,75,37,18,63,99,70,0,0);
+
+        //copy to all
+        ui->algoCombo->setCurrentIndex(17-1);
+
+        initSliders();
+
+        ui->algosvg->SvgLoad("./images/algo17.svg");
+        ui->algosvg->LoadDom("./images/algo17.svg");
+        ui->algosvg->repaint();
+
+        AssignGUIValues();
+
     }
 
     if( arg1 == "orchestra" )

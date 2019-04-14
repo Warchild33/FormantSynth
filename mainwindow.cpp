@@ -144,6 +144,7 @@ void MainWindow::play_test_song()
             //synt->LoadPatch(piano_patch,0);
             synt->LoadPatch("./patches/"+channels_dlg->getPatch(1),1);
             synt->LoadPatch("./patches/"+channels_dlg->getPatch(9),9);
+            synt->SetEnabledChannels(channels_dlg->getEnabledChannels());
             hb_song = new Happybirsday();
             hb_song->set_synth(synt);
             connect(hb_song,SIGNAL(noteShow(QString)),ui->pianoWidget,SLOT(on_key_show(QString)));

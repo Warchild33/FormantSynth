@@ -15,6 +15,7 @@ public:
      Ui::ChannelsDlg *ui;
     explicit ChannelsDlg(QWidget *parent = 0);
     QString getPatch(int i);
+    int     getEnabledChannels();
     ~ChannelsDlg();
 
 };
