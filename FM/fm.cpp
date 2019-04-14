@@ -496,33 +496,26 @@ void FMSynth::write_note(Buffer* buffer, long offset, char note, double duration
 Buffer* FMSynth::play_note(char note, double duration, double velocity)
 {
     Buffer* buffer = new Buffer(48000,duration*1.5,2);
-    qDebug() << "starting thread  " << QThread::currentThreadId();
+    //qDebug() << "starting thread  " << QThread::currentThreadId();
 
     float f = freq_table.getFreq(note);
 
-    QFuture<double*> future;
-    if(n_test == 4)
+    AlgoParams param;
+    param.bReleaseNote = false;
+    param.buffer = buffer;
+    param.f_oc = f;
+    param.key_time = 0;
+    param.time = duration;
+
+    if(!bShowOSC)
     {
-        AlgoParams param;
-        param.bReleaseNote = false;
-        param.buffer = buffer;
-        param.f_oc = f;
-        param.key_time = 0;
-        param.time = duration;
-
-        if(!bShowOSC)
-        {
-            if( bAsynch )
-               QtConcurrent::run(this, &FMSynth::Algorithm, param);
-            else
-                Algorithm(param);
-        }
+        if( bAsynch )
+            QtConcurrent::run(this, &FMSynth::Algorithm, param);
         else
-          Algorithm(param);
+            Algorithm(param);
     }
-    //if(n_test == 3) future = QtConcurrent::run(this, &FMSynth::Test3, buffer, f,duration,false,0);
-
-
+    else
+        Algorithm(param);
 
 
     return buffer;

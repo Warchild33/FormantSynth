@@ -28,6 +28,11 @@ void Key2NoteTable::create()
     key2note['L'] = 71;    key2note[';'] = 72;
     key2note['\''] = 74;    key2note['\\'] = 76;
     //key2note['\''] = 77;    key2note['\\'] = 79;
+    //C7
+    key2note['É'] = 72;    key2note['Ö'] = 74;
+    key2note['Ó'] = 76;    key2note['Ê'] = 77;
+    key2note['Å'] = 79;    key2note['Í'] = 81;
+    key2note['Ã'] = 83;    key2note['Ø'] = 84;
 
     // black keys
     key2note['1'] = 37;    key2note['2'] = 39;

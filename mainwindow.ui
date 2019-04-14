@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1104</width>
-    <height>895</height>
+    <width>1102</width>
+    <height>820</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,33 +42,11 @@
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>300</height>
+        <height>200</height>
        </size>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(102, 222, 255);</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QFrame" name="waveFrame">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>11</width>
-        <height>11</height>
-       </size>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
       </property>
      </widget>
     </item>
@@ -79,7 +57,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1104</width>
+     <width>1102</width>
      <height>28</height>
     </rect>
    </property>
@@ -139,7 +117,7 @@
   </action>
   <action name="actionLoadPatch">
    <property name="text">
-    <string>LoadPatch</string>
+    <string>&amp;LoadPatch</string>
    </property>
   </action>
   <action name="actionSavevPatch">
@@ -149,7 +127,7 @@
   </action>
   <action name="actionSavePatch">
    <property name="text">
-    <string>SavePatch</string>
+    <string>&amp;SavePatch</string>
    </property>
   </action>
  </widget>

@@ -7,8 +7,8 @@
 PianoWidget::PianoWidget(QWidget *parent) : SvgWidget(parent)
 {
     //background = QImage("./images/piano_keys_and_notes.png");
-    SvgLoad("./images/keyboard.svg");
-    LoadDom("./images/keyboard.svg");
+    SvgLoad("./images/keyboard2.svg");
+    LoadDom("./images/keyboard2.svg");
     create_table();
 }
 
@@ -107,6 +107,33 @@ void PianoWidget::create_table()
     piano_keys['K'] = PianoKey("A6", getRect("A6"),getRect("Ab6"),getRect("Bb6"));
     piano_keys['L'] = PianoKey("B6", getRect("B6"),getRect("Bb6"));
 
+    //C7
+    piano_keys['É'] = PianoKey("C7", getRect("C7"),getRect("Db7"));
+    piano_keys['Ö'] = PianoKey("D7", getRect("D7"),getRect("Eb7"),getRect("Db7"));
+    piano_keys['Ó'] = PianoKey("E7", getRect("E7"),getRect("Eb7"));
+    piano_keys['Ê'] = PianoKey("F7", getRect("F7"),getRect("Gb7"));
+    piano_keys['Å'] = PianoKey("G7", getRect("G7"),getRect("Gb7"),getRect("Ab7"));
+    piano_keys['Í'] = PianoKey("A7", getRect("A7"),getRect("Ab7"),getRect("Bb7"));
+    piano_keys['Ã'] = PianoKey("B7", getRect("B7"),getRect("Bb7"));
+
+    //C8
+    piano_keys['Ø'] = PianoKey("C8", getRect("C8"),getRect("Db8"));
+    piano_keys['Ù'] = PianoKey("D8", getRect("D8"),getRect("Eb8"),getRect("Db8"));
+    piano_keys['Ç'] = PianoKey("E8", getRect("E8"),getRect("Eb8"));
+    piano_keys['Õ'] = PianoKey("F8", getRect("F8"),getRect("Gb8"));
+    piano_keys['Ú'] = PianoKey("G8", getRect("G8"),getRect("Gb8"),getRect("Ab8"));
+    piano_keys['Ô'] = PianoKey("A8", getRect("A8"),getRect("Ab8"),getRect("Bb8"));
+    piano_keys['Û'] = PianoKey("B8", getRect("B8"),getRect("Bb8"));
+
+    //C9
+    piano_keys['Â'] = PianoKey("C9", getRect("C9"),getRect("Db9"));
+    piano_keys['À'] = PianoKey("D9", getRect("D9"),getRect("Eb9"),getRect("Db9"));
+    piano_keys['Ï'] = PianoKey("E9", getRect("E9"),getRect("Eb9"));
+    piano_keys['Ð'] = PianoKey("F9", getRect("F9"),getRect("Gb9"));
+    piano_keys['Î'] = PianoKey("G9", getRect("G9"),getRect("Gb9"),getRect("Ab9"));
+    piano_keys['Ë'] = PianoKey("A9", getRect("A9"),getRect("Ab9"),getRect("Bb9"));
+    piano_keys['Ä'] = PianoKey("B9", getRect("B9"),getRect("Bb9"));
+
     piano_keys['1'] = PianoKey("Db4", getRect("Db4"));
     piano_keys['2'] = PianoKey("Eb4", getRect("Eb4"));
     piano_keys['3'] = PianoKey("Gb4", getRect("Gb4"));
@@ -124,6 +151,24 @@ void PianoWidget::create_table()
     piano_keys['C'] = PianoKey("Gb6", getRect("Gb6"));
     piano_keys['V'] = PianoKey("Ab6", getRect("Ab6"));
     piano_keys['B'] = PianoKey("Bb6", getRect("Bb6"));
+
+    piano_keys['Æ'] = PianoKey("Db7", getRect("Db7"));
+    piano_keys['Ý'] = PianoKey("Eb7", getRect("Eb7"));
+    piano_keys['ß'] = PianoKey("Gb7", getRect("Gb7"));
+    piano_keys['×'] = PianoKey("Ab7", getRect("Ab7"));
+    piano_keys['Ñ'] = PianoKey("Bb7", getRect("Bb7"));
+
+    piano_keys['Ì'] = PianoKey("Db8", getRect("Db8"));
+    piano_keys['È'] = PianoKey("Eb8", getRect("Eb8"));
+    piano_keys['Ò'] = PianoKey("Gb8", getRect("Gb8"));
+    piano_keys['Ü'] = PianoKey("Ab8", getRect("Ab8"));
+    piano_keys['Á'] = PianoKey("Bb8", getRect("Bb8"));
+
+    piano_keys['!'] = PianoKey("Db9", getRect("Db9"));
+    piano_keys['@'] = PianoKey("Eb9", getRect("Eb9"));
+    piano_keys['#'] = PianoKey("Gb9", getRect("Gb9"));
+    piano_keys['$'] = PianoKey("Ab9", getRect("Ab9"));
+    piano_keys['%'] = PianoKey("Bb9", getRect("Bb9"));
 
     for(auto it=piano_keys.begin(); it!=piano_keys.end(); it++)
     {
