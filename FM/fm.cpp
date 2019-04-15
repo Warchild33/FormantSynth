@@ -427,7 +427,7 @@ void FMSynth::Algorithm(AlgoParams& param)
         param.buffer->samples[n*2] = sample;
         param.buffer->samples[n*2+1] = sample;
 
-        if(n == 100 && bDoOutBuffer)
+        if(n == 1024 && bDoOutBuffer)
             out_buffer(param.buffer);
 
         t+=dt;

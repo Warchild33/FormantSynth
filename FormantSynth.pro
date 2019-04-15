@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui svg xml concurrent
-lessThan(QT_MAJOR_VERSION, 5): LIBS+=-lqwt -lasound
-greaterThan(QT_MAJOR_VERSION, 4): LIBS+=-lqwt-qt5 -lasound
+lessThan(QT_MAJOR_VERSION, 5): LIBS+=-lqwt -lasound -lpulse -lpulse-simple
+greaterThan(QT_MAJOR_VERSION, 4): LIBS+=-lqwt-qt5 -lasound -lpulse -lpulse-simple
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QMAKE_CXXFLAGS+=-g -std=c++11 -Wreorder
 
@@ -58,7 +58,8 @@ SOURCES += main.cpp\
     FM/fm.cpp \
     FM/fm_dialog.cpp \
     FM/fm_envelope.cpp \
-    channelsdlg.cpp
+    channelsdlg.cpp \
+    puseaudiodriver.cpp
 
 HEADERS  += mainwindow.h \
     fft/stft.h \
@@ -96,7 +97,8 @@ HEADERS  += mainwindow.h \
     FM/fm_dialog.h \
     FM/fm.h \
     FM/fm_envelope.h \
-    channelsdlg.h
+    channelsdlg.h \
+    puseaudiodriver.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \

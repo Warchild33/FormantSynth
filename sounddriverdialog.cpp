@@ -24,6 +24,7 @@ SoundDriverDialog::SoundDriverDialog(QWidget *parent) :
 //    ui->comboBox->addItem("hw:1,2");
     listdev();
     ui->comboBox->addItem("plug:dmix");
+    ui->comboBox->addItem("pulseaudio");
 
     //ui->comboBox->setCurrentText(settings.value("alsa_device").toString());
     ui->comboBox->setItemText(0,settings.value("alsa_device").toString());
@@ -81,6 +82,15 @@ void SoundDriverDialog::on_testButton_clicked()
 void SoundDriverDialog::on_comboBox_activated(const QString &arg1)
 {
     //alsa->close();
-    alsa->open((char*)ui->comboBox->currentText().toStdString().c_str(), true);
-    settings.setValue("alsa_device", arg1);
+    if(ui->comboBox->currentText()=="pulseaudio")
+    {
+        settings.setValue("use_driver","pulse");
+    }
+    else
+    {
+        settings.setValue("use_driver","alsa");
+        alsa->open((char*)ui->comboBox->currentText().toStdString().c_str(), true);
+        settings.setValue("alsa_device", arg1);
+    }
+
 }
