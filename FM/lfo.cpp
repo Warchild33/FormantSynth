@@ -81,7 +81,7 @@ Lfo::Lfo(int lfoAmpModSens)
     params.controllerModVal = 0;
     params.lfoAmpModDepth = 0;
     params.lfoDelay = 33;
-    params.lfoPitchModDepth = 0;
+    params.lfoPitchModDepth = 20;
     params.lfoPitchModSens = 3;
     params.lfoWaveform = LFO_MODE_SINE;
     this->lfoAmpModSens = lfoAmpModSens;

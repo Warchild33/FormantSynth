@@ -20,27 +20,27 @@ double algo0(double A, double f_oc, double fm1, double fm2, double I1, double I2
 */
 extern Ploter* p;
 
-double sine_table[1000] = {0};
-
-inline double sinT(double angle_rad);
 
 FMSynth::FMSynth()
 :Syntezer()
 {
     TestEvenlope();
     TestTriangle();
+    for(int i=0; i < 32; i++)
+      algoFuncs[i] = &algo1;
+   algoFuncs[2] = &algo2;
+   algoFuncs[3] = &algo3;
+   algoFuncs[5] = &algo5;
+   algoFuncs[16] = &algo16;
+   algoFuncs[17] = &algo17;
+   algoFuncs[19] = &algo19;
+   algoFuncs[32] = &algo32;
 
     n_test = 1;
     n_op_osc = 0;
     bShowOSC = false;
 
-    //generate sin table
-    for (int i = 1; i <= 1000; i++)
-    {
-        sine_table[i-1] = std::sin(2 * M_PI * i/ 1000.0);
-    }
-    sinT( -4*M_PI );
-    sinT( 4*M_PI );
+
 }
 
 void FMSynth::SavePatch(QString filename)
@@ -69,40 +69,6 @@ void FMSynth::SetCurrentPatch(int n)
     if(n < 0 || n > 10) return;
     gui_params = patches[n];
 }
-
-inline double sinT(double angle_rad)
-{
-    if(angle_rad!=angle_rad)
-        return 0;
-
-    if( angle_rad < 0 )
-    {
-        angle_rad+=int(abs(angle_rad) / (2 * M_PI)) * 2 * M_PI + (2 * M_PI);
-    }
-
-    if( angle_rad > (2 * M_PI) )
-    {
-        angle_rad-=int(abs(angle_rad) / (2 * M_PI)) * 2 * M_PI ;
-    }
-   // qDebug() << "angle_rad=" << angle_rad;
-   //return 0;
-
-   int i = (angle_rad/(2*M_PI)) * 1000.0;
-   return sine_table[i];
-}
-
-//inline double sinT(double angle)
-//{
-//    double x5=angle,x3=angle,x7=angle;
-//    for(int i=0; i < 3; i++ )
-//        x3*=x3;
-//    for(int i=0; i < 5; i++ )
-//        x5*=x5;
-//    for(int i=0; i < 7; i++ )
-//        x7*=x7;
-//    value = angle - x3/6 + x5/120 - x7/5040;
-//    return value;
-//}
 
 void FMSynth::TestEvenlope()
 {
@@ -151,64 +117,6 @@ void  FMSynth::TestTriangle()
 
 }
 
-
-double FMSynth::Evenlope(int op_index, FmParams* params, double t, bool bReleaseNote, double key_time)
-{
-    double level[5];
-    double rate[4];
-
-    level[0] = params->level[op_index][0];
-    level[1] = params->level[op_index][1]; // attack
-    level[2] = params->level[op_index][2]; // decay
-    level[3] = params->level[op_index][3]; // sustain
-    level[4] = params->level[op_index][4]; // release
-    rate[0] = params->rate[op_index][0];
-    rate[1] = params->rate[op_index][1];
-    rate[2] = params->rate[op_index][2];
-    rate[3] = params->rate[op_index][3];
-
-    if( bReleaseNote )
-    {
-        return level[3] + (level[4]-level[3]) * (t-key_time) / rate[3];
-    }
-
-    double t0 = 0;
-    int i = 0;
-
-    if(t > 0 && t < rate[0])
-    {
-        i = 0;
-        t0 = 0;
-    }
-    if((t > rate[0]) && (t < (rate[0] + rate[1])))
-    {
-        i = 1;
-        t0 = rate[0];
-    }
-    if((t > (rate[0] + rate[1])) && (t < (rate[0] + rate[1] + rate[2])))
-    {
-        i = 2;
-        t0 = (rate[0] + rate[1] );
-    }
-    if((t > (rate[0] + rate[1] + rate[2])) && (t < (rate[0] + rate[1] + rate[2] + rate[3])))
-    {
-        i = 3;
-        t0 = (rate[0] + rate[1] + rate[2] );
-    }
-    double l;
-    if(t > (rate[0] + rate[1] + rate[2] + rate[3]))
-        return 0;
-    l = level[i] +  (level[i+1]-level[i]) * (t - t0) / rate[i];
-    return l;
-
-    //qDebug() << "rate i=" << i;
-    //qDebug() << "level=" << l << " for t=" << t;
-
-
-
-
-}
-
 //testing feedback loop
 double FMSynth::algotest(FmParams* p, double t)
 {
@@ -224,7 +132,7 @@ double amp_mod(double Amax, double fvib, double t, double faze)
 }
 
 //testing algo 19
-double FMSynth::algo19(FmParams* p, double t, int n)
+double FMSynth::algo19(FmParams* p, double t, int n, bool bReleaseNote, double key_time)
 {
     static double d[7];
 
@@ -234,7 +142,7 @@ double FMSynth::algo19(FmParams* p, double t, int n)
 
    // qDebug() << d[6];
 
-    double ev = Evenlope(6, p, t, false, 0);
+    double ev = p->envelope[6]->render();
     p->out[6] = p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + d[6]*p->out[6]);
     p->out[4] = ev * p->I[4] * sin( 2 * M_PI * (p->f[4]) * t + d[4]*p->out[6]);
     p->out[5] = ev * p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + d[5]*p->out[6]);
@@ -412,7 +320,7 @@ void FMSynth::Algorithm(AlgoParams& param)
     double t = 0;
     double dt = 1. / 48000;
 
-    //if( bShowOSC)
+    if( bShowOSC)
        p->clearvals(0);
     Lfo lfo(0);
     for(int n=param.offset; n < param.offset + floor((param.time)*48000); n++) //
@@ -421,25 +329,7 @@ void FMSynth::Algorithm(AlgoParams& param)
         double T_lfo = 1./2;
 
         //param.fm_params.lfo = lfo.renderAmp();//0.7 + 0.3*triangle(2,48000,t);
-
-        switch(param.fm_params.algo_n)
-        {
-            case 1: x = algo1(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
-            break;
-            case 2: x = algo2(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
-            break;
-            case 3: x = algo3(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
-            break;
-            case 5: x = algo5(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
-            break;
-            case 16: x = algo16(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
-            break;
-            case 17: x = algo17(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
-            break;
-            case 32: x = algo32(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
-            break;
-        }
-
+        x = algoFuncs[param.fm_params.algo_n](&param.fm_params, t, n, param.bReleaseNote, param.key_time);
 
         if( param.buffer->bWrited) break;
         param.buffer->samplesD[n*2] =  (param.buffer->samplesD[n*2] + x);
@@ -451,9 +341,9 @@ void FMSynth::Algorithm(AlgoParams& param)
         if(n == 100 && bDoOutBuffer)
             out_buffer(param.buffer);
 
-        t+=dt;
+        t+=dt*lfo.render();
 
-        p->setXY(0, t, lfo.render());
+        //p->setXY(0, t, lfo.render());
         //if(n % 100 == 0)
         //if(n < 10000)
         //  p->setXY(0, t, x);
@@ -468,7 +358,7 @@ void FMSynth::Algorithm(AlgoParams& param)
 
     }
 
-    //if( bShowOSC)
+    if( bShowOSC)
     {
       p->set_autoscale(true);
       p->zoomer->setAxis(QwtPlot::xBottom, QwtPlot::yRight);
