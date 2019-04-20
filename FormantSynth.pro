@@ -59,7 +59,8 @@ SOURCES += main.cpp\
     FM/fm_dialog.cpp \
     FM/fm_envelope.cpp \
     channelsdlg.cpp \
-    puseaudiodriver.cpp
+    puseaudiodriver.cpp \
+    FM/lfo.cpp
 
 HEADERS  += mainwindow.h \
     fft/stft.h \
@@ -98,7 +99,8 @@ HEADERS  += mainwindow.h \
     FM/fm.h \
     FM/fm_envelope.h \
     channelsdlg.h \
-    puseaudiodriver.h
+    puseaudiodriver.h \
+    FM/lfo.h
 #    spectrogram.h
 
 FORMS    += mainwindow.ui \

@@ -95,7 +95,7 @@ void Syntezer::on_key_release(int key_code)
    //emit sigDisableNote(key2note[key_code]);
    Buffer* buf=0;
    bDoOutBuffer = true;
-   bAsynch = true;
+   bAsynch = false;
    if(key2noteBuffer.find(key_code)!=key2noteBuffer.end())
    {
        buf = key2noteBuffer[key_code];

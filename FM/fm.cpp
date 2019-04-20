@@ -5,6 +5,7 @@
 #include <QFile>
 #include "fm.h"
 #include "gen.h"
+#include "lfo.h"
 #include "envelope.h"
 #include "common.h"
 #include "fm_envelope.h"
@@ -27,6 +28,7 @@ FMSynth::FMSynth()
 :Syntezer()
 {
     TestEvenlope();
+    TestTriangle();
 
     n_test = 1;
     n_op_osc = 0;
@@ -134,6 +136,21 @@ void FMSynth::TestEvenlope()
 
 }
 
+void  FMSynth::TestTriangle()
+{
+    double t=0;
+    double dt=0.0001;
+    p->clearvals(0);
+    for(t = 0; t < 0.1; t+=dt)
+    {
+        double x = triangle(800,48000,t);
+        p->setXY(0, t, x);
+    }
+    p->update_data();
+
+
+}
+
 
 double FMSynth::Evenlope(int op_index, FmParams* params, double t, bool bReleaseNote, double key_time)
 {
@@ -235,12 +252,12 @@ double FMSynth::algo17(FmParams* p, double t, int n, bool bReleaseNote, double k
         p->ev[i] = p->envelope[i]->render();
     }
 
-    p->out[6] = p->ev[6] * p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t);
-    p->out[5] = p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
-    p->out[4] = p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
-    p->out[3] = p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
-    p->out[2] = p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t+ p->out[2]);
-    p->out[1] = p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
+    p->out[6] = p->lfo * p->ev[6] * p->I[6] * sin( 2 * M_PI * (p->f[6]+ p->d[6])* t);
+    p->out[5] = p->lfo * p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5]+ p->d[5])* t+ p->out[6]);
+    p->out[4] = p->lfo * p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4]+ p->d[4])* t);
+    p->out[3] = p->lfo * p->ev[3] * p->I[3] * sin( 2 * M_PI * (p->f[3]+ p->d[3])* t+ p->out[4]);
+    p->out[2] = p->lfo * p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2]+ p->d[2])* t+ p->out[2]);
+    p->out[1] = p->lfo * p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1]+ p->d[1])* t+ p->out[2]+p->out[3]+p->out[5]);
     return p->out[1];
 
 }
@@ -395,11 +412,16 @@ void FMSynth::Algorithm(AlgoParams& param)
     double t = 0;
     double dt = 1. / 48000;
 
-    if( bShowOSC)
+    //if( bShowOSC)
        p->clearvals(0);
-
+    Lfo lfo(0);
     for(int n=param.offset; n < param.offset + floor((param.time)*48000); n++) //
     {
+        //lfo
+        double T_lfo = 1./2;
+
+        //param.fm_params.lfo = lfo.renderAmp();//0.7 + 0.3*triangle(2,48000,t);
+
         switch(param.fm_params.algo_n)
         {
             case 1: x = algo1(&param.fm_params, t, n, param.bReleaseNote, param.key_time);
@@ -419,7 +441,6 @@ void FMSynth::Algorithm(AlgoParams& param)
         }
 
 
-
         if( param.buffer->bWrited) break;
         param.buffer->samplesD[n*2] =  (param.buffer->samplesD[n*2] + x);
         param.buffer->samplesD[n*2+1] =(param.buffer->samplesD[n*2] + x);
@@ -427,10 +448,12 @@ void FMSynth::Algorithm(AlgoParams& param)
         param.buffer->samples[n*2] = sample;
         param.buffer->samples[n*2+1] = sample;
 
-        if(n == 1024 && bDoOutBuffer)
+        if(n == 100 && bDoOutBuffer)
             out_buffer(param.buffer);
 
         t+=dt;
+
+        p->setXY(0, t, lfo.render());
         //if(n % 100 == 0)
         //if(n < 10000)
         //  p->setXY(0, t, x);
@@ -444,7 +467,8 @@ void FMSynth::Algorithm(AlgoParams& param)
         }
 
     }
-    if( bShowOSC)
+
+    //if( bShowOSC)
     {
       p->set_autoscale(true);
       p->zoomer->setAxis(QwtPlot::xBottom, QwtPlot::yRight);
@@ -459,12 +483,12 @@ double FMSynth::algo5(FmParams* p, double t, int n, bool bReleaseNote, double ke
         p->ev[i] = p->envelope[i]->render();
     }
 
-    p->out[6] =  p->ev[6] * p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + p->out[6] ) * p->lfo;
-    p->out[5] =  p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + p->out[6] ) * p->lfo ;
-    p->out[4] =  p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4])* t) * p->lfo ;
-    p->out[3] =  p->ev[3] * p->I[3] *  sin( 2 * M_PI *  p->f[3] * t + p->out[4]) * p->lfo;
-    p->out[2] =  p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2])* t) * p->lfo;
-    p->out[1] =  p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1])* t+ p->out[2]) * p->lfo;
+    p->out[6] = p->lfo * p->ev[6] * p->I[6] * sin( 2 * M_PI * (p->f[6]) * t + p->out[6] ) * p->lfo;
+    p->out[5] = p->lfo * p->ev[5] * p->I[5] * sin( 2 * M_PI * (p->f[5]) * t + p->out[6] ) * p->lfo ;
+    p->out[4] = p->lfo * p->ev[4] * p->I[4] * sin( 2 * M_PI * (p->f[4])* t) * p->lfo ;
+    p->out[3] = p->lfo * p->ev[3] * p->I[3] *  sin( 2 * M_PI *  p->f[3] * t + p->out[4]) * p->lfo;
+    p->out[2] = p->lfo * p->ev[2] * p->I[2] * sin( 2 * M_PI * (p->f[2])* t) * p->lfo;
+    p->out[1] = p->lfo * p->ev[1] * p->I[1] * sin( 2 * M_PI * (p->f[1])* t+ p->out[2]) * p->lfo;
     return (p->out[1] + p->out[3] + p->out[5])/3;
 }
 

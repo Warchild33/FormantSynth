@@ -92,7 +92,6 @@ public:
     double* Test2(Buffer* buffer,double f_oc, double SampleRate, double time, bool bReleaseNote);
     double* Test3(Buffer* buffer,double f_oc, double time, bool bReleaseNote, double key_time);
     void  Algorithm(AlgoParams& param);
-    void  TestEvenlope();
     double Evenlope(int op_index, FmParams* params, double t, bool bReleaseNote, double key_time);
     double Evenlope2(int op_index, FmParams* params, double t, bool bReleaseNote, double key_time);
     double find_max_release_rate(FmParams& param);
@@ -101,6 +100,9 @@ public:
     void SavePatch(QString filename);
     void LoadPatch(QString filename, int n);
     void SetCurrentPatch(int n);
+
+    void  TestEvenlope();
+    void  TestTriangle();
 
     FmParams getParams(double f_oc);
 

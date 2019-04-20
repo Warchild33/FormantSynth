@@ -112,6 +112,23 @@ double* tri_nes(double f_oc=800, double percent=0.75, double SampleRate=48000, d
 }
 
 
+double triangle(double f_oc=800, double SampleRate=48000, double t=0, double phase0=0)
+{
+    double x;
+    int Nt = SampleRate / f_oc;
+    double T = 1./f_oc;
+    int N1 =  Nt / 2;
+    double phase = t - int(t/T)*T + phase0;
+    int nf = SampleRate * phase;
+    if(nf > N1)
+        x = (1. / N1) * nf;
+    else
+        x = 1 - (1. / N1) * (nf-N1);
+    return x-1;
+}
+
+
+
 void abs_signal(std::vector<double>& signal)
 {
     for (int j=0; j<signal.size()/2-1; j++)
