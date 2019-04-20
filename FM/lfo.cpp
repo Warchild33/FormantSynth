@@ -74,6 +74,11 @@ double delayIncrements[] = {0, 0, 0};
 int delayVals[] = {0, 0, 1};
 LfoParams params;
 
+void setGlobalLfoParams(LfoParams& p)
+{
+    params = p;
+}
+
 Lfo::Lfo(int lfoAmpModSens)
 {
     lfoSpeed = 34;

@@ -311,6 +311,12 @@ double FMSynth::find_max_release_rate(FmParams& param)
     return max;
 }
 
+void setLfoParams(FmParams* fm_params)
+{
+    LfoParams lfo_params;
+    lfo_params.lfoPitchModDepth = fm_params->pitchModDepth;
+    setGlobalLfoParams(lfo_params);
+}
 
 void FMSynth::Algorithm(AlgoParams& param)
 {
@@ -322,7 +328,10 @@ void FMSynth::Algorithm(AlgoParams& param)
 
     if( bShowOSC)
        p->clearvals(0);
+
     Lfo lfo(0);
+    setLfoParams(&gui_params);
+
     for(int n=param.offset; n < param.offset + floor((param.time)*48000); n++) //
     {
         //lfo

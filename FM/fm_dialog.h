@@ -87,6 +87,8 @@ private slots:
     void on_comboBox_2_currentIndexChanged(int index);
     void on_sliderMoved(int);
 
+    void on_pichMod_sliderMoved(int position);
+
 private:
 
 };

@@ -5,8 +5,9 @@
 #include "syntezer.h"
 #include "fm_envelope.h"
 
-struct FmParams
+class FmParams
 {
+public:
     FmParams()
     {
         for(int i=0; i<7;i++)
@@ -35,7 +36,8 @@ struct FmParams
     double out[7];
     EnvelopeFM* envelope[7];
     double lfo;
-    int    algo_n;    
+    int    algo_n;
+    int    pitchModDepth;
 };
 
 

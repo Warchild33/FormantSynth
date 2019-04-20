@@ -1,8 +1,18 @@
 #ifndef LFO_H
 #define LFO_H
 
-struct LfoParams
+class LfoParams
 {
+public:
+    LfoParams()
+    {
+        controllerModVal = 0;
+        lfoAmpModDepth = 0;
+        lfoDelay = 33;
+        lfoPitchModDepth = 20;
+        lfoPitchModSens = 3;
+        lfoWaveform = 4;
+    }
     int lfoWaveform;
     int lfoPitchModSens;
     int lfoPitchModDepth;
@@ -10,6 +20,8 @@ struct LfoParams
     int lfoDelay;
     int controllerModVal;
 };
+
+void setGlobalLfoParams(LfoParams& p);
 
 class Lfo
 {

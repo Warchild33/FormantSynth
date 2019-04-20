@@ -171,6 +171,7 @@ void FM_Dialog::AssignGUIValues()
     synt->gui_params.d[5] = ui->d5->value();
     synt->gui_params.d[6] = ui->d6->value();
     synt->gui_params.algo_n = ui->algoCombo->currentIndex()+1;
+    synt->gui_params.pitchModDepth = ui->pichMod->value();
 
 //    //evenlope
     for(int i=1; i <= 6; i++)
@@ -604,4 +605,9 @@ void FM_Dialog::on_algoCombo_currentIndexChanged(const QString &arg1)
 void FM_Dialog::on_comboBox_2_currentIndexChanged(int index)
 {
     synt->n_op_osc = index;
+}
+
+void FM_Dialog::on_pichMod_sliderMoved(int position)
+{
+    synt->gui_params.pitchModDepth = position;
 }
