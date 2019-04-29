@@ -38,6 +38,7 @@ public:
     double lfo;
     int    algo_n;
     int    pitchModDepth;
+    int    lfoDelay;
 };
 
 

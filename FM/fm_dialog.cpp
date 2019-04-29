@@ -172,6 +172,7 @@ void FM_Dialog::AssignGUIValues()
     synt->gui_params.d[6] = ui->d6->value();
     synt->gui_params.algo_n = ui->algoCombo->currentIndex()+1;
     synt->gui_params.pitchModDepth = ui->pichMod->value();
+    synt->gui_params.lfoDelay = ui->delay->value();
 
 //    //evenlope
     for(int i=1; i <= 6; i++)

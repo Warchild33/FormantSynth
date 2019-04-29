@@ -315,6 +315,7 @@ void setLfoParams(FmParams* fm_params)
 {
     LfoParams lfo_params;
     lfo_params.lfoPitchModDepth = fm_params->pitchModDepth;
+    lfo_params.lfoDelay = fm_params->lfoDelay;
     setGlobalLfoParams(lfo_params);
 }
 

@@ -1658,6 +1658,32 @@
     </item>
    </layout>
   </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>450</y>
+     <width>121</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_26">
+    <item>
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>Delay</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSlider" name="delay">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
