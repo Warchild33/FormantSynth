@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include <QSettings>
+#include <QStringList>
 #include <QDebug>
 #include <QApplication>
 #include <fcntl.h>

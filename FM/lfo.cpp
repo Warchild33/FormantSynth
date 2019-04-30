@@ -1,4 +1,5 @@
 #include <math.h>
+#include <random>
 #include "lfo.h"
 
 
@@ -148,7 +149,7 @@ double Lfo::render() {
         this->pitchVal = pow(pitchModDepth, amp);
         // TODO: Simplify ampValTarget calculation.
         // ampValTarget range = 0 to 1. lfoAmpModSens range = -3 to 3. ampModDepth range =  0 to 1. amp range = -1 to 1.
-        double ampSensDepth = abs(lfoAmpModSens) * 0.333333;
+        double ampSensDepth = fabs(lfoAmpModSens) * 0.333333;
         double phase = (lfoAmpModSens > 0) ? 1 : -1;
         this->ampValTarget = 1 - ((ampModDepth + params.controllerModVal) * ampSensDepth * (amp * phase + 1) * 0.5);
         this->ampIncrement = (this->ampValTarget - this->ampVal) / LFO_SAMPLE_PERIOD;

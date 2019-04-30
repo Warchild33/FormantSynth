@@ -27,7 +27,7 @@ FMSynth::FMSynth()
     TestEvenlope();
     TestTriangle();
     for(int i=0; i < 32; i++)
-      algoFuncs[i] = &algo1;
+      algoFuncs[i] = &algo17;
    algoFuncs[2] = &algo2;
    algoFuncs[3] = &algo3;
    algoFuncs[5] = &algo5;
