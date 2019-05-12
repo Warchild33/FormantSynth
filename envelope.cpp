@@ -1,6 +1,6 @@
 #include "envelope.h"
 #include <math.h>
-
+#define M_PI 3.14159265
 
 Pnt spline_kochaken(Pnt P1, Pnt P2, Pnt P3, Pnt P4, float t,
            double tension, double bias, double continuity)

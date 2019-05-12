@@ -9,6 +9,7 @@
 #include "puseaudiodriver.h"
 #include "freqtable.h"
 #include "key2notetable.h"
+#include "qtaudiodriver.h"
 #include "buffer.h"
 
 class Syntezer : public QObject
@@ -17,6 +18,7 @@ class Syntezer : public QObject
 public:
     AlsaDriver*          alsa;
     PuseAudioDriver*     pulse;
+    QtAudioDriver*       qt;
     std::map<int,Buffer*>       key2noteBuffer;
     FreqTable                   freq_table;
     Key2NoteTable               key2note;

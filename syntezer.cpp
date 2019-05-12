@@ -6,7 +6,7 @@
 #include "syntezer.h"
 #include "alsadriver.h"
 #include "puseaudiodriver.h"
-
+#include "qtaudiodriver.h"
 
 
 Syntezer::Syntezer()
@@ -18,12 +18,22 @@ Syntezer::Syntezer()
         alsa = new AlsaDriver();
         alsa->open((char*)settings.value("alsa_device").toString().toStdString().c_str(),false);
         pulse = 0;
+        qt = 0;
     }else if(settings.value("use_driver").toString() == "pulse")
     {
 
         pulse = new PuseAudioDriver();
         //pulse->open();
         alsa = 0;
+        qt = 0;
+    }
+    else if(settings.value("use_driver").toString() == "qt")
+    {
+
+        pulse = 0;
+        //pulse->open();
+        alsa = 0;
+        qt = new QtAudioDriver();
     }
     //connect(this, SIGNAL(sigDisableNote(char)),&alsa->mixer_thread, SLOT(disable_note(char)));
     bKeyPressed = false;
@@ -47,6 +57,10 @@ void Syntezer::out_pcm(short* buffer, int len)
     {
         alsa->drop_pcm_frames();
         alsa->out_pcm(buffer, (unsigned long)len);
+    }else if(qt)
+    {
+        qt->drop_pcm_frames();
+        qt->out_pcm(buffer, (unsigned long)len);
     }
 }
 
@@ -55,6 +69,7 @@ void Syntezer::out_buffer(Buffer* buf)
     if(!bEnabled) return;
     if(alsa) alsa->out_buffer(buf);
     if(pulse) pulse->out_buffer(buf);
+    if(qt) qt->out_buffer(buf);
 }
 
 void Syntezer::drop_pcm_frames()

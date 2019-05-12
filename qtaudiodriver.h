@@ -1,5 +1,5 @@
-#ifndef PUSEAUDIODRIVER_H
-#define PUSEAUDIODRIVER_H
+#ifndef QTAUDIODRIVER_H
+#define QTAUDIODRIVER_H
 
 #include "buffer.h"
 #include <QObject>
@@ -7,22 +7,22 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <map>
-#ifdef __linux__
-#include <pulse/simple.h>
-#endif
+#include <QAudioOutput>
+#include <QBuffer>
 
-class PuseAudioDriver : public QThread
+class QtAudioDriver : public QThread
 {
        Q_OBJECT
 public:
-    PuseAudioDriver();
-    PuseAudioDriver(PuseAudioDriver* parent);
+    QtAudioDriver();
+    QtAudioDriver(QtAudioDriver* parent);
     int  open();
     int  out_pcm(short* buf, unsigned long len);
     void out_buffer(Buffer* buf);
     int  close();
     int  drop_pcm_frames();
     int  set_nonblock(bool flag);
+
 
     void run();
     void nonBlockingLoop();
@@ -32,15 +32,18 @@ public:
     QMutex                    mutex;
     void createThreads(char* device_name);
 
+public slots:
+    void qtStateChanged(QAudio::State state);
+
 private:
-    std::vector<PuseAudioDriver*> pulse_threads;
-    PuseAudioDriver* parent;
+    std::vector<QtAudioDriver*> pulse_threads;
+    QtAudioDriver* parent;
     bool bExitThread;
     std::string device_name;
     int Nthreads;
-#ifdef __linux__
-    pa_simple *s;
-#endif
+    QAudioOutput *_ao;
+    QAudioFormat _af;
+    QBuffer _buf;
 };
 
 #endif // PUSEAUDIODRIVER_H

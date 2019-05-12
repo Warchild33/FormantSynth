@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <QtGlobal>
 
+#define M_PI 3.14159265
+
 double* ones(int i1, int i2);
 double* zeroes(int i1, int i2);
 double rem(double x, double y);
@@ -22,6 +24,7 @@ void four1(double data[], int nn, int isign);
 
 double* istft(complex_double** d, int ftsize, int w=0, int h=0, int rows=0, int cols=0, int* ylen=0)
 {
+
     // special case: rectangular window
     double* win;
     if(w == 0)

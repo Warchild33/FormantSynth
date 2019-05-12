@@ -8,8 +8,10 @@
 #include <QDebug>
 #include <QApplication>
 #include <fcntl.h>
+#ifdef __linux__
 #include <pulse/simple.h>
 #include <pulse/error.h>
+#endif
 
 static QSettings settings("./settings/settings.ini", QSettings::IniFormat);
 
@@ -19,7 +21,9 @@ PuseAudioDriver::PuseAudioDriver()
     bExitThread = false;
     parent = 0;
     Nthreads = 4;
+#ifdef __linux__
     s = NULL;
+#endif
     createThreads((char*)settings.value("pulse_device").toString().toStdString().c_str());
 }
 
@@ -29,7 +33,9 @@ PuseAudioDriver::PuseAudioDriver(PuseAudioDriver* parent)
     //playback_handle = 0;
     bExitThread = false;
     Nthreads = 0;
+ #ifdef __linux__
     s = NULL;
+ #endif
 }
 
 void PuseAudioDriver::createThreads(char* device_name)
@@ -67,7 +73,7 @@ void PuseAudioDriver::out_buffer(Buffer* buf)
 
 void PuseAudioDriver::run()
 {
-
+#ifdef __linux__
     //open device if not parent
 
     if( parent!=0 )
@@ -125,17 +131,21 @@ void PuseAudioDriver::run()
         if( bExitThread ) return;
 
     }
+#endif
 }
 
 int  PuseAudioDriver::close()
 {
+ #ifdef __linux__
     pa_simple_free(s);
+#endif
 }
 
 char gCounter = 'A';
 
 int  PuseAudioDriver::open()
 {
+#ifdef __linux__
     /* The Sample format to use */
     static const pa_sample_spec ss = {
         .format = PA_SAMPLE_S16LE,
@@ -160,6 +170,6 @@ int  PuseAudioDriver::open()
         return 0;
     }
     return 1;
-
+#endif
 
 }

@@ -4,9 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core gui svg xml concurrent
-lessThan(QT_MAJOR_VERSION, 5): LIBS+=-lqwt -lasound -lpulse -lpulse-simple
-greaterThan(QT_MAJOR_VERSION, 4): LIBS+=-lqwt-qt5 -lasound -lpulse -lpulse-simple
+QT       += core gui svg xml concurrent multimedia
+unix: lessThan(QT_MAJOR_VERSION, 5): LIBS+=-lqwt -lasound -lpulse -lpulse-simple
+unix: greaterThan(QT_MAJOR_VERSION, 4): LIBS+=-lqwt-qt5 -lasound -lpulse -lpulse-simple
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QMAKE_CXXFLAGS+=-g -std=c++11 -Wreorder
 
@@ -27,6 +28,7 @@ SOURCES += main.cpp\
     dsp/pvoc.cpp \
 #    dsp/psample.cpp \
     fft/fft.cpp \
+    qtaudiodriver.cpp \
     wave_in.cpp \
     ploter.cpp \
 #    spectrogram.cpp \
@@ -71,6 +73,7 @@ HEADERS  += mainwindow.h \
     common.h \
     fft/fft.h \
     complex.h \
+    qtaudiodriver.h \
     wave_in.h \
     dsp/pvoc.h \
     test.h \
@@ -113,3 +116,13 @@ FORMS    += mainwindow.ui \
 OTHER_FILES += \
     play_wav.sh \
     midi_data/happy_birsday.txt
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/3PartyLibs/lib/ -lqwt
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/3PartyLibs/lib/ -lqwtd
+
+INCLUDEPATH += $$PWD/3PartyLibs/qwt
+DEPENDPATH += $$PWD/3PartyLibs/qwt
+
+INCLUDEPATH += $$PWD/3PartyLibs
+DEPENDPATH += $$PWD/3PartyLibs
+

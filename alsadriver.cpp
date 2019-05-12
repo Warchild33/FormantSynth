@@ -15,11 +15,13 @@ AlsaDriver::AlsaDriver()
     bExitThread = false;
     parent = 0;
     Nthreads = 8;
-
+#ifdef __linux__
     if(playback_handle != 0)
     {
         createThreads((char*)settings.value("alsa_device").toString().toStdString().c_str());
     }
+ #endif
+
 }
 
 AlsaDriver::AlsaDriver(AlsaDriver* parent)
@@ -54,6 +56,8 @@ int AlsaDriver::open(char* device_name, bool bTest)
     short buf[128];
     //return 0;
     this->device_name = device_name;
+
+#ifdef __linux__
 
     if ((err = snd_pcm_open(&playback_handle, device_name, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK)) < 0) {
         fprintf (stderr, "cannot open audio device %s (%s)\n",
@@ -148,7 +152,7 @@ int AlsaDriver::open(char* device_name, bool bTest)
     //fprintf (stderr, "thread id = %d\n", QThread::currentThreadId());
 
     createThreads(device_name);
-
+#endif
     return 1;
 }
 
@@ -158,8 +162,9 @@ int AlsaDriver::close()
     int err;
     bExitThread = true;
     int i=0;
+#ifdef __linux__
     snd_pcm_close(playback_handle);
-
+#endif
 
 }
 
@@ -167,7 +172,7 @@ int AlsaDriver::close()
 /*
  *   Underrun and suspend recovery
  */
-
+#ifdef __linux__
 static int xrun_recovery(snd_pcm_t *handle, int err)
 {
         if (err == -EPIPE) {    /* under-run */
@@ -187,6 +192,7 @@ static int xrun_recovery(snd_pcm_t *handle, int err)
         }
         return err;
 }
+#endif
 
 void AlsaDriver::out_buffer(Buffer* buf)
 {
@@ -235,11 +241,13 @@ void AlsaDriver::run()
         {
             int err;
             fprintf (stderr,"AlsaDriver Thread exit ");
+  #ifdef __linux__
             if ((err = snd_pcm_close(playback_handle)) < 0) {
                 fprintf (stderr, "cannot close audio device (%s)\n",
                          snd_strerror (err));
                 return;
             }
+  #endif
             return;
         }
     }
@@ -265,6 +273,7 @@ void AlsaDriver::nonBlockingLoop()
         cptr = period_size;
         ptr = &buf->samples[0];
         while (cptr > 0) {
+            #ifdef __linux__
             err = snd_pcm_writei(playback_handle, ptr, 1);
 
             if (err == -EAGAIN)
@@ -276,6 +285,7 @@ void AlsaDriver::nonBlockingLoop()
                 }
                 continue;
             }
+            #endif
 
             if( (!buf->timeEnd.isNull()) && (buf->timeEnd < QTime::currentTime()) )
             {
@@ -313,6 +323,7 @@ void AlsaDriver::blockingLoop()
 int AlsaDriver::out_pcm(short* buf, unsigned long len)
 {
     int err;
+#ifdef __linux__
     if( playback_handle==0 ) return 0;
     if ((err = snd_pcm_prepare (playback_handle)) < 0) {
         fprintf (stderr, "cannot prepare audio interface for use (%s)\n",
@@ -325,27 +336,32 @@ int AlsaDriver::out_pcm(short* buf, unsigned long len)
              snd_strerror (err));
         return 0;
     }
+#endif
     return 1;
 }
 
 int AlsaDriver::drop_pcm_frames()
 {
     int err;
+ #ifdef __linux__
     if( playback_handle==0 ) return 0;
     if ((err = snd_pcm_drop(playback_handle)) < 0) {
         fprintf (stderr, "cannot prepare audio interface for use (%s)\n",
              snd_strerror (err));
         return 0;
     }
+#endif
     return 1;
 }
 
 int AlsaDriver::set_nonblock(bool flag)
 {
     int err;
+    #ifdef __linux__
     if ((err = snd_pcm_nonblock (playback_handle, flag)) < 0) {
       fprintf (stderr, "cannot set non block (%s)\n",
                snd_strerror (err));
       return 0;
     }
+#endif
 }

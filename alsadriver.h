@@ -2,7 +2,9 @@
 #define ALSADRIVER_H
 
 #include "buffer.h"
+#ifdef __linux__
 #include <alsa/asoundlib.h>
+#endif
 #include <QObject>
 #include <QThread>
 #include <QMutex>
@@ -39,8 +41,10 @@ private:
 
     std::vector<AlsaDriver*> alsa_threads;
     AlsaDriver* parent;
-    snd_pcm_t *playback_handle;
-    snd_pcm_hw_params_t *hw_params;
+    #ifdef __linux__
+      snd_pcm_t *playback_handle;
+      snd_pcm_hw_params_t *hw_params;
+    #endif
     bool bExitThread;
     std::string device_name;
     int Nthreads;

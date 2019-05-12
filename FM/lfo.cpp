@@ -2,7 +2,7 @@
 #include <random>
 #include "lfo.h"
 
-
+#define M_PI 3.14159265
 const double PERIOD = M_PI * 2;
 const double PERIOD_HALF = PERIOD / 2;
 const double PERIOD_RECIP = 1. / PERIOD;
