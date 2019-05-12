@@ -163,6 +163,7 @@ void Happybirsday::Play(std::vector<Notestruct>* song, QProgressBar* progress_ba
     this->song = song;
     this->progress_bar = progress_bar;
     isPlaying = true;
+    generate_play_wave(*song);
 }
 
 void Happybirsday::Stop()

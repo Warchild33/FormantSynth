@@ -156,8 +156,8 @@ void QtAudioDriver::qtStateChanged(QAudio::State state)
     {
 
     }
-    qDebug() << "error " << _ao->error();
-    qDebug() << "state " << _ao->state();
+    //qDebug() << "error " << _ao->error();
+    //qDebug() << "state " << _ao->state();
 }
 
 
@@ -173,7 +173,7 @@ int  QtAudioDriver::open()
     QAudioDeviceInfo deviceInfo = QAudioDeviceInfo::defaultOutputDevice();
     if(deviceInfo.isFormatSupported(format))
     {
-        qDebug() << "format supported";
+       // qDebug() << "format supported";
     }
     _ao = new QAudioOutput(deviceInfo, format);
     _ao->setVolume(1);
