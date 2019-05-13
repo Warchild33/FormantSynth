@@ -51,6 +51,7 @@ void QtAudioDriver::createThreads(char* device_name)
 void QtAudioDriver::out_buffer(Buffer* buf)
 {
     int cnt = 0;
+
     //for(int i=0; i < Nthreads; i++)
     for(auto t = pulse_threads.begin(); t!=pulse_threads.end(); t++,cnt++)
     {
@@ -59,6 +60,8 @@ void QtAudioDriver::out_buffer(Buffer* buf)
             (*t)->quenue.push_back(buf);
             (*t)->waitCondition.wakeAll();
             fprintf(stderr,"write to thread %d\n", cnt);
+            qDebug() << "write to thread " << cnt;
+
             break;
         }
     }
@@ -73,7 +76,7 @@ void QtAudioDriver::run()
     {
         if(!open())
             return;
-        //fprintf (stderr, "AlsaDriver thread id = %d device=dmix", QThread::currentThreadId());
+        //fprintf (stderr, "QtDriver thread id = %d device=qt", QThread::currentThreadId());
     }
     unsigned char* ptr;
     unsigned char* ptr_last;
@@ -156,8 +159,9 @@ void QtAudioDriver::qtStateChanged(QAudio::State state)
     {
 
     }
-    //qDebug() << "error " << _ao->error();
-    //qDebug() << "state " << _ao->state();
+    qDebug() << "error " << _ao->error();
+    qDebug() << "state " << _ao->state();
+
 }
 
 
@@ -179,5 +183,6 @@ int  QtAudioDriver::open()
     _ao->setVolume(1);
 
     connect(_ao, SIGNAL(stateChanged(QAudio::State)), this, SLOT(qtStateChanged(QAudio::State)));
+    return 1;
 
 }

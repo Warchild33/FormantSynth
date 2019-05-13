@@ -13,28 +13,10 @@ Syntezer::Syntezer()
     : QObject()
 {
     QSettings settings("./settings/settings.ini", QSettings::IniFormat);
-    if( settings.value("use_driver").toString() == "alsa" )
-    {
-        alsa = new AlsaDriver();
-        alsa->open((char*)settings.value("alsa_device").toString().toStdString().c_str(),false);
-        pulse = 0;
-        qt = 0;
-    }else if(settings.value("use_driver").toString() == "pulse")
-    {
-
-        pulse = new PuseAudioDriver();
-        //pulse->open();
-        alsa = 0;
-        qt = 0;
-    }
-    else if(settings.value("use_driver").toString() == "qt")
-    {
-
-        pulse = 0;
-        //pulse->open();
-        alsa = 0;
-        qt = new QtAudioDriver();
-    }
+    pulse = 0;
+    //pulse->open();
+    alsa = 0;
+    qt = new QtAudioDriver();
     //connect(this, SIGNAL(sigDisableNote(char)),&alsa->mixer_thread, SLOT(disable_note(char)));
     bKeyPressed = false;
     bEnabled = false;

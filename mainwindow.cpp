@@ -96,6 +96,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
+void MainWindow::print(const QString& str )
+{
+
+}
+
 void MainWindow::on_save_patch()
 {
     QString fileName = QFileDialog::getSaveFileName(this,

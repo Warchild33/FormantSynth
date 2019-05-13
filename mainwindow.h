@@ -23,6 +23,8 @@ public:
 signals:
     void keyPressSig(int);
     void keyReleaseSig(int);
+public slots:
+    void print(const QString& str );
 
 private slots:
     void on_sound_Settings();
