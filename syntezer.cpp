@@ -38,6 +38,7 @@ Syntezer::Syntezer()
     //connect(this, SIGNAL(sigDisableNote(char)),&alsa->mixer_thread, SLOT(disable_note(char)));
     bKeyPressed = false;
     bEnabled = false;
+    enabledChannels = 0xFFFFFF;
     QTimer* timer = new QTimer();
     connect(timer,SIGNAL(timeout()), this, SLOT(on_Timer()));
     timer->start(1000);

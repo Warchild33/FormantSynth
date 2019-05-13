@@ -91,6 +91,7 @@ void SyntTestForm::on_hbSongButton_clicked()
         *notes = hb_song->parse_hb_notes("./midi_data/happy_birsday.txt");
         settings.setValue("multiple_voice",1);
         hb_song->Play(notes, ui->progressBar);
+        hb_song->generate_play_wave(*notes);
         ui->hbSongButton->setText("Stop");
     }
     else
@@ -157,6 +158,7 @@ void SyntTestForm::on_musicGeneratorBN_clicked()
         generate_music(*notes);
         settings.setValue("multiple_voice",1);
         hb_song->Play(notes, ui->progressBar);
+        hb_song->generate_play_wave(*notes);
         ui->musicGeneratorBN->setText("Stop");
     }
     else
