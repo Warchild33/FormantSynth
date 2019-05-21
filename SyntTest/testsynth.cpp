@@ -13,7 +13,7 @@ TestSynth::TestSynth()
     gen_type = FM;
     percent = 0.5;
     ratio = 1./4.;
-    guitar_synt = new GuitarSynth();
+    //guitar_synt = new GuitarSynth();
 }
 
 void TestSynth::write_note(Buffer* buffer, long offset, char note, double duration)
@@ -38,8 +38,8 @@ void TestSynth::write_note(Buffer* buffer, long offset, char note, double durati
     if(gen_type == FM)
         x = test_fm(f,ratio,48000,duration,&N);
 
-    if(gen_type == GUITAR)
-        x = guitar_synt->gen(f,48000,duration);
+    //if(gen_type == GUITAR)
+    //    x = guitar_synt->gen(f,48000,duration);
 
 
     double Amax = (*std::max_element(&x[0],&x[N-1]));
@@ -82,8 +82,8 @@ Buffer* TestSynth::play_note(char note, double duration, double velocity)
     if(gen_type == FM)
         x = test_fm(f,ratio,48000,duration,&N);
 
-    if(gen_type == GUITAR)
-        x = guitar_synt->gen(f,48000,duration);
+    //if(gen_type == GUITAR)
+    //    x = guitar_synt->gen(f,48000,duration);
 
 
     double Amax = (*std::max_element(&x[0],&x[N-1]));    

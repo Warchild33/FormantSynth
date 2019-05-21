@@ -27,6 +27,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {
+    qApp->addLibraryPath("./plugins");
     QApplication a(argc, argv);
    // QtMessageHandler prev = qInstallMessageHandler(myMessageOutput);
     MainWindow w;

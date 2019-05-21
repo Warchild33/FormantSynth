@@ -127,7 +127,7 @@ void QtAudioDriver::run()
                 }
                 if(Abort) break;
             }
-
+            delete buf;
             quenue.erase(quenue.end()-1);
         }
         mutex.unlock();
